@@ -1,0 +1,34 @@
+// $ANTLR 2.7.5 (20050128): cnfparse.g -> CNFParserTokenTypes.txt$
+CNFParser    // output token vocab name
+LITERAL_input_clause="input_clause"=4
+OPEN_P("an opening paren")=5
+LOWER_WORD=6
+COMMA=7
+CLOSE_P("a closing paren")=8
+PERIOD=9
+DASH=10
+LITERAL_axiom="axiom"=11
+LITERAL_definition="definition"=12
+LITERAL_knowledge="knowledge"=13
+LITERAL_assumption="assumption"=14
+LITERAL_hypothesis="hypothesis"=15
+LITERAL_conjecture="conjecture"=16
+LITERAL_lemma="lemma"=17
+LITERAL_theorem="theorem"=18
+LITERAL_plain="plain"=19
+LITERAL_unknown="unknown"=20
+LITERAL_derived="derived"=21
+OPEN_B("an opening bracket")=22
+CLOSE_B("a closing bracket")=23
+SIGN=24
+LITERAL_true="true"=25
+LITERAL_false="false"=26
+LITERAL_equal="equal"=27
+NUMBER=28
+QUOTED_STRING("a quoted string")=29
+UPPER_WORD=30
+LITERAL_include="include"=31
+UNDERSCORE=32
+COMMENT=33
+WS=34
+NEWLINE=35

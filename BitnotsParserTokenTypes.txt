@@ -1,0 +1,34 @@
+// $ANTLR 2.7.5 (20050128): bitnotsparse.g -> BitnotsParserTokenTypes.txt$
+BitnotsParser    // output token vocab name
+OPEN_P("an opening paren")=4
+"def-axiom"=5
+CLOSE_P("a closing paren")=6
+"def-lemma"=7
+"def-predicate"=8
+"def-conjecture"=9
+"def-term"=10
+"def-knowledge"=11
+LITERAL_and="and"=12
+LITERAL_or="or"=13
+LITERAL_not="not"=14
+LITERAL_implies="implies"=15
+LITERAL_iff="iff"=16
+LITERAL_forall="forall"=17
+"for-some"=18
+LITERAL_truth="truth"=19
+LITERAL_falsity="falsity"=20
+SYMBOL=21
+"the-class-of-all"=22
+LITERAL_the="the"=23
+LITERAL_name="name"=24
+STRING_LITERAL("a quoted string")=25
+LITERAL_format="format"=26
+"format-only"=27
+LITERAL_true="true"=28
+LITERAL_false="false"=29
+LITERAL_include="include"=30
+LITERAL_string="string"=31
+LITERAL_identifier="identifier"=32
+COMMENT=33
+WS=34
+NEWLINE=35

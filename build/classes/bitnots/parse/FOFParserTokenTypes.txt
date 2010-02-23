@@ -1,0 +1,44 @@
+// $ANTLR 2.7.5 (20050128): fofparse.g -> FOFParserTokenTypes.txt$
+FOFParser    // output token vocab name
+LITERAL_input_formula="input_formula"=4
+OPEN_P("an opening paren")=5
+LOWER_WORD=6
+COMMA=7
+CLOSE_P("a closing paren")=8
+PERIOD=9
+QUANTIFIER=10
+OPEN_B("an opening bracket")=11
+CLOSE_B("a closing bracket")=12
+COLON=13
+NUMBER=14
+UPPER_WORD=15
+AND=16
+N_AND=17
+OR=18
+N_OR=19
+IFF=20
+XOR=21
+IMPLIES=22
+R_IMPLIES=23
+TILDE=24
+DASH=25
+LITERAL_axiom="axiom"=26
+LITERAL_definition="definition"=27
+LITERAL_knowledge="knowledge"=28
+LITERAL_assumption="assumption"=29
+LITERAL_hypothesis="hypothesis"=30
+LITERAL_conjecture="conjecture"=31
+LITERAL_lemma="lemma"=32
+LITERAL_theorem="theorem"=33
+LITERAL_plain="plain"=34
+LITERAL_unknown="unknown"=35
+LITERAL_derived="derived"=36
+LITERAL_true="true"=37
+LITERAL_false="false"=38
+LITERAL_equal="equal"=39
+QUOTED_STRING("a quoted string")=40
+LITERAL_include="include"=41
+UNDERSCORE=42
+COMMENT=43
+WS=44
+NEWLINE=45
