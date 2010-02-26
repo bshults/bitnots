@@ -1,0 +1,12 @@
+; A simple test file to make sure that the epsilon rule is working
+; correctly.
+
+(def-theorem first (a)
+    (string "a")
+)
+
+(def-theorem second (implies (a) (b))
+    (string "if a, then b")
+)
+
+(def-target the-target (b))

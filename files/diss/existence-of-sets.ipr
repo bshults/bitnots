@@ -1,0 +1,127 @@
+;;; Existence of Sets
+
+(def-axiom subclasses
+  (implies (an-element x)
+    (for-some ((y))
+      (and (an-element y)
+	   (forall ((z))
+	     (implies (a-subclass-of z x) (a-member-of z y)))))))
+
+(def-theorem kelley-a-33		; perfect! 2.32 sec with *all* previous
+					; theorems loaded! i.e. 51 theorems
+					; and 8 term definitions
+
+  (forall ((x) (z))
+    (implies (and (an-element x) (a-subclass-of z x))
+      (an-element z)))
+
+  (proof
+   (consider
+    (forall ((x) (z))
+      (implies (and (an-element x) (a-subclass-of z x)) (an-element z)))
+    skolem _x)
+   (promote
+    (implies (and (an-element (_x)) (a-subclass-of (_z) (_x)))
+      (an-element (_z))))
+   (apply-theorem subclasses
+		  ((x _x)))
+   (consider
+    (for-some ((y))
+      (and (an-element y) (forall ((z)) (implies (a-subclass-of z (_x))
+					  (a-member-of z y)))))
+    skolem _y)
+   (show-there-is
+    (forall ((z)) (implies (a-subclass-of z (_x)) (a-member-of z (_y))))
+    var z)
+   (forward-chain
+    (implies (a-subclass-of z (_x)) (a-member-of z (_y))))
+   nil
+   ((apply-theorem an-element2
+		   ((y _y) (x _z))))))
+
+(def-theorem kelley-a-34a
+  (= (the-empty-set) (the-family-intersection-of (the-universe-class))))
+
+(def-theorem kelley-a-34b
+  (= (the-universe-class) (the-family-union-of (the-universe-class))))
+
+(def-predicate (a-non-empty-class c)
+  (for-some ((y)) (a-member-of y c)))
+
+(def-theorem kelley-a-35
+  (forall ((x))
+    (implies (a-non-empty-class x)
+      (an-element (the-family-intersection-of x)))))
+
+(def-term (the-power-class-of x)
+  (the-class-of-all (y) (a-subclass-of y x)))
+
+(def-theorem kelley-a-37
+  (= (the-power-class-of (the-universe-class)) (the-universe-class)))
+
+(def-theorem kelley-a-38
+  (forall ((x) (y))
+    (iff (a-member-of y (the-power-class-of x))
+	 (a-subclass-of y x))))
+
+(def-theorem kelley-a-39
+  (not (an-element (the-universe-class))))
+
+(def-term (the-singleton x)
+  (the-class-of-all (z) (and (an-element x) (= z x))))
+
+(def-theorem kelley-a-41
+  (forall ((x))
+    (implies (an-element x)
+      (forall ((y))
+	(iff (a-member-of y (the-singleton x))
+	     (= y x))))))
+
+(def-theorem kelley-a-42
+  (forall ((x))
+    (implies (an-element x)
+      (an-element (the-singleton x)))))
+
+(def-theorem kelley-a-43
+  (forall ((x))
+    (iff (= (the-singleton x) (the-undefined-thing))
+	 (not (an-element x)))))
+
+(def-theorem kelley-a-44a
+  (forall ((x))
+    (implies (an-element x)
+      (= (the-family-intersection x) x))))
+
+(def-theorem kelley-a-44b
+  (forall ((x))
+    (implies (an-element x)
+      (= (the-family-union x) x))))
+
+;;;(def-theorem kelley-a-44c     ; benji think about this @%$#
+;;;  (forall ((x))
+;;;    (implies (not (an-element x))
+;;;      (= (the-intersection (the-singleton))))))
+
+(def-axiom union
+  (implies (and (an-element x) (an-element y))
+    (an-element (the-union-of x y))))
+
+(def-term (the-pair x y)
+  (the-union-of (the-singleton x) (the-singleton y)))
+
+(def-theorem kelley-a-46a-
+  (forall ((x) (y))
+    (implies (and (an-element x) (an-element y))
+      (and (an-element (the-pair x y))
+	   (forall ((z))
+	     (iff (a-member-of z (the-pair x y))
+		  (or (= z x) (= z y))))))))
+
+(def-theorem kelley-a-47		; look at the rest of these
+  (forall ((x) (y))
+    (implies (and (an-element x) (an-element y))
+      (and (= (the-family-intersection-of (the-pair x y))
+	      (the-intersection-of x y))
+	   (= (the-family-union-of (the-pair x y))
+	      (the-union-of x y))))))
+

@@ -1,0 +1,92 @@
+(forall ((a))
+  (implies (forall ((x) (y)) (implies (forall ((z)) (iff (a-member-of z x)
+							 (a-member-of z y)))
+			       (= x y)))
+    (= (the-class-of-all (x) (= x a)) (the-class-of-all (x)
+					(or (= x a) (= x a))))))
+;; with one obvious interaction relset0.06 and an early order to retry
+;; unification.  Currently, if this order is not given at the first
+;; opportunity, then it fails because we only unify the newest
+;; formulas.
+;; settheo0.01 gets it without help with extensionality loaded
+
+(forall ((a) (b))			; equality needs to be improved
+  (implies (and (forall ((x) (y))
+		  (implies (forall ((z)) (iff (a-member-of z x)
+					      (a-member-of z y)))
+		    (= x y)))
+		(= (the-singleton a) (the-class-of-all (x) (= x a)))
+		(= (the-pair a b) (the-class-of-all (x) (or (= x a) (= x b)))))
+    (= (the-singleton a) (the-pair a a))))
+
+(an-element (the-undefined-thing))	; no
+
+(forall ((y)) (= y (the (x) (= x y))))	; not a theorem
+
+(forall ((x) (y) (z) (w))		; I think it doesn't get this because
+					; it doesn't unify equality preds
+  (implies (and (an-element x) (an-element y) (an-element z) (an-element w)
+		(an-element (the-class-of-all (a) 
+			      (or (= a (the-class-of-all (b) (= b x)))
+				  (= a (the-class-of-all (b)
+					 (or (= b x) (= b y)))))))
+		(an-element (the-class-of-all (b) (= b x)))
+		(an-element (the-class-of-all (b) (or (= b x) (= b y))))
+		(an-element (the-class-of-all (a) 
+			      (or (= a (the-class-of-all (b) (= b z)))
+				  (= a (the-class-of-all (b)
+					 (or (= b z) (= b w)))))))
+		(an-element (the-class-of-all (b) (= b z)))
+		(an-element (the-class-of-all (b) (or (= b z) (= b w))))
+		(forall ((x) (y))
+		  (implies (and (an-element x) (an-element y)
+				(for-some ((w)) (a-member-of w x))
+				(for-some ((w)) (a-member-of w y)))
+		    (iff (forall ((z)) (iff (a-member-of z x)
+					    (a-member-of z y)))
+			 (= x y))))
+		(forall ((n))
+		  (iff (a-member-of n (the-class-of-all (a) 
+					(or (= a (the-class-of-all (b) (= b x)))
+					    (= a (the-class-of-all (b)
+						   (or (= b x) (= b y)))))))
+		       (a-member-of n (the-class-of-all (a) 
+					(or (= a (the-class-of-all (b) (= b z)))
+					    (= a (the-class-of-all (b) 
+						   (or (= b z) (= b w))))))))))
+    (and (= x z) (= w y))))
+
+;; relset0.06 june 14 1994
+
+(forall ((x)) (not (a-member-of x (the-class-of-all (z) (not (= z z))))))
+;; relset0.06 june 14 1994
+
+(forall ((x))
+  (iff (an-element x) (a-member-of x (the-class-of-all (z) (= z z)))))
+;; relset0.06 june 14 1994
+
+(forall ((x) (y) (z))
+  (implies (and (forall ((a)) (implies (a-member-of a x)
+				(a-member-of a y)))
+		(forall ((b)) (implies (a-member-of b y)
+				(a-member-of b z))))
+    (forall ((c)) (implies (a-member-of c x)
+		    (a-member-of c z)))))
+;; relset0.06 june 14 1994
+
+(forall ((x) (y))
+  (iff (forall ((a)) 
+	 (implies (a-member-of a x)
+	   (a-member-of a y)))
+       (forall ((b))
+	 (iff (a-member-of b (the-class-of-all (n)
+			       (or (a-member-of n x)
+				   (a-member-of n y))))
+	      (a-member-of b y)))))
+
+(forall ((x))
+  (implies (an-element x)
+    (forall ((y))
+      (iff (a-member-of y (the-class-of-all (a) (= a x)))
+	   (= y x)))))
+

@@ -1,0 +1,78 @@
+(def-theory group-theory fol={}
+  (terms (op 2) (the-identity 0) (the-inverse 1))
+  (axioms
+   (associativity
+    (forall ((x) (y) (z))
+      (= (op (op x y) z) (op x (op y z)))))
+   (left-identity
+    (forall ((y)) (= (op (the-identity) y) y)))
+   (left-inverse
+    (forall ((y))
+      (= (op (the-inverse y) y) (the-identity)))))))
+
+;;;(def-term (the-inverse z)
+;;;    (the (x) (= (op x z) (the-identity)))
+;;;  (theory group-theory))
+
+(def-theorem right-inverse
+    (forall ((x))
+      (= (op x (the-inverse x)) (the-identy)))
+  (theory group-theory))
+
+(def-theorem right-identity
+    (theory group-theory)
+  (forall ((x))
+    (= (op x (the-identity)) x)))
+
+(def-theorem gt1			; simple
+    (implies (forall ((x)) (= (op x x) (the-identity)))
+      (forall ((x) (y))
+	(= (op x y) (op y x))))
+  (theory group-theory))
+
+(def-theorem gt2			; moderate
+    (implies (forall ((x) (y) (z)) (= (op (op (op x y) z) (op x z)) y))
+      (and (forall ((x) (y))
+	     (= (op x x) (op y y)))
+	   (forall ((x) (y) (z))
+	     (= (op (op x y) z) (op x (op y z))))
+	   (forall ((y) (x)) (= (op (op x x) y) y))
+	   (forall ((y) (x))
+	     (for-some ((z))
+	       (= (op z y) (op x x))))))
+  (theory fol=))
+
+(def-term (bracket x y)
+    (op x (op y (op (the-inverse x) (the-inverse y)))))
+
+(def-theorem gt3			; moderate
+    (implies (forall ((x)) (= (op x (op x x)) (the-identity)))
+      (forall ((x) (y)) (= (bracket (bracket x y) y) (the-identity)))))
+
+(def-theorem gt4			; moderate
+    ;; the following axiomatizes commutative group theory
+    ;; with (op x (the-inverse x)) representing (the-identity)
+    ;; once the apropos formula has been proved
+    (forall ((x) (y) (z) (u))
+      (= (op x (the-inverse (op y (op (op (op z (the-inverse z))
+					  (the-inverse (op u y))) x))))
+	 u)))
+
+(def-theorem gt5			; moderate
+    ;; the following axiomatizes commutative group theory
+    (forall ((x) (y) (z))
+      (= (op (op (op x y) z) (the-inverse (op x z))) y)))
+
+(def-theorem gt6			; very hard
+    ;; the following axiomatizes commutative group theory
+    (forall ((x1) (x2) (z) (y) (v))
+      (= (op (the-inverse (op (the-inverse (op (the-inverse (op x1 x2))
+					       (op x2 x1)))
+			      (op (the-inverse (op z y))
+				  (op z (the-inverse (op (op v (the-inverse x))
+							 (the-inverse y)))))))
+	     x) v)))
+
+(def-theorem nu2			; moderate
+  ;; prove that subgroups of order 2 are normal
+  ())

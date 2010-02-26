@@ -1,0 +1,19 @@
+;;; 19
+
+(def-target 19 (for-some ((x)) (forall ((y) (z)) ; mixed finds a shorter proof!
+		  (implies (implies (p y) (q x))
+		    (implies (p x) (q z))))))
+
+;; ;; takes too long
+
+;; ;;; 68
+
+;; (def-target 68 (implies (and (forall ((x) (y)) (t (i x (i y x))))
+;;                              (forall ((x) (y) (z))
+;;                                (t (i (i x (i y z)) (i (i x y) (i x z)))))
+;;                              (forall ((x) (y)) (t (i (i y x) (i (n x) (n y)))))
+;;                              (forall ((x) (y))
+;;                                (implies (and (t (i x y)) (t x)) (t y))))
+;;                  (forall ((x)) (t (i x (n (n x)))))))
+
+

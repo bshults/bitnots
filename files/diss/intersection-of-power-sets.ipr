@@ -1,0 +1,39 @@
+(setq *format-only* t)
+
+(def-term (the-intersection-of a b)
+  ()
+  (format "the intersection of ~a and ~a")
+  )
+
+(def-term (the-power-set-of a)
+  ()
+  (format "the power set of ~a")
+  )
+
+(setq *format-only* nil)
+
+(def-predicate (a-subset-of a b)
+  (forall ((x)) (implies (a-member-of x a)
+		  (a-member-of x b)))
+  (format "~a is a subset of ~a")
+  (description "the definition of subset"))
+
+(def-theorem intersection
+  (iff (a-member-of x (the-intersection-of a b))
+       (and (a-member-of x a)
+	    (a-member-of x b)))
+  (description "the definition of intersection"))
+
+(def-theorem power-set
+  (iff (a-member-of x (the-power-set-of y))
+       (forall ((a)) (implies (a-member-of a x)
+		       (a-member-of a y))))
+  (description "the definition of power-set"))
+
+;;; the theorem follows
+
+(def-theorem power-set
+  (a-subset-of (the-power-set-of (the-intersection-of x y))
+	       (the-intersection-of (the-power-set-of x)
+				    (the-power-set-of y))))
+

@@ -1,0 +1,12 @@
+(implies (and (forall ((x)) (implies (implies (and (F x) (G x)) (H x))
+                                     (for-some ((y)) (and (f y) (not (g y))))))
+              (or (forall ((w)) (implies (f w) (g w)))
+                  (forall ((z)) (implies (f z) (h z)))))
+         (implies (forall ((r)) (implies (and (f r) (h r))
+                                         (g r)))
+                  (for-some ((v)) (and (f v) (g v) (not (h v))))))
+
+;; requires q >= 2
+(for-some ((x))
+          (forall ((y)) (implies (p x) (p y))))
+

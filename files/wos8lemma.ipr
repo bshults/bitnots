@@ -1,0 +1,93 @@
+(def-predicate (homomorphism f g h)
+  (and (a-group g)
+       (a-group h)
+       (function f (group-to-set g) (group-to-set h))
+       (forall ((g1) (g2))
+         (implies (and (a-member-of g1 (group-to-set g))
+                       (a-member-of g2 (group-to-set g)))
+           (= (apply-binary (operator h) (apply f g1) (apply f g2))
+              (apply f (apply-binary (operator g) g1 g2))))))
+  (string "the definition of homomorphism")
+  (format "~1 is a homomorphism from ~1 to ~2")
+  )
+
+(def-predicate (function f A B)
+  (and (forall ((a))
+         ;; every member of A goes to exactly one element of B.
+         (implies (a-member-of a A)
+           ;; every member of A goes somewhere in B.
+           (for-some ((y))
+             (and (= (a-member-of (the-ordered-pair a y) f) ; (apply f a) y)
+                  (a-member-of y B)
+                  ;; and nowhere else
+                  (forall ((z))
+                    (implies (a-member-of (the-ordered-pair a z) f) ; (= (apply f a) z)
+                      (= z y)))))))
+       ;; every member of f is an ordered pair whose first coordinate
+       ;; is in A.
+       (forall ((z))
+         (implies (a-member-of z f)
+           (for-some ((x) (y))
+             (and (= z (the-ordered-pair x y))
+                  (a-member-of x A))))))
+  (string "the definition of a function")
+  (format "~1:~2 -> ~3 is a function")
+  )
+
+(def-theorem function-application1
+  (iff (a-member-of (the-ordered-pair x y) f)
+       (= (apply f x) y))
+  (string "definition of function application")
+  )
+
+(def-theorem groups-non-empty
+  (implies (a-group g)
+    (for-some ((a)) (a-member-of a (group-to-set g))))
+  (string "the fact that groups can't be empty")
+  )
+
+(def-theorem ordered-pairs
+  (implies (= (the-ordered-pair a b) (the-ordered-pair c d))
+    (and (= a c)
+         (= b d)))
+  (string "a basic fact about ordered pairs")
+  )
+
+(def-predicate (onto f a_ b_)
+  (and (function f a_ b_)
+       (forall ((h))
+         (implies (a-member-of h b_)
+           (for-some ((g))
+             (and (a-member-of g a_)
+                  (= (apply f g) h))))))
+  (string "the definition of onto")
+  (format "~1:~2->~3 is onto")
+  )
+
+(def-theorem quotient-group-element
+  (iff (a-member-of a (group-to-set (mod G H)))
+       (for-some ((g)) (and (a-member-of g (group-to-set G))
+                            (= a (leftCoset g H)))))
+  (string "what quotient groups are made of")
+  )
+
+(def-term (phi f g_)
+  (the-class-of-all ((x))
+    (for-some ((g))
+      (and (= x (the-ordered-pair (leftCoset g (kernel f)) (apply f g)))
+           (a-member-of g (group-to-set g_)))))
+  (string "the definition of the function phi")
+  (format "phi_(~1, ~2)")
+  )
+
+(def-lemma crucial
+  (implies (and (onto f (group-to-set g_) (group-to-set h_))
+                (homomorphism f g_ h_))
+    (and (function (phi f g_) (group-to-set (mod g_ (kernel f)))
+                   (group-to-set h_))
+         (implies (a-member-of g (group-to-set g_))
+           (= (apply (phi f g_) (leftCoset g (kernel f)))
+              (apply f g)))))
+  (string "the crucial lemma")
+  )
+

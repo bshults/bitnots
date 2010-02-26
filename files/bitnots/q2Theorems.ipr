@@ -1,0 +1,140 @@
+;; failing with error
+;; requires q >= 2
+(def-target a (forall ((b) (c))
+                (implies (q (f b)) 
+                  (for-some ((x))
+                    (for-some ((y))
+                      (and (implies (p (f y)) 
+                             (and (p x)
+                                  (implies (r y)
+                                    (and (r b)
+                                         (r c))))) 
+                           (q x)))))))
+
+;; requires q >= 2
+(def-target a (forall ((a) (b))
+                (implies (forall ((y)) (implies (q y) (p y)))
+                  (for-some ((x)) (and (implies (p x) (p a)) 
+                                       (implies (q x) (p b)))))))
+
+;; requires q >= 2
+(def-target a (forall ((c) (b))
+                (implies
+                    (forall ((z)) (q (f z))) 
+                  (for-some ((x)) (for-some ((y))
+                                    (and (implies (p (f y)) (p x)) 
+                                         (implies (r y)
+                                           (and (r b) (r c)))
+                                         (q x)))))))
+
+;; requires q >= 2
+(def-target a (forall ((b) (c))
+                (implies
+                    (forall ((z)) (q (f z))) 
+                  (for-some ((x)) (for-some ((y))
+                                    (and (implies (p (f y)) 
+                                           (and (p x)
+                                                (implies (r y)
+                                                  (and (r b) (r c)))))
+                                         (q x)))))))
+
+;; requires q >= 2
+(def-target a (implies (forall ((x)) (p x))
+                (forall ((a) (b)) (and (p a) (p b)))))
+
+;; requires q >= 2
+(def-target a (forall ((a) (b)) (implies (forall ((z)) (implies (q z) (p z)))
+                                  (for-some ((x)) (and (implies (p x) (p a)) 
+                                  (implies (q x) (p b)))))))
+
+;; requires q >= 2
+(def-target a (for-some ((x))
+                (forall ((y)) (implies (p x) (p y)))))
+
+;; requires q >= 2
+(def-target a (forall ((a) (b))
+                (implies (forall ((y)) (implies (q y) (p y)))
+                  (for-some ((x)) (and (implies (p x) (p a)) 
+                  (implies (q x) (p b)))))))
+
+;; requires q >= 2
+(def-target a (for-some ((z))           ; thm1
+                (forall ((x))
+                  (for-some ((y))
+                    (and (implies (p y x) (for-some ((w)) (p w y))) 
+                    (implies (and (p z y) (p y z)) (p y x)))))))
+
+;; requires q >= 2
+(def-target a (implies (forall ((x) (y))
+                         (iff (eq x y)
+                              (forall ((z))
+                              (iff (a-member-of z x) (a-member-of z y)))))
+                (forall ((a) (b))
+                  (implies (eq a b) (eq b a)))))
+
+;; requires q >= 2
+(def-target a (forall ((a) (b)) (implies (forall ((x)) (p x))
+                                  (and (p a) (p b)))))
+
+;; requires q >= 2
+(def-target a (implies (forall ((x)) (p x)) 
+                (and (forall ((x)) (p x)) (forall ((y)) (p y)))))
+
+;; requires q >= 2
+(def-target a (iff (for-some ((x)) (or (p x) (q x)))
+                   (or (for-some ((x)) (p x)) (for-some ((x)) (q x)))))
+
+;; requires q >= 2
+(def-target a (iff (forall ((x)) (and (p x) (q x)))
+                   (and (forall ((x)) (p x)) (forall ((x)) (q x)))))
+
+;; requires q >= 2
+(def-target a (for-some ((x)) (forall ((y))
+                                (implies (implies (p y) (q x))
+                                  (implies (p x) (q x))))))
+
+;; requires q >= 2
+(def-target a (implies (forall ((x) (y))
+                         (iff (eq x y)
+                              (forall ((z))
+                              (iff (a-member-of z x) (a-member-of z y)))))
+                (forall ((x) (y)) (iff (eq x y) (eq y x)))))
+
+;;; Group with stupid equality.
+
+;; ;; slow (quit)
+;; (def-target a (forall ((e))
+;;                 (implies
+;;                     (and (forall ((x) (y)) (for-some ((z)) (p x y z)))
+;;                          (forall ((x) (y) (z) (u) (v) (w))
+;;                          (implies (and (p x y u) (p y z v) (p u z w))
+;;                            (p x v w)))
+;;                          (forall ((x) (y) (z) (u) (v) (w))
+;;                          (implies (and (p x y u) (p y z v) (p x v w))
+;;                            (p u z w)))
+;;                          (forall ((x)) (p x e x))
+;;                          (forall ((x)) (p e x x))
+;;                          (forall ((x)) (p x (i x) e))
+;;                          (forall ((x)) (p (i x) x e)))
+;;                   (implies (forall ((x)) (p x x e))
+;;                     (forall ((u) (v) (w)) (implies (p u v w) (p v u w)))))))
+
+;; ;; slow (quit)
+;; (def-target a (forall ((e))
+;;                 (implies
+;;                     (and (forall ((x) (y)) (for-some ((z)) (p x y z)))
+;;                          (forall ((x) (y) (z) (u) (v) (w))
+;;                          (implies (and (p x y u) (p y z v) (p u z w))
+;;                            (p x v w)))
+;;                          (forall ((x) (y) (z) (u) (v) (w))
+;;                          (implies (and (p x y u) (p y z v) (p x v w))
+;;                            (p u z w)))
+;;                          (forall ((x)) (p x e x))
+;;                          (forall ((x)) (p e x x))
+;;                          (forall ((x)) (p x (i x) e))
+;;                          (forall ((x)) (p (i x) x e)))
+;;                   (forall ((u) (v) (w) (x))
+;;                     (implies (and (p (i u) (i v) w)
+;;                                   (p v u x))
+;;                     (p (i w) (i x) e))))))
+

@@ -1,0 +1,129 @@
+(setq *format-only* t)
+
+(def-term (the-union-of a b)
+  ()
+  (format "the union of ~a and ~a")
+  )
+
+(def-term (the-intersection-of a b)
+  ()
+  (format "the intersection of ~a and ~a")
+  )
+
+(def-term (the-power-set-of a)
+  ()
+  (format "the power set of ~a")
+  )
+
+(setq *format-only* nil)
+
+(def-predicate (a-subset-of a b)
+  (forall ((x)) (implies (a-member-of x a)
+		  (a-member-of x b)))
+  (format "~a is a subset of ~a")
+  (description "the definition of subset"))
+
+(def-theorem union
+  (iff (a-member-of x (the-union-of a b))
+       (or (a-member-of x a)
+	   (a-member-of x b)))
+  (description "the definition of union"))
+
+;;;(def-theorem intersection
+;;;  (iff (a-member-of x (the-intersection-of a b))
+;;;       (and (a-member-of x a)
+;;;	    (a-member-of x b)))
+;;;  (description "the definition of intersection"))
+
+(def-theorem power-set
+  (iff (a-member-of x (the-power-set-of y))
+       (forall ((a)) (implies (a-member-of a x)
+		       (a-member-of a y))))
+  (description "the definition of power-set"))
+
+;;; the theorem follows
+
+(def-theorem power-set
+  (a-subset-of (the-union-of (the-power-set-of x) (the-power-set-of y))
+	       (the-power-set-of (the-union-of x y))))
+
+(def-theorem power-set
+  (a-subset-of (the-class-of-all (a)
+		 (or (a-member-of a (the-class-of-all (s) (a-subset-of s x)))
+		     (a-member-of a (the-class-of-all (s) (a-subset-of s y)))))
+	       (the-class-of-all (a)
+		 (a-subset-of a (the-class-of-all (s)
+				  (or (a-member-of s x)
+				      (a-member-of s y)))))))
+
+(def-theorem power-set
+  (a-subset-of (the-class-of-all (a)
+		 (or (a-member-of a (the-class-of-all (s)
+				      (forall ((b))
+					(implies (a-member-of b s)
+					  (a-member-of b x)))))
+		     (a-member-of a (the-class-of-all (s)
+				      (forall ((b))
+					(implies (a-member-of b s)
+					  (a-member-of b y)))))))
+	       (the-class-of-all (a)
+		 (forall ((b))
+		   (implies (a-member-of b a)
+		     (a-member-of b (the-class-of-all (s)
+				      (or (a-member-of s x)
+					  (a-member-of s y)))))))))
+
+;;; The other way:
+
+(def-theorem power-set
+  (a-subset-of (the-power-set-of (the-intersection-of x y))
+	       (the-intersection-of (the-power-set-of x)
+				    (the-power-set-of y))))
+
+
+(def-theorem power-set
+  (a-subset-of (the-class-of-all (a)
+		 (a-subset-of a (the-class-of-all (s)
+				  (and (a-member-of s x)
+				       (a-member-of s y)))))
+	       (the-class-of-all (a)
+		 (and (a-member-of a (the-class-of-all (s) (a-subset-of s x)))
+		      (a-member-of a (the-class-of-all (s)
+				       (a-subset-of s y)))))))
+
+(def-theorem power-set
+  (a-subset-of (the-class-of-all (a)
+		 (forall ((b))
+		   (implies (a-member-of b a)
+		     (a-member-of b (the-class-of-all (s)
+				      (and (a-member-of s x)
+					   (a-member-of s y)))))))
+	       (the-class-of-all (a)
+		 (and (a-member-of a (the-class-of-all (s)
+				       (forall ((b))
+					 (implies (a-member-of b s)
+					   (a-member-of b x)))))
+		      (a-member-of a (the-class-of-all (s)
+				       (forall ((b))
+					 (implies (a-member-of b s)
+					   (a-member-of b y)))))))))
+
+;;; This is found if the copy-max is incremented by 1.
+
+(def-theorem power-set
+  (implies (a-member-of t (the-class-of-all (a)
+			    (forall ((b))
+			      (implies (a-member-of b a)
+				(a-member-of b (the-class-of-all (s)
+						 (and (a-member-of s x)
+						      (a-member-of s y))))))))
+    (a-member-of t (the-class-of-all (a)
+		     (and (a-member-of a (the-class-of-all (s)
+					   (forall ((b))
+					     (implies (a-member-of b s)
+					       (a-member-of b x)))))
+			  (a-member-of a (the-class-of-all (s)
+					   (forall ((b))
+					     (implies (a-member-of b s)
+					       (a-member-of b y))))))))))
+

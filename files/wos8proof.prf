@@ -1,0 +1,118 @@
+()
+000+  Group(G_0)                                                        delta+alpha
+001+  f_0:G_0 -> H_0 homomorphism                                       delta+alpha
+002-  G_0/Ker(f_0) ~=~ <Im(f_0), *_H_0(Im(f_0))>                        delta+alpha
+003+  Ker(f_0)<|G_0                                                     kernelNormal (001)
+004+  Phi_0:Dom(G_0/Ker(f_0)) -> Im(f_0) function                       crucial1 (001)
+005-  some(f) f:G_0/Ker(f_0) -> <Im(f_0), *_H_0(Im(f_0))> isomorphism   Defn:~=~ (002)
+006-  f:G_0/Ker(f_0) -> <Im(f_0), *_H_0(Im(f_0))>  isomorphism          gamma (005)
+
+[NOTE: assuming http://www.mathcs.bethel.edu/bugzilla/show_bug.cgi?id=322#c3 is solved,
+       not only do we not create a fourth branch here, but we also go ahead and bring
+       our desired function into each branch.]
+
+(1)
+007-  Phi_0:G_0/Ker(f_0) -> <Im(f_0), *_H_0(Im(f_0))> homomorphism      Defn:isomorphism [domainOfGroup] (006)
+
+[NOTE: here is another place where 
+       http://www.mathcs.bethel.edu/bugzilla/show_bug.cgi?id=322#c3 is assumed.
+       Otherwise, we would have another branch here.]
+
+010-  all(g1,g2)(g1 E Dom(G_0/Ker(f_0)) and g2 E Dom(G_0/Ker(f_0)) implies
+                    Phi_0(g1)op_<Im(f_0), *_H_0(Im(f_0))>Phi_0(g2) = Phi_0(g1 op_G_0/Ker(f_0) g2))
+                                                                        Defn:homomorphism (007)
+011+  g1 E Dom(G_0/Ker(f_0))                                            delta+alpha (010)
+012+  g2 E Dom(G_0/Ker(f_0))                                            delta+alpha (010)
+013-  Phi_0(g1) op_<Im(f_0), *_H_0(Im(f_0))> Phi_0(g2) = Phi_0(g1 op_G_0/Ker(f_0) g2)
+                                                                        delta+alpha (010)
+014+  some(g)(g E Dom(G_0) and g1 = gKer(f_0))                          cosetThm (011)
+015+  some(g)(g E Dom(G_0) and g2 = gKer(f_0))                          cosetThm (012)
+016+  g3 E Dom(G_0)                                                     delta+alpha (014)
+017+  g4 E Dom(G_0)                                                     delta+alpha (015)
+018+  g1 = g3Ker(f_0)                                                   delta+alpha (014)
+019+  g2 = g4Ker(f_0)                                                   delta+alpha (015)
+020+  g3Ker(f_0) E Dom(G_0/Ker(f_0))                                    Brown's rule (016, 018)
+021+  g4Ker(f_0) E Dom(G_0/Ker(f_0))                                    Brown's rule (017, 019)
+022-  Phi_0(g3Ker(f_0)) op_<Im(f_0), *_H_0(Im(f_0))> Phi_0(g4Ker(f_0)) =
+      Phi_0(g3Ker(f_0) op_G_0/Ker(f_0) g4Ker(f_0))                      Brown's rule (018, 019, 013)
+023+  g3Ker(f_0) op_G_0/Ker(f_0) g4Ker(f_0) = (g3 op_G_0 g4)Ker(f_0)    productOfCosets (003, 020, 021)
+024+  Phi_0(g3Ker(f_0)) = f_0(g3)                                       crucial2 (001, 016)
+025+  Phi_0(g4Ker(f_0)) = f_0(g4)                                       crucial2 (001, 017)
+026+  f_0(g3) op_H_0 f_0(g4) = f_0(g3 op_G_0 g4)                        Defn:homomorphism (001, 016, 017)
+027+  (g3 op_G_0 g4) E Dom(G_0)                                         closure (016, 017)
+028+  Phi_0((g3 op_G_0 g4)Ker(f_0)) = f_0(g3 op_G_0 g4)                 crucial2 (001, 027)
+
+      * Congruence closure: 022 <- 023, 024, 025, 026, 028
+
+(2)
+008-  Phi_0:Dom(G_0/Ker(f_0)) -> Im(f_0) 1-1                            Defn:isomorphism [domainOfGroup] (006)
+029-  all(x,y)(x E Dom(G_0/Ker(f_0)) and y E Dom(G_0/Ker(f_0)) and Phi_0(x) = Phi_0(y) implies x = y)
+                                                                        Defn:1-1 (008, 004)
+030+  x1 E Dom(G_0/Ker(f_0))                                            delta+alpha (029)
+031+  y1 E Dom(G_0/Ker(f_0))                                            delta+alpha (029)
+032+  Phi_0(x1) = Phi_0(y1)                                             delta+alpha (029)
+033-  x1 = y1                                                           delta+alpha (029)
+034+  some(x2)(x2 E Dom(G_0) and x1 = x2Ker(f_0))                       cosetThm (030)
+035+  some(y2)(y2 E Dom(G_0) and y1 = y2Ker(f_0))                       cosetThm (031)
+036+  x2 E Dom(G_0)                                                     delta+alpha (034)
+037+  y2 E Dom(G_0)                                                     delta+alpha (035)
+038+  x1 = x2Ker(f_0)                                                   delta+alpha (034)
+039+  y1 = y2Ker(f_0)                                                   delta+alpha (035)
+;; 040+  x2Ker(f_0) E Dom(G_0/Ker(f_0))
+;; 041+  y2Ker(f_0) E Dom(G_0/Ker(f_0))
+042+  Phi_0(x2Ker(f_0)) = Phi_0(y2Ker(f_0))                             Brown's rule (032, 038, 039)
+043-  x2Ker(f_0) = y2Ker(f_0)                                           Brown's rule (033, 038, 039)
+044+  Phi_0(x2Ker(f_0)) = f_0(x2)                                       crucial2 (001, 036)
+045+  Phi_0(y2Ker(f_0)) = f_0(x2)                                       crucial2 (001, 037)
+046-  (x2^(-1) op_G_0 y2) E Dom(Ker(f_0))                               propertyOfCosets (043, 036, 037, 003)
+047-  f_0(x2^(-1) op_G_0 y2) = (identity H_0)                           propertyOfKernel (001, 046)
+048-  f_0(x2) = f_0(y2)                                                 propertyOfHomomorphism (047, 001, 036, 037)
+
+      * Congruence closure: 048 <- 042, 044, 045
+
+(3)
+009-  Phi_0:Dom(G_0/Ker(f_0)) -> Im(f_0) onto                           Defn:isomorphism [domainOfGroup] (006)
+049+  f_0:Dom(G_0) -> Dom(H_0) function                                 Defn:homomorphism (001)
+050+  f_0:Dom(G_0) -> Im(f_0) onto                                      ontoImage (049)
+051+  all(h)(h E Im(f_0) implies some(g)(g E Dom(G_0) and f(g) = h))    Defn:onto (050)
+
+(3.1)
+052+  some(g)(g E Dom(G_0) and f(g) = h)                                gamma+beta (051)
+054+  g5 E Dom(G_0)                                                     delta+alpha (052)
+;; 055+  f(g5) = h
+;; 056+  Phi_0(g5Ker(f_0)) = f_0(g5)
+057-  all(h)(h E Dom(H_0) implies some(g)(g E Dom(G_0/Ker(f_0)) and Phi_0(g) = h))
+                                                                        Defn:onto (009, 004)
+058+  h0 E Im(f_0)                                                      delta+alpha (057)
+059-  some(g)(g E Dom(G_0/Ker(f_0)) and Phi_0(g) = h0)                  delta+alpha (057)
+
+(3.1.1)
+060-  g E Dom(G_0/Ker(f_0))                                             gamma+beta (059)
+
+      * propertyOfCosets2 (054, 003, 060, {g/g5Ker(f_0)})
+
+(3.1.2)
+061-  Phi_0(g) = h0                                                     gamma+beta (059)
+062+  h' E Im(f_0) implies some(g)(g E Dom(G_0) and f(g) = h')          gamma2 (051)
+
+[NOTE: second application of gamma rule to 051.]
+
+(3.1.2.1)
+063+  some(g)(g E Dom(G_0) and f(g) = h')                               gamma+beta (062)
+065+  g6 E Dom(G_0)                                                     delta+alpha (063)
+066+  f(g6) = h'                                                        delta+alpha (063)
+067+  Phi_0(g6Ker(f_0)) = f_0(g6)                                       crucial2 (001, 065)
+
+      * eunification (067, 066, 061, {g/g6Ker(f_0), h'/h0})
+
+(3.1.2.2)
+064-  h' E Im(f_0)                                                      gamma+beta (062)
+
+      * (064, 058, {h'/h0})
+
+(3.2)
+053-  h E Im(f_0)                                                       gamma+beta (051)
+065-  g' E Dom(G_0)                                                     propertyOfImage (049, 053, {h/f_0(g')})
+
+      * groupIdentity (065, 000, {g'/Id_G_0})
+

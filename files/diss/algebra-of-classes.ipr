@@ -1,0 +1,396 @@
+;;; Elementary Algebra of Classes
+
+(setq *format-only* t)
+
+(def-term (the-intersection-of a b)
+  (the-class-of-all (x) (and (a-member-of x a) (a-member-of x b)))
+  (format "the intersection of ~a and ~a")
+  )
+
+(def-term (the-union-of a b)
+  (the-class-of-all (x) (or (a-member-of x a) (a-member-of x b)))
+  (format "~a U ~a")
+  )
+
+(setq *format-only* nil)
+
+(def-theorem intersection
+  (iff (a-member-of x (the-intersection-of a b))
+       (and (a-member-of x a) (a-member-of x b)))
+  (string "the definition of intersection")
+  )
+
+(def-theorem union
+  (iff (a-member-of x (the-union-of a b))
+       (or (a-member-of x a) (a-member-of x b)))
+  (string "the definition of union")
+  )
+
+(def-theorem kelley-a-4a		; perfect proof found, no search.
+  (forall ((x) (y) (z))
+    (iff (a-member-of z (the-union-of x y))
+	 (or (a-member-of z x) (a-member-of z y))))
+  (proof				; old, with interaction
+   (consider
+    (forall ((x) (y) (z))
+      (iff (a-member-of z (the-union-of x y))
+	   (or (a-member-of z x) (a-member-of z y))))
+    skolem _x)
+   (iff
+    (iff (a-member-of (_z) (the-union-of (_x) (_y)))
+	 (or (a-member-of (_z) (_x)) (a-member-of (_z) (_y)))))
+   ((promote
+     (implies (a-member-of (_z) (the-union-of (_x) (_y)))
+       (or (a-member-of (_z) (_x)) (a-member-of (_z) (_y)))))
+    (church-schema
+     (a-member-of (_z) (the-class-of-all (x)
+			 (or (a-member-of x (_x)) (a-member-of x (_y))))))
+    (or-split
+     (or (a-member-of (_z) (_x)) (a-member-of (_z) (_y))))
+    nil nil)
+   ((promote
+     (implies (or (a-member-of (_z) (_x)) (a-member-of (_z) (_y)))
+       (a-member-of (_z) (the-union-of (_x) (_y)))))
+    (or-split
+     (or (a-member-of (_z) (_x)) (a-member-of (_z) (_y))))
+    ((church-schema
+      (a-member-of (_z) (the-class-of-all (x)
+			  (or (a-member-of x (_x)) (a-member-of x (_y))))))
+     nil
+     ((apply-theorem an-element3 ((y _x) (x _z)))))
+    ((church-schema
+      (a-member-of (_z) (the-class-of-all (x)
+			  (or (a-member-of x (_x)) (a-member-of x (_y))))))
+     nil
+     ((apply-theorem an-element3 ((y _y) (x _z))))))))
+
+(def-theorem kelley-a-4b
+  (forall ((x) (y) (z))
+    (iff (a-member-of z (the-intersection-of x y))
+	 (and (a-member-of z x) (a-member-of z y))))
+  (proof
+   (consider
+    (forall ((x) (y) (z))
+      (iff (a-member-of z (the-intersection-of x y))
+	   (and (a-member-of z x) (a-member-of z y))))
+    skolem _x)
+   (iff
+    (iff (a-member-of (_z) (the-class-of-all (x)
+			     (and (a-member-of x (_x)) (a-member-of x (_y)))))
+	 (and (a-member-of (_z) (_x)) (a-member-of (_z) (_y)))))
+   ((promote
+     (implies (a-member-of (_z) (the-class-of-all (x)
+				  (and (a-member-of x (_x))
+				       (a-member-of x (_y)))))
+       (and (a-member-of (_z) (_x)) (a-member-of (_z) (_y)))))
+    (and-split
+     (and (a-member-of (_z) (_x)) (a-member-of (_z) (_y))))
+    (church-schema
+     (a-member-of (_z) (the-class-of-all (x)
+			 (and (a-member-of x (_x)) (a-member-of x (_y)))))))
+   ((promote
+     (implies (and (a-member-of (_z) (_x)) (a-member-of (_z) (_y)))
+       (a-member-of (_z) (the-class-of-all (x)
+			   (and (a-member-of x (_x)) (a-member-of x (_y)))))))
+    (iff
+     (iff (a-member-of (_z) (the-intersection-of (_x) (_y)))
+	  (and (a-member-of (_z) (_x)) (a-member-of (_z) (_y)))))
+    ((promote
+      (implies (a-member-of (_z) (the-intersection-of (_x) (_y)))
+	(and (a-member-of (_z) (_x)) (a-member-of (_z) (_y)))))
+     (and-split
+      (and (a-member-of (_z) (_x)) (a-member-of (_z) (_y))))
+     nil nil)
+    ((promote
+      (implies (and (a-member-of (_z) (_x)) (a-member-of (_z) (_y)))
+	(a-member-of (_z) (the-intersection-of (_x) (_y)))))
+     (church-schema
+      (a-member-of (_z) (the-class-of-all (x)
+			  (and (a-member-of x (_x)) (a-member-of x (_y))))))
+     ((and-split
+       (and (a-member-of (_z) (_x)) (a-member-of (_z) (_y))))
+      nil nil)
+     ((apply-theorem an-element3
+		     ((y _x) (x _z))))))))
+
+(def-theorem kelley-a-5a
+  (forall ((x)) (= (the-union-of x x) x))
+  (proof
+   (consider
+    (forall ((x)) (= (the-union-of x x) x))
+    skolem _x)
+   (apply-theorem extensionality
+		  ((y _x) (x the-union-of (_x) (_x))))
+   (consider
+    (forall ((u))
+      (iff (a-member-of u (the-union-of (_x) (_x))) (a-member-of u (_x))))
+    skolem _u)
+   (iff
+    (iff (a-member-of (_u) (the-union-of (_x) (_x))) (a-member-of (_u) (_x))))
+   ((promote
+     (implies (a-member-of (_u) (the-union-of (_x) (_x)))
+       (a-member-of (_u) (_x))))
+    (apply-theorem kelley-a-4a
+		   ((x _x) (y _x) (z _u))))
+   ((promote
+     (implies (a-member-of (_u) (_x))
+       (a-member-of (_u) (the-union-of (_x) (_x)))))
+    (apply-theorem kelley-a-4a2
+		   ((y _x) (x _x) (z _u))))))
+
+(def-theorem kelley-a-5b
+  (forall ((x)) (= (the-intersection-of x x) x))
+  (proof
+   (consider
+    (forall ((x)) (= (the-intersection-of x x) x))
+    skolem _x)
+   (apply-theorem extensionality
+		  ((y _x) (x the-intersection-of (_x) (_x))))
+   (consider
+    (forall ((u))
+      (iff (a-member-of u (the-intersection-of (_x) (_x))) (a-member-of u (_x))))
+    skolem _u)
+   (iff
+    (iff (a-member-of (_u) (the-intersection-of (_x) (_x)))
+	 (a-member-of (_u) (_x))))
+   ((promote
+     (implies (a-member-of (_u) (the-intersection-of (_x) (_x)))
+       (a-member-of (_u) (_x))))
+    (apply-theorem kelley-a-4b1
+		   ((x _x) (y _x) (z _u))))
+   ((promote
+     (implies (a-member-of (_u) (_x))
+       (a-member-of (_u) (the-intersection-of (_x) (_x)))))
+    (apply-theorem kelley-a-4b2
+		   ((y _x) (x _x) (z _u))))))
+
+(def-theorem kelley-a-6a
+  ;; here's what's happening: two hyps from a theorem are unifying
+  ;; with the same hyp in the sequent.  (kelley-a-4b2) and that's just
+  ;; going to keep on happening.  But that is not really the problem,
+  ;; because this could happen with out that.  The problem is that the
+  ;; same theorem is being applied many times without helping.
+  ;; %$#@ benji there is a mistake in this proof!
+  (forall ((x) (y)) (= (the-union-of x y) (the-union-of y x)))
+					; this proof was with interaction
+					; mainly I just kept killing its
+					; attempts until it did what I liked.
+  (proof
+   (consider
+    (forall ((x) (y)) (= (the-union-of x y) (the-union-of y x)))
+    skolem _x)
+   (apply-theorem extensionality
+		  ((y the-union-of (_y) (_x)) (x the-union-of (_x) (_y))))
+   (consider
+    (forall ((u))
+      (iff (a-member-of u (the-union-of (_x) (_y)))
+	   (a-member-of u (the-union-of (_y) (_x)))))
+    skolem _u)
+   (iff
+    (iff (a-member-of (_u) (the-union-of (_x) (_y)))
+	 (a-member-of (_u) (the-union-of (_y) (_x)))))
+   ((promote
+     (implies (a-member-of (_u) (the-union-of (_x) (_y)))
+       (a-member-of (_u) (the-union-of (_y) (_x)))))
+    (apply-theorem kelley-a-4a
+		   ((y _y) (x _x) (z _u)))
+    (or-split
+     (or (a-member-of (_u) (_x)) (a-member-of (_u) (_y))))
+    ((apply-theorem kelley-a-4a2
+		    ((y _x) (z _u))))
+    ((apply-theorem kelley-a-4a1
+		    ((x _y) (z _u)))))
+   ((promote
+     (implies (a-member-of (_u) (the-union-of (_y) (_x)))
+       (a-member-of (_u) (the-union-of (_x) (_y)))))
+    (apply-theorem kelley-a-4a2
+		   ((y _y) (x _x) (z _u)))
+    (apply-theorem kelley-a-4a1
+		   ((y _y) (x _x) (z _u)))
+    (church-schema
+     (a-member-of (_u) (the-class-of-all (x)
+			 (or (a-member-of x (_y)) (a-member-of x (_x))))))
+    (or-split
+     (or (a-member-of (_u) (_y)) (a-member-of (_u) (_x))))
+    nil nil)))
+
+(def-theorem kelley-a-6b
+  (forall ((x) (y)) (= (the-intersection-of x y) (the-intersection-of y x)))
+  (proof
+   (consider
+    (forall ((x) (y)) (= (the-intersection-of x y) (the-intersection-of y x)))
+    skolem _x)
+   (apply-theorem extensionality
+		  ((y the-intersection-of (_y) (_x))
+		   (x the-intersection-of (_x) (_y))))
+   (consider
+    (forall ((u))
+      (iff (a-member-of u (the-intersection-of (_x) (_y)))
+	   (a-member-of u (the-intersection-of (_y) (_x)))))
+    skolem _u)
+   (iff
+    (iff (a-member-of (_u) (the-intersection-of (_x) (_y)))
+	 (a-member-of (_u) (the-intersection-of (_y) (_x)))))
+   ((promote
+     (implies (a-member-of (_u) (the-intersection-of (_x) (_y)))
+       (a-member-of (_u) (the-intersection-of (_y) (_x)))))
+    (apply-theorem kelley-a-4b2
+		   ((y _x) (x _y) (z _u)))
+    (and-split
+     (and (a-member-of (_u) (_y)) (a-member-of (_u) (_x))))
+    ((apply-theorem kelley-a-4b1
+		    ((x _x) (y _y) (z _u))))
+    ((apply-theorem kelley-a-4b
+		    ((y _y) (x _x) (z _u)))))
+   ((promote
+     (implies (a-member-of (_u) (the-intersection-of (_y) (_x)))
+       (a-member-of (_u) (the-intersection-of (_x) (_y)))))
+    (apply-theorem kelley-a-4b2
+		   ((y _y) (x _x) (z _u)))
+    (and-split
+     (and (a-member-of (_u) (_x)) (a-member-of (_u) (_y))))
+    ((apply-theorem kelley-a-4b1
+		    ((x _y) (y _x) (z _u))))
+    ((apply-theorem kelley-a-4b
+		    ((y _x) (x _y) (z _u)))))))
+
+(def-theorem kelley-a-7a
+  (= (the-union-of (the-union-of x y) z)
+     (the-union-of x (the-union-of y z))))
+
+(def-theorem kelley-a-7b
+  (= (the-intersection-of (the-intersection-of x y) z)
+     (the-intersection-of x (the-intersection-of y z))))
+
+(def-theorem kelley-a-8a
+  (forall ((x) (y) (z))
+    (= (the-union-of x (the-intersection-of y z))
+       (the-intersection-of (the-union-of x y) (the-union-of x z)))))
+
+(def-theorem kelley-a-8b
+  (forall ((x) (y) (z))
+    (= (the-intersection-of x (the-union-of y z))
+       (the-union-of (the-intersection-of x y) (the-intersection-of x z)))))
+
+(def-term (the-complement-of a)
+  (the-class-of-all (x) (not (a-member-of x a))))
+
+(def-term (the-relative-complement-of a b)
+  (the-class-of-all (x) (and (a-member-of x a) (not (a-member-of x b)))))
+
+(def-theorem kelley-a-11
+  (forall ((x)) (= x (the-complement-of (the-complement-of x)))))
+
+(def-theorem de-morgan1
+  (forall ((x) (y))
+    (= (the-complement-of (the-union-of x y))
+       (the-intersection-of (the-complement-of x) (the-complement-of y)))))
+
+(def-theorem de-morgan2
+  (forall ((x) (y))
+    (= (the-complement-of (the-intersection-of x y))
+       (the-union-of (the-complement-of x) (the-complement-of y)))))
+
+(def-theorem kelley-a-14
+  (forall ((x) (y) (z))
+    (= (the-intersection-of x (the-relative-complement-of y z))
+       (the-relative-complement-of (the-intersection-of x y) z))))
+
+(def-term (the-empty-set)
+  (the-class-of-all (x) (not (= x x)))
+  (theory my-set-theory))
+
+(def-theorem kelley-a-16
+  (forall ((x)) (not (a-member-of x (the-empty-set)))))
+
+(def-theorem kelley-a-17a
+  (forall ((x)) (= (the-union-of x (the-empty-set)) x)))
+
+(def-theorem kelley-a-17b
+ (forall ((x)) (= (the-intersection-of x (the-empty-set)) (the-empty-set))))
+
+(def-term (the-universe-class)
+  (the-class-of-all (x) (= x x))
+  (theory my-set-theory))
+
+(def-theorem kelley-a-19
+  (forall ((x))
+    (iff (an-element x) (a-member-of x (the-universe-class)))))
+
+(def-theorem kelley-a-20a
+  (forall ((x))
+    (= (the-union x (the-universe-class)) (the-universe-class))))
+
+(def-theorem kelley-a-20b
+  (forall ((x)) (= (the-intersection x (the-universe-class)) x)))
+
+(def-theorem kelley-a-21a
+  (= (the-complement-of (the-empty-set))
+     (the-universe-class)))
+
+(def-theorem kelley-a-21b
+  (= (the-complement-of (the-universe-class))
+     (the-empty-set)))
+
+(def-term (the-family-union-of x)
+  (the-class-of-all (z) 
+    (for-some ((y))
+      (and (a-member-of z y) (a-member-of y x)))))
+
+(def-term (the-family-intersection-of x)
+  (the-class-of-all (z) 
+    (for-some ((y))
+      (implies (a-member-of y x) (a-member-of z y)))))
+
+(def-theorem kelley-a-24a
+  (= (the-family-union-of (the-empty-set)) (the-empty-set)))
+
+(def-theorem kelley-a-24b
+  (= (the-family-intersection-of (the-empty-set)) (the-universe-class)))
+
+(def-predicate (a-subclass-of x y)
+  (forall ((z)) (implies (a-member-of z x) (a-member-of z y))))
+
+(def-theorem kelley-a-26a
+  (forall ((x)) (a-subclass-of (the-empty-set) x)))
+
+(def-theorem kelley-a-26b
+  (forall ((x)) (a-subclass-of x (the-universe-class))))
+
+(def-theorem kelley-a-27
+  (forall ((x) (y))
+    (iff (= x y) (and (a-subclass-of x y) (a-subclass y x)))))
+
+(def-theorem kelley-a-28
+  (implies (and (a-subclass-of a b) (a-subclass-of b c))
+    (a-subclass-of a c)))
+
+(def-theorem kelley-a-29
+  (forall ((x) (y))
+    (iff (a-subclass-of x y) (= (the-union x y) y))))
+
+(def-theorem kelley-a-30
+  (forall ((x) (y))
+    (iff (a-subclass-of x y) (= (the-intersection x y) x))))
+
+(def-theorem kelley-a-31a
+  (forall ((x) (y))
+    (implies (a-subclass-of x y)
+      (a-subclass-of (the-family-union-of x) (the-family-union-of y)))))
+
+(def-theorem kelley-a-31b
+  (forall ((x) (y))
+    (implies (a-subclass-of x y)
+      (a-subclass-of (the-family-intersection-of y)
+		     (the-family-intersection-of x)))))
+
+(def-theorem kelley-a-32a
+  (forall ((x) (y))
+    (implies (a-member-of x y)
+      (a-subclass-of x (the-family-union-of y)))))
+
+(def-theorem kelley-a-32b
+  (forall ((x) (y))
+    (implies (a-member-of x y)
+      (a-subclass-of (the-family-intersection-of y) x))))
+

@@ -156,6 +156,8 @@ public final class MultiBranchCloser {
     bc: for (BranchCloser bc: this.branchClosers) {
       // if bc is located on a descendant, branch, of root
       TableauNode branch = bc.getHome();
+      // this is needed because root may not be the root of the tableau but
+      // only the root of a subtree that needs to be condensed.
       if (branch.isDescentantOf(root)) {
         branch.cleanUp(this);
         //   delete the children of branch bc
@@ -165,6 +167,7 @@ public final class MultiBranchCloser {
           goal.addAncestors(formulas);
         for (TableauFormula hyp: bc.getHyps())
           hyp.addAncestors(formulas);
+        branch.deleteAllBut(formulas);
         // move up branch toward the root looking at parent and branch along the way.
         TableauNode parent = branch.getParent();
         while (parent != null) {
@@ -187,8 +190,11 @@ public final class MultiBranchCloser {
             branch = parent;
             parent = parent.getParent();
             branch.cleanUp(this);
+            // since root may not be the root of the tableau but only the
+            // root of a subtree which needs to be condensed:
             if (branch == root)
-              break bc;
+//              break bc; // this doesn't seem right.
+              break;
           }
         }
       }

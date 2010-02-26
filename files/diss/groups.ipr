@@ -1,0 +1,71 @@
+(forall ((e))
+  (implies
+      (and (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+	   (forall ((x) (y) (z))
+	     (= (* x (* y z)) (* (* x y) z)))
+	   (forall ((x)) (= (* x e) x))
+	   (forall ((x)) (= (* x (i x)) e)))
+    (forall ((x)) (= (* (i x) x) e))))
+
+(forall ((e))
+  (implies
+      (and (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+	   (forall ((x) (y) (z))
+	     (= (* x (* y z)) (* (* x y) z)))
+	   (forall ((x)) (= (* x e) x))
+	   (forall ((x)) (= (* x (i x)) e)))
+    (forall ((x)) (= (* e x) x))))
+
+(forall
+    ((x) (e))
+  (implies (and
+	    (= (* (i x) (* x e)) (* (* (i x) x) e))
+	    (= (* x e) x)
+	    (= (* (i x) (i (i x))) e)
+	    (= (* (i x) (* x (* (i x) (i (i x)))))
+	       (* (* (i x) x) (* (i x) (i (i x)))))
+	    (= (* (i x) (* e (i (i x)))) (* (* (i x) e) (i (i x))))
+	    (= (* (i x) e) (i x))
+	    (= (* x (i x)) e)
+	    (= (* x (* (i x) (i (i x)))) (* (* x (i x)) (i (i x)))))
+    (and (= (* (i x) x) e)
+	 (= (* e x) x))))
+
+(forall ((e))
+  (implies
+      (and (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+	   (forall ((x) (y) (z))
+	     (= (* x (* y z)) (* (* x y) z)))
+	   (forall ((x)) (= (* x e) x))
+	   (forall ((x)) (= (* x (i x)) e)))
+    (forall ((x) (y)) (= (i (* x y)) (* (i y) (i x))))))
+
+(forall ((e))
+  (implies
+      (and (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+	   (forall ((x) (y) (z))
+	     (= (* x (* y z)) (* (* x y) z)))
+	   (forall ((x)) (= (* x e) x))
+	   (forall ((x)) (= (* x (i x)) e)))
+    (implies (forall ((x)) (= (* x x) e))
+      (forall ((u)) (= u (i u))))))
+
+(forall ((e))
+  (implies
+      (and (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+	   (forall ((x) (y) (z))
+	     (= (* x (* y z)) (* (* x y) z)))
+	   (forall ((x)) (= (* x e) x))
+	   (forall ((x)) (= (* x (i x)) e)))
+    (implies (forall ((x)) (= (* x x) e))
+      (forall ((u) (v)) (= (* u v) (* v u))))))
+
+(forall ((e))				; testing
+  (implies
+      (and ;; (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+       (forall ((x) (y) (z))
+	 (= (* x (* y z)) (* (* x y) z)))
+       (forall ((w)) (= (* w e) w))
+       (forall ((s)) (= (* s (i s)) e)))
+    (forall ((a)) (= (* e a) a))))
+

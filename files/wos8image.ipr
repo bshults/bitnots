@@ -1,0 +1,307 @@
+(format-only true)
+
+(def-term (identity g)
+  ()
+  (string "the definition of the identity of a group")
+  (format "id_{~1}")
+  )
+
+(def-term (group-to-set g)
+  ()
+  (string "the definition of the domain of a group")
+  (format "Dom(~1)")
+  )
+
+(def-term (apply-binary op x y)
+  ()
+  (string "the definition of the application of a binary operator")
+  (format "(~2 ~1 ~3)")
+  )
+
+(def-term (apply f x)
+  ()
+  (string "the definition of the application of a function")
+  (format "~1(~2)")
+  )
+
+(def-term (image f)
+  ()
+  (string "the definition of the image of a function")
+  (format "Im(~1)")
+  )
+
+(def-term (restriction-to bin-op s)
+  ()
+  (string "the definition of the restriction of an operator")
+  (format "~1|_{~2}")
+  )
+
+(def-term (operator g)
+  ()
+  (string "the definition of the operator of a group")
+  (format "*_{~1}")
+  )
+
+(def-term (mod a b)
+  ()
+  (string "the definition of the quotient group")
+  (format "~1/~2")
+  )
+
+(def-term (the-group s o)
+  ()
+  (string "the definition of a group")
+  (format "<~1, ~2>")
+  )
+
+(def-term (kernel f)
+  ()
+  (string "the definition of the kernel")
+  (format "Ker(~1)")
+  )
+
+(def-term (phi f g_)
+  (the-class-of-all (x)
+    (for-some ((a) (b) (g))
+      (and (= x (the-ordered-pair a b))
+           (a-member-of g (group-to-set g_))
+           (= a (leftCoset g (kernel f)))
+           (= b (apply f g)))))
+  (string "the definition of some function")
+  (format "phi(~1, ~2, ~3)")
+  )
+
+(def-term (leftCoset g h_)
+  ()
+  (string "the definition of a left coset")
+  (format "~1~2")
+  )
+
+(def-term (the-ordered-pair a b)
+  ()
+  (string "the definition of an ordered pair")
+  (format "<~1, ~2>")
+  )
+
+(def-predicate (normal-subgroup h g)
+  ()
+  (string "the definition of a normal subgroup")
+  (format "~1<|~2")
+  )
+
+(def-predicate (function f A B)
+  (and
+   ;; every member of A goes to a unique spot in B.
+   (forall ((a))
+     (implies (a-member-of a A)
+       ;; every member of A goes somewhere in B
+       (for-some ((y))
+         (and (a-member-of y B)
+              (a-member-of (the-ordered-pair a y) f)
+              ;; and nowhere else
+              (forall ((z))
+                (implies (a-member-of (the-ordered-pair a z) f)
+                  (= z y)))))))
+   ;; every member of f is an ordered pair whose first coordinate is
+   ;; in A.
+   (forall ((z))
+     (implies (a-member-of z f)
+       (for-some ((x) (y))
+         (and (= z (the-ordered-pair x y))
+              (a-member-of x A)
+              ;;                  (a-member-of y b)))))
+              )))))
+  (string "the definition of a function")
+  (format "~1:~2 -> ~3 is a function")
+  )
+
+(def-predicate (a-group g)
+  ()
+  (string "the definition of group")
+  (format "~1 is a group")
+  )
+
+(format-only false)
+
+(def-predicate (isomorphic a b)
+  (for-some ((f)) (isomorphism f a b))
+  (string "the definition of isomorphic")
+  (format "~1 and ~2 are isomorphic")
+  )
+
+(def-predicate (homomorphism f g h)
+  (and (a-group g)
+       (a-group h)
+       (function f (group-to-set g) (group-to-set h))
+       (forall ((g1) (g2))
+         (implies (and (a-member-of g1 (group-to-set g))
+                       (a-member-of g2 (group-to-set g)))
+           (= (apply-binary (operator h) (apply f g1) (apply f g2))
+              (apply f (apply-binary (operator g) g1 g2))))))
+  (string "the definition of homomorphism")
+  (format "~1 is a homomorphism from ~1 to ~2")
+  )
+
+(def-predicate (one-to-one f a_ b_)
+  (and (function f a_ b_)
+       (forall ((x) (y))
+         (implies (and (a-member-of x a_)
+                       (a-member-of y a_)
+                       (= (apply f x)
+                          (apply f y)))
+           (= x y))))
+  (string "the definition of 1-1")
+  (format "~1:~2->~3 is 1-1")
+  )
+
+(def-predicate (onto f a_ b_)
+  (and (function f a_ b_)
+       (forall ((h))
+         (implies (a-member-of h b_)
+           (for-some ((g))
+             (and (a-member-of g a_)
+                  (= (apply f g) h))))))
+  (string "the definition of onto")
+  (format "~1:~2->~3 is onto")
+  )
+
+;; I might need to add this to the hyps of the theorem I want to prove.
+(def-predicate (isomorphism f a b)
+  (and (function f (group-to-set a) (group-to-set b))
+       (homomorphism f a b)
+       (one-to-one f (group-to-set a) (group-to-set b))
+       (onto f (group-to-set a) (group-to-set b)))
+  (string "the definition of isomorphism")
+  (format "~1 is an isomorphism from ~2 to ~3")
+  )
+
+(def-lemma crucial
+  (forall ((f) (g_) (h_) (g))
+    (implies (homomorphism f g_ h_)
+      (and (function (phi f g_) (group-to-set (mod g_ (kernel f)))
+                     (image f))
+           (implies (a-member-of g (group-to-set g_))
+             (= (apply (phi f g_) (leftCoset g (kernel f)))
+                (apply f g))))))
+  (string "the crucial lemma")
+  )
+
+(def-theorem domainOfGroup
+  (forall ((s) (o))
+    (= (group-to-set (the-group s o)) s))
+  (string "the definition of the domain of a group")
+  )
+
+(def-theorem closure
+  (forall ((g_) (g1) (g2))
+    (implies (and (a-member-of g1 (group-to-set g_))
+                  (a-member-of g2 (group-to-set g_)))
+      (a-member-of (apply-binary (operator g_) g1 g2)
+                   (group-to-set g_))))
+  (string "the closure of group operations")
+  )
+
+(def-theorem cosetThm
+  (forall ((p) (G_) (H_))
+    (implies (a-member-of p (group-to-set (mod G_ H_)))
+      (for-some ((g))
+        (and (a-member-of g (group-to-set G_))
+             (= p (leftCoset g H_))))))
+  (string "a property of quotient groups")
+  )
+
+(def-theorem propertyOfCosets2
+  (forall ((g) (g_) (h_))
+    (implies (and (a-member-of g (group-to-set g_))
+                  (normal-subgroup h_ g_))
+      (a-member-of (leftCoset g h_) (group-to-set (mod g_ h_)))))
+  (string "the definition of quotient group")
+  )
+
+(def-theorem kernelNormal
+  (forall ((f) (g) (h))
+    (implies (homomorphism f g h)
+      (normal-subgroup (kernel f) g)))
+  (string "the fact that the kernel of a homomorphism is normal")
+  )
+
+;; I should probably get rid of the backward direction (done)
+(def-theorem propertyOfHomomorphism
+  (forall ((f) (g) (h) (a) (b))
+    (implies (and (homomorphism f g h)
+                  (a-member-of a (group-to-set g))
+                  (a-member-of b (group-to-set g))
+                  (= (apply f a) (apply f b)))
+      (= (apply f (apply-binary (operator g) (inverse a g) b))
+         (identity h))))
+  (string "a fact about homomorphisms")
+  )
+
+(def-theorem propertyOfKernel
+  (forall ((f) (g_) (h_) (g))
+    (implies (and (homomorphism f g_ h_)
+                  (= (apply f g) (identity h_)))
+      (a-member-of g (group-to-set (kernel f)))))
+  (string "a property of the kernel")
+  )
+
+(def-theorem propertyOfCosets
+  (forall ((g) (a) (b) (h))
+    (implies (and (a-member-of a (group-to-set g))
+                  (a-member-of b (group-to-set g))
+                  (normal-subgroup h g)
+                  (a-member-of (apply-binary (operator g) (inverse a g) b)
+                               (group-to-set h)))
+      (= (leftCoset a h) (leftCoset b h))))
+  (string "a property of cosets")
+  )
+
+(def-theorem productOfCosets
+  (forall ((h) (g))
+    (implies (normal-subgroup h g)
+      (forall ((a) (b))
+        (implies (and (a-member-of a (group-to-set g))
+                      (a-member-of b (group-to-set g)))
+          (= (apply-binary (operator (mod g h))
+                           (leftCoset a h)
+                           (leftCoset b h))
+             (leftCoset (apply-binary (operator g) a b) h))))))
+  (string "a property of coset multiplication")
+  )
+
+(def-theorem ontoImage
+  (forall ((f) (g) (h))
+    (implies (function f g h)
+      (onto f g (image f))))
+  (string "the fact that a function is onto its image")
+  )
+
+(def-theorem propertyOfImage
+  (implies (and (function f a b)
+                (a-member-of x a))
+    (a-member-of (apply f x) (image f)))
+  (string "a fact about the image")
+  )
+
+(def-theorem groups-non-empty
+  (implies (a-group g)
+    (for-some ((a)) (a-member-of a (group-to-set g))))
+  (string "the fact that groups can't be empty")
+  )
+
+;; (def-theorem groupIdentity
+;;   (forall ((g))
+;;     (implies (a-group g)
+;;       (a-member-of (identity g) (group-to-set g))))
+;;   (string "the fact that every group has an identity")
+;;   )
+
+(def-target wos8
+  (forall ((f) (g) (h))
+    (implies (homomorphism f g h)
+      (isomorphic (mod g (kernel f)) (the-group (image f)
+                                                (restriction-to
+                                                 (operator h) (image f))))))
+  (string "Wos' eighth research problem")
+  )
+

@@ -1,0 +1,228 @@
+(setq *strings-only* t)
+
+(def-predicate (closed-in a b)
+  (open-in (the-set-difference-of b a) b)
+  (string "~a is a closed subset of ~a"))
+
+(def-term (the-graph-of f)
+  ()
+  (string "the graph of ~a"))
+
+(def-term (the-domain-of f)
+  ()
+  (string "the domain of ~a"))
+
+(def-term (the-product-top-space-of a b)
+  ()
+  (string "the product topological space of ~a and ~a"))
+
+(def-term (the-product-of a b)
+  ()
+  (string "the cartesian product of ~a and ~a"))
+
+(def-term (apply a b)
+  ()
+  (string "{~a}(~a)"))
+
+(def-term (the-ordered-pair a b)
+  ()
+  (string "<~a, ~a>"))
+
+;;;(def-term (the-set-difference-of a b)
+;;;  ()
+;;;  (string "the set difference of ~a and ~a")
+;;;  )
+
+(def-term (coerce-to-class x)
+  ()
+  (string "the class associated with ~a")
+  )
+
+(def-predicate (open-in a x)
+  ()
+  (string "~a is open in ~a")
+  )
+
+(def-predicate (a-function-from-to f x y)
+  ()
+  (string "~a is a function from ~a to ~a")
+  )
+
+(def-term (the-set-inverse-image-of f a)
+  ()
+  (string "{~a}^{-1}(~a)")
+  )
+
+(setq *strings-only* nil)
+
+(def-theorem closed-subset-thm
+  (iff (closed-in a x)
+       (forall ((y)) (implies (and (a-member-of y (coerce-to-class x))
+				   (not (a-member-of y a)))
+		       (for-some ((g))
+			 (and (a-member-of y g)
+			      (open-in g x)
+			      (disjoint g a))))))
+  (string "a simple theorem about closed sets"))
+
+;;;(def-theorem closed-subset-thm
+;;;  (iff (closed-in a x)
+;;;       (forall ((y)) (implies (a-member-of y (the-set-difference-of
+;;;					      (coerce-to-class x) a))
+;;;		       (for-some ((g))
+;;;			 (and (a-member-of y g)
+;;;			      (open-in g x)
+;;;			      (disjoint g a))))))
+;;;  (string "a simple theorem about closed sets"))
+
+(def-predicate (a-hausdorff-top-space x)
+  (forall ((a) (b))
+    (implies (and (a-member-of a (coerce-to-class x))
+		  (a-member-of b (coerce-to-class x))
+		  (not (= a b)))
+      (for-some ((g1) (g2))
+	(and (open-in g1 x) (open-in g2 x)
+	     (a-member-of a g1) (a-member-of b g2)
+	     (disjoint g1 g2)))))
+  (STRING "~a is a Hausdorff space"))
+
+(def-predicate (a-continuous-function-from-to f x y)
+  (and (a-function-from-to f (coerce-to-class x) (coerce-to-class y))
+       (forall ((g)) (implies (open-in g y)
+		       (open-in (the-set-inverse-image-of f g) x))))
+  (string "~a : ~a --> ~a is a continuous function"))
+
+;;; The difficulty of the problem to any prover is sensitive to how
+;;; the remaining needs are satisfied.  We may want to make things
+;;; easier or harder in the future.
+
+(def-theorem product-of-open-sets
+  (implies (and (open-in a x) (open-in b y))
+    (open-in (the-product-of a b) (the-product-top-space-of x y)))
+  (string "a basic fact about the product topology"))
+
+;;; This might be an easier way of handling some of this.
+;;;(def-theorem pair-in-product
+;;;  (implies (a-member-of (the-ordered-pair a b) (the-product-of x y))
+;;;    (and (a-member-of a x) (a-member-of b y)))
+;;;  (string "a fact about pairs in products"))
+
+(def-theorem product-top
+  (implies (a-member-of x (coerce-to-class (the-product-top-space-of s t)))
+    (for-some ((a) (b)) (and (a-member-of a (coerce-to-class s))
+			     (a-member-of b (coerce-to-class t))
+			     (= x (the-ordered-pair a b)))))
+  (string "basic fact about product topologies"))
+
+(def-theorem product
+  (implies (a-member-of x (the-product-of s t))
+    (for-some ((a) (b))
+      (and (a-member-of a s) (a-member-of b t) (= x (the-ordered-pair a b)))))
+  (string "basic fact about products"))
+
+(def-predicate (disjoint a b)
+  (not (for-some ((y)) (and (a-member-of y a) (a-member-of y b))))
+  (string "~a and ~a are disjoint"))
+
+;;; IPR uses the following definition.  A FOL prover should use the
+;;; theorem named "intersection" with the string "a fact about
+;;; intersections" below instead.
+;;;(def-term (the-intersection-of a b)
+;;;    (the-class-of-all (x) (and (a-member-of x a) (a-member-of x b)))
+;;;  (string "the intersection of ~a and ~a"))
+
+;;; IPR does not need this since it uses the comprehension schema.
+;;; This will be needed by FOL provers and it doesn't hurt IPR either.
+;;;(def-theorem intersection
+;;;    (implies (a-member-of x (the-intersection-of a b))
+;;;	     (and (a-member-of x a) (a-member-of x b)))
+;;;  (string "a fact about intersections"))
+
+;;; IPR uses the following definition.  A FOL prover should use the
+;;; theorem named "inverse-image" with the string "a fact about
+;;; inverse images" below instead.
+;;;(def-term (the-set-inverse-image-of f a)
+;;;    (the-class-of-all (x) (a-member-of (apply f x) a))
+;;;  (string "~a ^{-1} (~a)"))
+
+;;; IPR does not need this since it uses the comprehension schema.
+;;; This will be needed by FOL provers and it doesn't hurt IPR either.
+(def-theorem inverse-image
+  (implies (a-member-of x (the-set-inverse-image-of f a))
+    (a-member-of (apply f x) a))
+  (string "a fact about inverse images"))
+
+;;; As above, FOL provers will need a theorem instead of this definition.
+;;;(def-term (the-set-difference-of a b)
+;;;    (the-class-of-all (x) (and (a-member-of x a) (not (a-member-of x b))))
+;;;  (string "the set difference of ~a and ~a"))
+
+;;; This is the FOL substitute for the above definition.
+;;;(def-theorem set-difference
+;;;  (implies (a-member-of a (the-set-difference-of x y))
+;;;    (and (a-member-of a x) (not (a-member-of a y))))
+;;;  (string "definition of set-difference"))
+
+;;; IPR uses this definition.  A FOL prover will need to replace this with
+;;; the theorem below.
+;;;(def-term (the-graph-of f)
+;;;    (the-class-of-all (z)
+;;;		      (for-some ((x))
+;;;				(and (a-member-of x (the-domain-of f))
+;;;				     (= z (the-ordered-pair x (apply f x))))))
+;;;  (string "the graph of ~a"))
+
+;;; Needed by an FOL prover.
+(def-theorem graph
+  (implies (a-member-of z (the-graph-of f))
+    (for-some ((x)) (and (a-member-of x (the-domain-of f))
+			 (= z (the-ordered-pair x (apply f x))))))
+  (string "a fact about graphs"))
+
+(def-theorem ordered-pair
+  (implies (= (the-ordered-pair a b) (the-ordered-pair c d))
+    (and (= a c) (= b d)))
+  (string "the ordered-pair property"))
+
+(def-theorem image
+  (implies (and (a-function-from-to f a b) (a-member-of x a))
+    (a-member-of (apply f x) b))
+  (string "basic fact about functions"))
+
+;;; from Abraham, Marsden, Raitu
+;;; Manifolds, Tensor Analysis and Applications
+(def-theorem challenge-AMR-1-4b
+  (implies (and (a-continuous-function-from-to phi S T)
+		(a-hausdorff-top-space T))
+    (closed-in (the-graph-of phi) (the-product-top-space-of S T)))
+  (string "a theorem whose proof is a challenge to some ATP programs"))
+
+(def-theorem j1
+  (implies (and (a-continuous-function-from-to phi S T)
+		(a-hausdorff-top-space T))
+    (or (forall ((y)) (implies (and (a-member-of y (coerce-to-class
+						    (the-product-top-space-of
+						     S T)))
+				    (not (a-member-of y (the-graph-of phi))))
+			(for-some ((g))
+			  (and (a-member-of y g)
+			       (open-in g (coerce-to-class
+					   (the-product-top-space-of S T)))
+			       (disjoint g (the-graph-of phi))))))
+        (closed-in (the-graph-of phi) (the-product-top-space-of S T)))))
+
+(def-theorem j2
+  (implies (and (a-continuous-function-from-to phi S T)
+		(a-hausdorff-top-space T)
+		(a-member-of y (coerce-to-class (the-product-top-space-of
+						 S T))))
+    (or (for-some ((g))
+	  (and (a-member-of y g)
+	       (open-in g (coerce-to-class
+			   (the-product-top-space-of S T)))
+	       (disjoint g (the-graph-of phi))))
+	(a-member-of y (the-graph-of phi))
+	(closed-in (the-graph-of phi) (the-product-top-space-of S T)))))
+
+
+

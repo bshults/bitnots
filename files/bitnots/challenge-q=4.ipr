@@ -1,0 +1,22 @@
+;; ;; too long
+
+;; ;;; 67
+
+;; (def-target 67 (implies (and (forall ((x) (y)) (t (i x (i y x))))
+;;                              (forall ((x) (y) (z))
+;;                                (t (i (i x (i y z)) (i (i x y) (i x z)))))
+;;                              (forall ((x) (y)) (t (i (i (n x) (n y)) (i y x))))
+;;                              (forall ((x) (y)) (implies (and (t (i x y))
+;;                                                              (t x)) (t y))))
+;;                  (forall ((x)) (t (i (n (n x)) x)))))
+
+;; ;;; 66
+
+;; (def-target 66 (implies (and (forall ((x) (y)) (t (i x (i y x))))
+;;                              (forall ((x) (y) (z))
+;;                                (t (i (i x (i y z)) (i (i x y) (i x z)))))
+;;                              (forall ((x) (y)) (t (i (i (n x) (n y)) (i y x))))
+;;                              (forall ((x) (y))
+;;                                (implies (and (t (i x y)) (t x)) (t y))))
+;;                  (forall ((x)) (t (i x (n (n x)))))))
+

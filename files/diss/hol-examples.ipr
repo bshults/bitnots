@@ -1,0 +1,100 @@
+;;; from paulson: check that <a,b> = {{a,a},{a,b}} is a valid
+;;; definition of ordered pair.  I.e. check that we get <a,b>=<c,d> if
+;;; and only if a=c and b=d.
+
+;;; Brown's rule with a restricted extensionality (only apply
+;;; extensionality when both terms are class terms) finds these with
+;;; almost no search.
+
+(iff (and (= a c) (= b d))
+     (= (the-class-of-all (x)
+	  (or (= x (the-class-of-all (y) (or (= y a) (= y a))))
+	      (= x (the-class-of-all (y) (or (= y a) (= y b))))))
+	(the-class-of-all (x)
+	  (or (= x (the-class-of-all (y) (or (= y c) (= y c))))
+	      (= x (the-class-of-all (y) (or (= y c) (= y d))))))))
+
+;;; Left to right is found with Brown's rule alone (of course
+;;; inequality unification is always needed.)
+
+(iff (and (= a c) (= b d))
+     (forall ((z))
+       (iff (a-member-of z (the-class-of-all (x)
+			     (or (= x (the-class-of-all (y)
+					(or (= y a) (= y a))))
+				 (= x (the-class-of-all (y)
+					(or (= y a) (= y b)))))))
+	    (a-member-of z (the-class-of-all (x)
+			     (or (= x (the-class-of-all (y)
+					(or (= y c) (= y c))))
+				 (= x (the-class-of-all (y)
+					(or (= y c) (= y d))))))))))
+
+;;; A well-controlled Brown's rule (no copies and waiting until
+;;; unification is tried) finds this proof without extensionality or
+;;; much search.
+
+(iff (and (= a c) (= b d))
+     (forall ((z))
+       (iff (a-member-of z (the-class-of-all (x)
+			     (or (forall ((w))
+				   (iff (a-member-of w (the-class-of-all (y)
+							 (or (= y a) (= y a))))
+					(a-member-of w x)))
+				 (forall ((w))
+				   (iff (a-member-of w (the-class-of-all (y)
+							 (or (= y a) (= y b))))
+					(a-member-of w x))))))
+	    (a-member-of z (the-class-of-all (x)
+			     (or (forall ((w))
+				   (iff (a-member-of w (the-class-of-all (y)
+							 (or (= y c) (= y c))))
+					(a-member-of w x)))
+				 (forall ((w))
+				   (iff (a-member-of w (the-class-of-all (y)
+							 (or (= y c) (= y d))))
+					(a-member-of w x)))))))))
+
+(implies (and (= a c) (= b d))
+  (forall ((z))
+    (iff (a-member-of z (the-class-of-all (x)
+			  (or (forall ((w))
+				(iff (a-member-of w (the-class-of-all (y)
+						      (or (= y a) (= y a))))
+				     (a-member-of w x)))
+			      (forall ((w))
+				(iff (a-member-of w (the-class-of-all (y)
+						      (or (= y a) (= y b))))
+				     (a-member-of w x))))))
+	 (a-member-of z (the-class-of-all (x)
+			  (or (forall ((w))
+				(iff (a-member-of w (the-class-of-all (y)
+						      (or (= y c) (= y c))))
+				     (a-member-of w x)))
+			      (forall ((w))
+				(iff (a-member-of w (the-class-of-all (y)
+						      (or (= y c) (= y d))))
+				     (a-member-of w x)))))))))
+
+(implies
+    (forall ((z))
+      (iff (a-member-of z (the-class-of-all (x)
+			    (or (forall ((w))
+				  (iff (a-member-of w (the-class-of-all (y)
+							(or (= y a) (= y a))))
+				       (a-member-of w x)))
+				(forall ((w))
+				  (iff (a-member-of w (the-class-of-all (y)
+							(or (= y a) (= y b))))
+				       (a-member-of w x))))))
+	   (a-member-of z (the-class-of-all (x)
+			    (or (forall ((w))
+				  (iff (a-member-of w (the-class-of-all (y)
+							(or (= y c) (= y c))))
+				       (a-member-of w x)))
+				(forall ((w))
+				  (iff (a-member-of w (the-class-of-all (y)
+							(or (= y c) (= y d))))
+				       (a-member-of w x))))))))
+  (and (= a c) (= b d)))
+

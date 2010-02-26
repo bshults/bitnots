@@ -1,0 +1,260 @@
+(def-term (the-universe-class)
+  (the-class-of-all (x) (= x x))
+  (theory my-set-theory))
+
+(def-term (the-empty-set)
+  (the-class-of-all (x) (not (= x x)))
+  (theory my-set-theory))
+
+(def-predicate (a-set a)		; Suppes/Fraenkel
+  (for-some ((x) (y)) 
+    (or (and (a-member-of x a) (a-member-of a y))
+	(= a (the-empty-set))))
+  ;; so this should be built into a module which contains the theorem
+  ;; (implies ... (a-set .)) with back-chain only.
+  )
+
+(def-predicate (an-ur-element a)
+  (and (an-element a) (not (a-set a))))
+
+(def-axiom an-element
+  (forall ((x) (y))
+    (implies (a-member-of x y)
+      (an-element x)))
+  ;; only back-chain.
+  )
+
+(def-axiom a-class
+;;  (forall ((y) (z))
+;;    (implies (or (= y (the-empty-set)) (a-member-of z y))
+;;      (a-class y)))
+  (forall ((y) (z))
+    (implies (or (a-set y) (a-member-of z y))
+      (a-class y)))
+  ;; I want this to be used only "if needed" i.e. only back-chain.
+  ;; so only when (a-class y) matches.
+  )
+
+(def-predicate (a-proper-class a)
+  (not (an-element a)))
+
+(def-axiom large-base
+  (a-proper-class (the-class-of-all (p) (an-ur-element p))))
+
+(def-axiom extensionality
+  (forall ((x) (y))			; type-predicates would help here
+    (implies (and (a-class x) (a-class y))
+      (iff (forall ((u)) (iff (a-member-of u x)
+			      (a-member-of u y)))
+	   (= x y))))
+;;;      (iff (= x y) (forall ((u)) (iff (a-member-of u x)
+;;;				      (a-member-of u y))))
+  (usage back-chain)
+  (theory my-set-theory))
+
+(def-term (the-singleton a)
+  (the-class-of-all (x) (= x a))	; this needs to be proved to be a set
+  (theory my-set-theory))
+
+;;; Note that (implies (a-proper-class a) (an-empty-set (the-singleton a)))
+
+(def-term (the-pair a b)
+  (the-class-of-all (x) (or (= x a) (= x b)))
+  (theory my-set-theory))
+
+;;;--load to here--
+
+(def-theorem test
+  (implies (an-ur-element a)
+    (not (= a (the-empty-set))))
+  (proof
+   (promote (implies (an-ur-element (_a))
+	      (not (= (_a) (the-empty-set)))))
+   (flip (not (= (_a) (the-empty-set))))
+   (apply-theorem an-ur-element2 ((a _a)))
+   (apply-theorem a-set3 ((a _a)))))
+;; settheo0.01 aug.13.94
+
+(def-theorem test
+  (or (a-set x) (an-ur-element x) (a-proper-class x))
+  (proof
+   (apply-theorem a-proper-class2 ((a _x)))
+   (apply-theorem an-ur-element3 ((a _x)))))
+;; settheo0.01 aug.13.94
+
+(def-theorem test
+  (implies (a-proper-class a) 
+    (= (the-empty-set) (the-class-of-all (x) (= x a))))
+  (proof
+   (claim (= (the-empty-set) (the-class-of-all (x) (not (= x x)))))
+   (apply-theorem the-empty-set1 nil))
+
+;;; equality is too weak and "R" is not working
+(def-theorem test
+  (implies (a-proper-class a) (= (the-empty-set) (the-singleton a))))
+
+(def-theorem test
+ (forall ((x) (y) (u))
+   (implies (forall ((w))
+	      (iff (a-member-of w x) (= w u)))
+     (iff (= x y) (= y (the-class-of-all (z) (= z u))))))
+ (proof))
+
+(def-theorem singleton-is-a-pair	; this is true even for classes a
+  (forall ((a)) (= (the-singleton a) (the-pair a a)))
+  (usage rewrite-r-l))
+
+;; it follows from singleton-is-a-pair that singleton-is-a-set.
+
+(def-theorem test
+  (forall ((a))
+    (= (the-class-of-all (x) (= x a))
+       (the-class-of-all (x) (or (= x a) (= x a)))))
+  (proof
+   (consider
+    (forall ((a))
+      (= (the-class-of-all (x) (= x a))
+	 (the-class-of-all (x) (or (= x a) (= x a)))))
+    skolem _a)
+   (apply-theorem extensionality
+		  ((*thm-y the-class-of-all
+			   (*var158) (or (= *var158 (_a)) (= *var158 (_a))))
+		   (*thm-x the-class-of-all (*var157) (= *var157 (_a)))))
+   (and-split
+    (and
+     (forall ((u))
+       (iff
+	(a-member-of u (the-class-of-all (x) (= x (_a))))
+	(a-member-of u (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))
+     (a-class
+      (the-class-of-all (x) (= x (_a))))
+     (a-class
+      (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))
+   ((consider
+     (forall ((u)) (iff (a-member-of u (the-class-of-all (x) (= x (_a))))
+			(a-member-of u (the-class-of-all (x)
+					 (or (= x (_a)) (= x (_a)))))))
+     skolem _u)
+    (iff
+     (iff
+      (a-member-of (_u) (the-class-of-all (x) (= x (_a))))
+      (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))
+    ((promote
+      (implies (a-member-of (_u) (the-class-of-all (x) (= x (_a))))
+	(a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))
+     (church-schema
+      (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a))))))
+     ((church-schema
+       (a-member-of (_u) (the-class-of-all (x) (= x (_a))))))
+     ((church-schema
+       (a-member-of (_u) (the-class-of-all (x) (= x (_a)))))))
+    ((promote
+      (implies (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))
+	(a-member-of (_u) (the-class-of-all (x) (= x (_a))))))
+     (church-schema
+      (a-member-of (_u) (the-class-of-all (x) (= x (_a)))))
+     ((church-schema
+       (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a))))))
+      (or-split
+       (or (= (_u) (_a)) (= (_u) (_a)))) nil nil)
+     ((church-schema
+       (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))))
+   ((class-schema
+     (a-class (the-class-of-all (x) (= x (_a))))))
+   ((class-schema
+     (a-class (the-class-of-all (x) (or (= x (_a)) (= x (_a))))))))
+  )
+
+(def-theorem test
+  (forall ((x) (y))
+    (iff (a-member-of y x)
+	 (a-member-of y (the-class-of-all (z)
+			  (not (a-member-of z (the-class-of-all (w)
+						(not (a-member-of w x)))))))))
+  (proof
+   (consider
+    (forall ((x) (y))
+      (iff (a-member-of y x)
+	   (a-member-of
+	    y (the-class-of-all (z)
+		(not (a-member-of z (the-class-of-all (w)
+				      (not (a-member-of w x)))))))))
+    skolem _x)
+   (iff
+    (iff (a-member-of (_y) (_x))
+	 (a-member-of
+	  (_y) (the-class-of-all (z)
+		 (not (a-member-of z (the-class-of-all (w)
+				       (not (a-member-of w (_x))))))))))
+   ((promote
+     (implies (a-member-of (_y) (_x))
+       (a-member-of
+	(_y) (the-class-of-all (z)
+	       (not (a-member-of z (the-class-of-all (w)
+				     (not (a-member-of w (_x))))))))))
+    (church-schema
+     (a-member-of (_y) (the-class-of-all (z)
+			 (not (a-member-of z (the-class-of-all (w)
+					       (not (a-member-of w (_x)))))))))
+    ((flip
+      (not (a-member-of (_y) (the-class-of-all (w) (not (a-member-of w (_x)))))))
+     (church-schema
+      (a-member-of (_y) (the-class-of-all (w) (not (a-member-of w (_x))))))
+     (flip
+      (not (a-member-of (_y) (_x)))))
+    ((apply-theorem an-element ((*thm-y _x) (*thm-x _y)))))
+   ((promote
+     (implies (a-member-of
+	       (_y) (the-class-of-all (z)
+		      (not (a-member-of z (the-class-of-all (w)
+					    (not (a-member-of w (_x))))))))
+       (a-member-of (_y) (_x))))
+    (church-schema
+     (a-member-of (_y) (the-class-of-all (z)
+			 (not (a-member-of z (the-class-of-all (w)
+					       (not (a-member-of w (_x)))))))))
+    (flip
+     (not (a-member-of (_y) (the-class-of-all (w) (not (a-member-of w (_x)))))))
+    (church-schema
+     (a-member-of (_y) (the-class-of-all (w) (not (a-member-of w (_x))))))
+    ((flip
+      (not (a-member-of (_y) (_x)))))
+    nil)))
+
+(def-theorem test
+  (forall ((x))
+    (iff (forall ((z))
+	   (not (a-member-of z (the-class-of-all (a) (= a x)))))
+	 (not (an-element x))))
+  (proof 
+   (consider
+    (forall ((x))
+      (iff (forall ((z)) (not (a-member-of z (the-class-of-all (a) (= a x)))))
+	   (not (an-element x))))
+    skolem _x)
+   (iff
+    (iff (forall ((z))
+	   (not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+	 (not (an-element (_x)))))
+   ((promote
+     (implies (forall ((z))
+		(not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+       (not (an-element (_x)))))
+    (flip
+     (not (an-element (_x))))
+    (show-there-is
+     (forall ((z)) (not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+     var z)
+    (flip
+     (not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+    (church-schema
+     (a-member-of z (the-class-of-all (a) (= a (_x))))) nil nil)
+   ((consider
+     (forall ((z)) (not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+     skolem _z1)
+    (flip
+     (not (a-member-of (_z1) (the-class-of-all (a) (= a (_x))))))
+    (church-schema
+     (a-member-of (_z1) (the-class-of-all (a) (= a (_x)))))))
+  )
+

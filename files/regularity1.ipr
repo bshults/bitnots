@@ -1,0 +1,8 @@
+;; A simple test file which results in the creation of
+;; duplicate formulas.  It is the task of the regularity
+;; enforcer to get rid of duplicate formulas.  The target
+;; has no proof. 
+
+(def-target target (iff (and (implies (b) (a)) (implies (a) (b))) 
+                            (and (a) (b)))
+)

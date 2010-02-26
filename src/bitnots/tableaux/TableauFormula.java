@@ -1,11 +1,9 @@
 package bitnots.tableaux;
 
-import javax.swing.tree.*;
 import java.util.*;
 import java.lang.reflect.*;
 import java.io.*;
 import bitnots.expressions.*;
-//import bitnots.util.*;
 
 public abstract class TableauFormula implements Serializable {
 

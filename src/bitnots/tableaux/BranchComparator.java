@@ -57,7 +57,7 @@ public class BranchComparator
     double b2Value = this.getRating(b2);   // branch 2's rating
 
     // compare the two branches
-    if (b1Value < b2Value) {
+    if (b1Value > b2Value) {
       // higher ranked branches should go first.
       return 1;
     }

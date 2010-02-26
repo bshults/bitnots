@@ -1,0 +1,40 @@
+(def-theorem basic
+  (implies (ordinal x) (an-element x))
+  )
+
+(def-theorem Bernays-3-1-5-
+  (implies (and (ordinal d) (a-member-of c d))
+    (ordinal c)))
+
+;;; may need this for the other direction
+;;;(def-theorem Bernays-3-1-11
+;;;  (and (implies (and (ordinal a) (ordinal b))
+;;;	 (or (= a b) (a-member-of a b) (a-member-of b a)))
+;;;       (implies (and (ordinal a) (ordinal b) (ordinal c))
+;;;	 (implies (and (a-member-of a b) (a-member-of b c))
+;;;	   (a-member-of a c)))
+;;;       (implies (and (ordinal a) (ordinal b) (a-member-of a b))
+;;;	 (not (a-member-of b a)))))
+
+(def-theorem Bernays-3-1-12-		; principle of least ordinal
+  (implies (and (ordinal c)
+		(a-member-of c (the-class-of-all (a) (not (u a)))))
+    (for-some ((x))
+      (and (ordinal x) (a-member-of x (the-class-of-all (a) (not (u a))))
+	   (forall ((z))
+	     (implies (and (ordinal z)
+			   (a-member-of z (the-class-of-all (a) (not (u a)))))
+	       (or (= x z) (a-member-of x z))))))))
+
+(def-theorem Bernays-86-c-
+  (implies (and (ordinal a) (or (= c a) (a-member-of c a)))
+    (not (a-member-of a c))))
+
+(def-theorem transfinite-induction
+  (implies (forall ((r))
+	     (implies (and (ordinal r)
+			   (forall ((z)) (implies (a-member-of z r)
+					   (u z))))
+	       (u r)))
+    (implies (ordinal c) (u r))))
+

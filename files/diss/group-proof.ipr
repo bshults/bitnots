@@ -1,0 +1,27 @@
+(forall ((e))
+	(implies
+	    (and (forall ((x) (y)) (for-some ((z)) (= (p x y) z)))
+		 (forall ((x) (y) (z))
+			 (= (p x (p y z)) (p (p x y) z)))
+		 (forall ((x)) (= (p x e) x))
+		 (forall ((x)) (= (p x (i x)) e)))
+	  (forall ((x)) (= (p (i x) x) e))))
+
+;;;(1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
+Consider a
+x
+e
+If we suppose
+(all of the following:
+     (= (p (i x) (p x e)) (p (p (i x) x) e))
+     (= (p x e) x)
+     (= (p (i x) (i (i x))) e)
+     (= (p (i x) (p x (p (i x) (i (i x)))))
+	(p (p (i x) x) (p (i x) (i (i x)))))
+     (= (p (i x) (p e (i (i x)))) (p (p (i x) e) (i (i x))))
+     (= (p (i x) e) (i x))
+     (= (p x (i x)) e)
+     (= (p x (p (i x) (i (i x)))) (p (p x (i x)) (i (i x))))
+we have shown
+(= (p (i x) x) e)
+

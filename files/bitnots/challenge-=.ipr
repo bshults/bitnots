@@ -1,0 +1,180 @@
+;;; Full Predicate Logic with Identity
+
+;;; 48
+
+(def-target 48 (forall ((a) (b) (c) (d))
+                 (implies (and (or (= a b) (= c d))
+                               (or (= a c) (= b d)))
+                   (or (= a d) (= b c)))))
+
+;;; 49
+
+(def-target 49 (forall ((a) (b))        ; no can do ^#$%
+                 (implies (and (for-some ((x) (y)) (forall ((z))
+                                                     (or (= z x) (= z y))))
+                               (and (p a) (p b))
+                               (not (= a b)))
+                   (forall ((x)) (p x)))))
+
+;;; 51
+
+(def-target 51 (implies (for-some ((z) (w)) ; no can do
+                          (forall ((x) (y))
+                            (iff (f x y) (and (= x z) (= y w)))))
+                 (for-some ((z)) (forall ((x))
+                                   (iff (for-some ((w)) (forall ((y))
+                                                          (iff (f x y)
+                                                               (= y w))))
+                                        (= x z))))))
+
+;;; 52
+
+(def-target 52 (implies (for-some ((z) (w)) ; no can do
+                          (forall ((x) (y))
+                            (iff (f x y)
+                                 (and (= x z)
+                                      (= y w)))))
+                 (for-some ((w))
+                   (forall ((y))
+                     (iff (for-some ((z)) (forall ((x))
+                                            (iff (f x y)
+                                                 (= x z))))
+                          (= y w))))))
+
+;;; 53
+
+(def-target 53 (implies (for-some ((x) (y))
+                          (and (not (= x y))
+                               (forall ((z)) (or (= z x) (= z y)))))
+                 (iff (for-some ((z)) (forall ((x))
+                                        (iff (for-some ((w)) (forall ((y))
+                                                               (iff (f x y)
+                                                                    (= y w))))
+                                             (= x z))))
+                      (for-some ((w)) (forall ((y))
+                                        (iff (for-some ((z)) (forall ((x))
+                                                               (iff (f x y) (= x z))))
+                                             (= y w)))))))
+;; no can do
+
+;;; 54
+
+(def-target 54 (implies (forall ((y)) (for-some ((z)) (forall ((x))
+                                                        (iff (f x z) (= x y)))))
+                 (not (for-some ((w))
+                        (forall ((x))
+                          (iff (f x w) (forall ((u))
+                                         (implies (f x u)
+                                           (for-some ((y))
+                                             (and (f y u)
+                                                  (not (for-some ((z))
+                                                         (and (f z u)
+                                                              (f z y))))))))))))))
+
+;;; 55
+
+(def-target 55 (forall ((agatha) (butler) (charles))
+                 (implies (and (for-some ((x)) (and (resident x) (killed x agatha)))
+                               (resident agatha)
+                               (resident butler)
+                               (resident charles)
+                               (forall ((x)) (implies (resident x)
+                                               (or (= x agatha)
+                                                   (= x butler)
+                                                   (= x charles))))
+                               (forall ((y) (x)) (implies (killed x y)
+                                                   (hates x y)))
+                               (forall ((x) (y))
+                                 (implies (killed x y) (not (richer-than x y))))
+                               (forall ((x))
+                                 (implies (hates agatha x) (not (hates charles x))))
+                               (forall ((x))
+                                 (implies (not (= x butler)) (hates agatha x)))
+                               (forall ((x))
+                                 (implies (not (richer-then x agatha)) (hates butler x)))
+                               (forall ((x))
+                                 (implies (hates agatha x) (hates butler x)))
+                               (forall ((x)) (for-some ((y)) (hates x y)))
+                               (not (= agatha butler)))
+                   (killed agatha agatha))))
+;; no can do
+
+;;; Full Predicate Logic with Identity and Arbitrary Functions
+
+;;; 56
+
+(def-target 56 (iff (forall ((x)) (implies (for-some ((y))
+                                             (and (phi y) (= x (f y))))
+                                    (phi x)))
+                    (forall ((x)) (implies (phi x) (phi (f x))))))
+
+;;; 58
+
+(def-target 58 (implies (forall ((x) (y)) ; no can do because two vars in the 
+					; formula in hypothesis
+                          (= (f x) (g y)))
+                 (forall ((x) (y)) (= (f (f x)) (f (g y))))))
+;; with interaction
+
+;;; 61
+
+(def-target 61 (implies (forall ((x) (y) (z))
+                          (= (f x (f y z)) (f (f x y) z)))
+                 (forall ((x) (y) (z) (w))
+                   (= (f x (f y (f z w))) (f (f (f x y) z) w)))))
+;; no can do
+
+;;; 63
+
+(def-target 63 (forall ((a))      ; no can do for too many vars in hyp
+                 (implies (and (forall ((x) (y) (z)) (= (f (f x y) z) (f x (f y z))))
+                               (forall ((x)) (= (f a x) x))
+                               (forall ((x)) (for-some ((y)) (= (f y x) a))))
+                   (forall ((x) (y) (z))
+                     (implies (= (f x y) (f z y))
+                       (= x z))))))
+
+;;; 64
+
+(def-target 64 (forall ((a))            ; no can do ""
+                 (implies (and (forall ((x) (y) (z)) (= (f (f x y) z) (f x (f y z))))
+                               (forall ((x)) (= (f a x) x))
+                               (forall ((x)) (for-some ((y)) (= (f y x) a))))
+                   (forall ((x) (y)) (implies (= (f y x) a)
+                                       (= (f x y) a))))))
+
+;;; 65
+
+(def-target 65 (forall ((a))            ; no can do ""
+                 (implies (and (forall ((x) (y) (z)) (= (f (f x y) z) (f x (f y z))))
+                               (forall ((x)) (= (f a x) x)))
+                   (implies (forall ((x)) (= (f x x) a))
+                     (forall ((x) (y))
+                       (= (f x y) (f y x)))))))
+
+;;; 73
+
+;; predicate pigeon hole problem
+
+;; n = 3:  complexity should increase polynomial in n
+
+(def-target 73 (not (and (for-some ((x) (y) (z) (w))
+                           (and (obj x) (obj y) (obj z) (obj w) (not (= x y))
+                                (not (= x z)) (not (= x w)) (not (= y z))
+                                (not (= y w)) (not (= z w))))
+                         (for-some ((x) (y) (z))
+                           (and (hole x) (hole y) (hole z)
+                                (not (= x y)) (not (= x z)) (not (= y z))
+                                (forall ((w))
+                                  (implies (hole w)
+                                    (or (= w x) (= w y) (= w z))))))
+                         (forall ((x)) (implies (obj x) (for-some ((y))
+                                                          (and (hole y)
+                                                               (in x y)))))
+                         (forall ((x))
+                           (implies (hole x)
+                             (forall ((y) (z))
+                               (implies (and (obj y) (obj z) (in y x) (in z x))
+                                 (= y z))))))))
+;; no can do
+

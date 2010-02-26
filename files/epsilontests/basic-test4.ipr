@@ -1,0 +1,22 @@
+; Another simple test file for the epsilon rule
+
+(def-theorem first (half (a) (b))
+  (string "at least one of a and b")
+)
+
+;(def-theorem second (obtains (a))
+;    (string "a obtains")
+;)
+
+(def-theorem third (not (obtains (b)))
+  (string "b does not obtain")
+)
+
+(def-theorem half-meaning 
+  (forall ((x) (y))
+    (implies (half x y)
+      (or (obtains x) (obtains y))))
+  (string "the definition of 'half'")
+)
+
+(def-target the-target (obtains (a)))

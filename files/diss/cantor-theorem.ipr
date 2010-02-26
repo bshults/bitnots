@@ -1,0 +1,58 @@
+;;(setq *format-only* t)
+
+(def-term (ordered-pair a b)
+  ()
+  "<~1, ~2>"
+  "the definition of ordered pair"
+  )
+
+(def-term (power a)
+  ()
+  "Power(~1)"
+  "the definition of the power set"
+  )
+
+;;; (apply f x) = (the (y) (a-member-of (ordered-pair x y) f))
+
+;;; (first x) = (the (y) (and (= x (ordered-pair a b)) (= y a)))
+
+;;; (second x) = (the (y) (and (= x (ordered-pair a b)) (= y b)))
+
+;;(setq *format-only* nil)
+
+(def-predicate (function-from-to f a b)
+  (and (forall ((x))
+	 (implies (a-member-of x f)
+	   (and (a-member-of (the (y) (and (= x (ordered-pair c d))
+					   (= y c))) a)
+		(a-member-of (the (y) (and (= x (ordered-pair c d))
+					   (= y d))) b))))
+       (implies (and (a-member-of (ordered-pair c d) f)
+		     (a-member-of (ordered-pair e d) f))
+	 (= c e)))
+  "~1 is a function from ~2 to ~3"
+  "the definition of a function"
+  )
+
+(axiom
+  (iff (a-member-of x (power a))
+       (forall ((y))
+	 (implies (a-member-of y x)
+	   (a-member-of y a))))
+  "a property of power sets"
+  )
+
+(axiom
+  (implies (= (ordered-pair a b) (ordered-pair c d))
+    (and (= a c) (= b d)))
+  "an axiom of ordered pairs"
+  )
+
+;;; Cantor's theorem
+
+(implies (function-from-to f a (power a))
+  (for-some ((s))
+    (and (a-member-of s (power a))
+	 (forall ((x))
+	   (not (= (the (y) (a-member-of (ordered-pair x y) f)) s))))))
+

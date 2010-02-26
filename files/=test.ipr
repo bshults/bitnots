@@ -1,0 +1,126 @@
+;; here begins the ones it can prove
+
+(implies (and (forall ((S) (O))
+                (= (group-to-set (the-group S O)) S))
+              (forall ((f) (G))
+                (function (phi f G)
+                          (group-to-set (mod G (kernel f)))
+                          (image f))))
+  (forall ((G) (f))
+    (for-some ((h))
+      (function h (group-to-set (mod G (kernel f)))
+                (group-to-set (the-group (image f) (thingy)))))))
+
+(forall ((i) (j) (k) (l) (m))
+  (implies (and (= i j)
+                (= k l)
+                (= (a i) (b k))
+                (= j (a j))
+                (= m (b l)))
+    (= (a m) (b k))))
+
+(forall ((x)) (= x x))
+
+(forall ((x) (y)) (implies (= x y) (= y x)))
+
+(forall ((x)) (implies (= x (f x))
+		(= (f x) (f (f (f (f (f x))))))))
+
+(forall ((a) (b))
+  (implies (= (f a b) a)
+    (= (f (f a b) b) a)))
+
+(forall ((x)) (for-some ((y)) (= (f x) (f y))))
+
+(for-some ((g) (h))
+  (implies (and (= (apply (f_0) (g_5)) h)
+                (= (apply (phi_0) (coset (g_5) (kernel (f_0))))
+                   (apply (f_0) (g_5))))
+    (= (apply (phi_0) g) h)))
+
+;; below here, the prover can't prove yet.
+
+(forall ((a) (b) (c))
+  (implies (forall ((x))
+	     (and (= (g (f x)) c)
+		  (= (f x) (g x))))
+    (= (g (g a)) (g (f b)))))
+
+(forall ((x))
+  (implies (forall ((a)) (= (f (f (f a))) (f (f (f (f (f a)))))))
+    (= x (f x))))
+
+;; (def-theorem domainOfGroup
+;;   (forall ((s) (o))
+;;     (= (group-to-set (the-group S O)) S))
+;;   (string "the definition of the domain of a group")
+;;   )
+
+;; And I want the following to unify while searching
+;; for an application of the epsilon-rule:
+
+;; Formula in KB:
+;; (function (phi f g_)
+;;        (group-to-set (mod g_ (kernel f))
+;;        (image f))
+
+;; Formula in tableau:
+;; (function h
+;;        (group-to-set (mod g_0 (kernel f_0))
+;;        (group-to-set (the-group (image f_0) (...))))
+
+(implies (forall ((x)) (= x (f x)))
+  (forall ((x)) (= (f x) (f (f (f (f (f x))))))))
+
+(implies (forall ((x)) (= x (f x)))
+  (forall ((x)) (= x (f (f (f (f x)))))))
+
+(forall ((a) (b) (c))
+  (implies (forall ((x))
+	     (and (= (g (f x)) c)
+		  (or (= (f x) (g x))
+		      (forall ((y)) (and (= y c) (not (= y c)))))))
+    (= (g (g a)) (g (f b)))))
+
+(forall ((e))				; testing
+  (implies
+      (and ;; (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+       (forall ((x) (y) (z))
+	 (= (* x (* y z)) (* (* x y) z)))
+       (forall ((w)) (= (* w e) w))
+       (forall ((s)) (= (* s (i s)) e)))
+    (forall ((a)) (= (* (i a) a) e))))
+;;;  proof:
+;;;                                 (e) =
+;;;                 (* (i a) (i (i a))) =
+;;;         (* (* (i a) (e)) (i (i a))) =
+;;;         (* (i a) (* (e) (i (i a)))) =
+;;; (* (i a) (* (* a (i a)) (i (i a)))) = 
+;;; (* (i a) (* a (* (i a) (i (i a))))) = (* (i a) (* a (e)))
+;;;                                     = (* (i a) a)
+
+(forall ((e))				; testing
+  (implies
+      (and ;; (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+       (forall ((x) (y) (z))
+	 (= (* x (* y z)) (* (* x y) z)))
+       (forall ((w)) (= (* w e) w))
+       (forall ((s)) (= (* s (i s)) e)))
+    (forall ((a)) (= (* e a) a))))
+;;; Now the proof of this is easier if I know the previous theorem.
+;;; So what do I want it to mean by the term "know the previous theorem"?
+
+(forall ((e))
+  (implies (forall ((x) (y) (z))
+	     (and (= (* x (* y z)) (* (* x y) z))
+		  (= (* x e) x)
+		  (= (* x (i x)) e)))
+    (forall ((a)) (= (* e a) a))))
+
+;;; proof:
+;;; (* a (* (i a) a)) = (* (* a (i a)) a)
+;;;                     (* e a)
+;;; 
+;;; 
+;;; 
+

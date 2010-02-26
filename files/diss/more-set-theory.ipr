@@ -1,0 +1,62 @@
+(def-axiom extensionality
+  (iff (= x y)
+       (forall ((z))
+	 (iff (a-member-of z x)
+	      (a-member-of z y)))))
+
+(def-term (a-subset-of a b)
+  (forall ((x))
+    (implies (a-member-of x a)
+      (a-member-of x b))))
+
+(def-theorem subset
+  (iff (forall ((x))
+	 (implies (a-member-of x a)
+	   (a-member-of x b)))
+       (a-subset-of a b)))
+
+(def-theorem union
+  (iff (for-some ((b)) (and (a-member-of b c) (a-member-of a b)))
+       (a-member-of a (the-union-over c))))
+
+(def-theorem intersection
+  (iff (and (a-member-of c a)
+	    (a-member-of c b))
+       (a-member-of c (the-intersection-of a b))))
+
+;;; the above are enough for:
+
+;; p. 363 of Paulson
+(def-theorem example1-			; with interaction
+  (= (the-intersection-of a b)
+     (the-intersection-of b a))
+  (proof
+   (apply-theorem extensionality2
+		  ((y the-intersection-of (_b) (_a))
+		   (x the-intersection-of (_a) (_b))))
+   (consider
+    (forall ((z))
+      (iff (a-member-of z (the-intersection-of (_a) (_b)))
+	   (a-member-of z (the-intersection-of (_b) (_a)))))
+    skolem _z)
+   (iff
+    (iff (a-member-of (_z) (the-intersection-of (_a) (_b)))
+	 (a-member-of (_z) (the-intersection-of (_b) (_a)))))
+   ((promote
+     (implies (a-member-of (_z) (the-intersection-of (_a) (_b)))
+       (a-member-of (_z) (the-intersection-of (_b) (_a)))))
+    (apply-theorem intersection ((b _a) (a _b) (c _z)))
+    (and-split
+     (and (a-member-of (_z) (_b)) (a-member-of (_z) (_a))))
+    ((apply-theorem intersection2 ((a _a) (b _b) (c _z))))
+    ((apply-theorem intersection1 ((b _b) (a _a) (c _z)))))
+   ((promote
+     (implies (a-member-of (_z) (the-intersection-of (_b) (_a)))
+       (a-member-of (_z) (the-intersection-of (_a) (_b)))))
+    (apply-theorem intersection ((b _b) (a _a) (c _z)))
+    (and-split (and (a-member-of (_z) (_a)) (a-member-of (_z) (_b))))
+    ((apply-theorem intersection2 ((a _b) (b _a) (c _z))))
+    ((apply-theorem intersection1 ((b _a) (a _b) (c _z)))))))
+
+
+

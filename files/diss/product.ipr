@@ -1,0 +1,26 @@
+(setq *format-only* t)
+
+(def-term (the-ordered-pair a b)
+  ()
+  (format "<~a, ~a>")
+  (string "the definition of an ordered pair"))
+
+(def-term (the-product-of a b)
+  ()
+  (format "the product of ~a and ~a")
+  (string "the definition of the cross product"))
+
+(setq *format-only* nil)
+
+(def-theorem product			; a definition
+  (iff (a-member-of x (the-product-of s t))
+       (for-some ((a) (b))
+	 (and (a-member-of a s) (a-member-of b t)
+	      (= x (the-ordered-pair a b)))))
+  (string "a basic fact about products"))
+
+(def-theorem test
+  (implies (and (a-member-of a s)
+		(a-member-of b t))
+    (a-member-of (the-ordered-pair a b) (the-product-of s t))))
+

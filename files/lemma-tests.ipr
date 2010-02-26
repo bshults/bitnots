@@ -1,0 +1,12 @@
+;;; testing fol-lemmas
+
+(implies (or (a) (b) (c))
+  (d))
+
+(implies (a)
+  (and (b) (c) (d)))
+
+(implies 
+    (implies (a) (b))
+  (c))
+

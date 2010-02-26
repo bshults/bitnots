@@ -6,7 +6,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import bitnots.tableaux.BranchCloser;
 import bitnots.theories.TheoremApplication;
 
 /**

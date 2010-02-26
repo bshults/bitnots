@@ -72,7 +72,7 @@ public class EpsilonToolkit {
         Collections.sort(tas, new TheoremAppComparator());
         for (TheoremApplication ta : tas) {
           if (!this.hasBeenApplied(ta)) {
-            if (this.doTA(ta))
+            if (this.applyTheoremApplication(ta))
               return true;
           }
         }
@@ -83,6 +83,28 @@ public class EpsilonToolkit {
 
   private boolean hasBeenApplied(TheoremApplication ta) {
     return this.applied.get(ta) != null;
+  }
+
+  private void markApplied(TheoremApplication ta) {
+    this.applied.put(ta, "");
+  }
+
+  /**
+   * Subracts from <code>ta</code>'s rank a value depending on how many
+   * TheoremApplications similar to <code>ta</code> have already been applied.
+   * @param ta the TheoremApplication to be compared with those that have
+   * already been applied.
+   * @return the adjusted ranking.
+   */
+  private double getSimilarityRanking(TheoremApplication ta) {
+    double retVal = ta.rank;
+    for (TheoremApplication appliedTA : this.applied.keySet()) {
+      if (ta.getSequent() == appliedTA.getSequent())
+        if (ta.getSequentFormulas().equals(appliedTA.getSequentFormulas())) {
+          retVal -= 5;
+        }
+    }
+    return retVal;
   }
 
   /**
@@ -99,36 +121,43 @@ public class EpsilonToolkit {
       current = current.getParent();
     } while (current != null);
     List<TheoremApplication> allTAs = new ArrayList<TheoremApplication>();
-    List<TheoremApplication> newTAs = new ArrayList<TheoremApplication>();
     do {
       current = branchNodes.pop();
       Collection<TheoremApplication> addedNewTAs = null;
       if (current.hasBeenMatchedWithTheory()) {
         // combine the IMs here with the new TAs from above.
-        addedNewTAs = EpsilonToolkit.createTheoremApplications(current, newTAs);
+        addedNewTAs = EpsilonToolkit.createTheoremApplications(current, allTAs);
       } else {
         // create new InitialMatches.
         this.findInitialMatches(current, current.getTableau().getTheory());
         // combine those with ALL the TAs from above.
         addedNewTAs = EpsilonToolkit.createTheoremApplications(current, allTAs);
       }
-      if (addedNewTAs != null && !addedNewTAs.isEmpty()) {
+      if (addedNewTAs != null) {
         allTAs.addAll(addedNewTAs);
-        newTAs.addAll(addedNewTAs);
       }
     } while (!branchNodes.isEmpty());
     return allTAs;
   }
 
-  private static class TheoremAppComparator implements Comparator {
+  /**
+   * This is a member class because it needs to see whether simlar theorems
+   * have been applied.
+   */
+  private class TheoremAppComparator implements Comparator {
 
+    // XXX: this needs to consider whether similar ones have been applied.
     public int compare(Object o1, Object o2) {
       TheoremApplication ta1 = (TheoremApplication) o1;
       TheoremApplication ta2 = (TheoremApplication) o2;
-      if (ta1.rank > ta2.rank)
+      // check for similar TheoremApplications that have already been applied
+      // and subtract for each similar application.
+      double ta1Rank = EpsilonToolkit.this.getSimilarityRanking(ta1);
+      double ta2Rank = EpsilonToolkit.this.getSimilarityRanking(ta2);
+      if (ta1Rank > ta2Rank)
         // I want the largest to come first
         return -1;
-      else if (ta1.rank == ta2.rank)
+      else if (ta1Rank == ta2Rank)
         return 0;
       else
         return 1;
@@ -140,17 +169,16 @@ public class EpsilonToolkit {
    * base to (unused?) formulas in the tableau.
    * @param tableau The Tableau to be looked through
    * @return true if an epsilon was applied
-   */
   @SuppressWarnings("empty-statement")
   public boolean applyOneEpsilon() {
-    Map<TableauNode, List<TheoremApplication>> leafToTAs =
-                                               createAllTheoremApps(this.tableau.
-        getRoot());
-    if (!leafToTAs.isEmpty())
-      return this.applyBestTheoremApp(leafToTAs);
-    return false;
+  Map<TableauNode, List<TheoremApplication>> leafToTAs =
+  createAllTheoremApps(this.tableau.
+  getRoot());
+  if (!leafToTAs.isEmpty())
+  return this.applyBestTheoremApp(leafToTAs);
+  return false;
   }
-
+   */
   /**
    * Apply an epsilon rule to ln(#of branches).
    */
@@ -168,7 +196,7 @@ public class EpsilonToolkit {
         Collections.sort(tas, new TheoremAppComparator());
         for (TheoremApplication ta : tas) {
           if (!this.hasBeenApplied(ta)) {
-            if (this.doTA(ta)) {
+            if (this.applyTheoremApplication(ta)) {
               // only increment i if a theorem is applied
               retVal = true;
               i++;
@@ -251,27 +279,39 @@ public class EpsilonToolkit {
    * null if none are created.
    */
   private static Collection<TheoremApplication> createTheoremApplications(
-      TableauNode current,
-      Collection<TheoremApplication> taList) {
+      TableauNode current, Collection<TheoremApplication> taList) {
     if (!current.getInitialMatches().isEmpty()) {
       Collection<TheoremApplication> retVal =
                                      new ArrayList<TheoremApplication>();
       for (InitialMatch match : current.getInitialMatches()) {
-        // first create a TA for match
+        // combine match with TAs from previous matches from this same node.
+        retVal.addAll(combineMatchWithTAs(match, retVal));
+        // combine match with TAs from nodes up above
+        retVal.addAll(combineMatchWithTAs(match, taList));
+        // create a TA for match
         retVal.add(new TheoremApplication(match));
-        // then combine match with existing TAs
-        for (TheoremApplication ta : taList) {
-          Substitution combo = Substitution.compatible(match.getSubstitution(),
-                                                       ta.getSubstitution());
-          if (combo != null) {
-            TheoremApplication newTA = ta.combine(match, combo);
-            retVal.add(newTA);
-          }
-        }
       }
       return retVal;
     }
     return null;
+  }
+
+  /**
+   * Attempts to combine <code>match</code> with each TheoremApplication in
+   * taList.
+   * @param match
+   * @param taList
+   * @return the combinations.
+   */
+  private static Collection<TheoremApplication> combineMatchWithTAs(InitialMatch match,
+                                                                    Collection<TheoremApplication> taList) {
+    ArrayList<TheoremApplication> retVal = new ArrayList<TheoremApplication>();
+    for (TheoremApplication ta : taList) {
+      TheoremApplication newTA = ta.combine(match);
+      if (newTA != null)
+        retVal.add(newTA);
+    }
+    return retVal;
   }
 
   /**
@@ -338,100 +378,29 @@ public class EpsilonToolkit {
       }
 
       if (sub != null) { // the unification was successful
-        // Get the set of KBSequents sequentFormula appears in
-        Iterator setIt = ((Set) tableauFormula.getBirthPlace().getTableau().
-            getTheory().getFormulaMap().get(sequentFormula)).iterator();
-        // TODO: doesn't this create more IMs than it should?
-        // for each sequent that the sequent formula appears in,
-        // create a new InitialMatch object
-        while (setIt.hasNext()) {
-          InitialMatch im =
-                       new InitialMatch(sub, tableauFormula, sequentFormula, (KBSequent) setIt.
-              next());
-          tableauFormula.getBirthPlace().addInitialMatch(im);
-
-          // take care of map-related stuff
-          HashMap sfsToIMs = (HashMap) this.sequentMap.get(currentSeq);
-          if (sfsToIMs == null) {
-            sfsToIMs = new HashMap();
-            this.sequentMap.put(currentSeq, sfsToIMs);
-          }
-          List imList = (List) sfsToIMs.get(sequentFormula);
-          if (imList == null) {
-            imList = new ArrayList();
-            sfsToIMs.put(sequentFormula, imList);
-          }
-          imList.add(im);
-          sfsToIMs.put(im.getSequentFormula(), imList);
+        InitialMatch im =
+                     new InitialMatch(sub, tableauFormula, sequentFormula,
+                                      currentSeq);
+        // add it to the node
+        tableauFormula.getBirthPlace().addInitialMatch(im);
+        // take care of map-related stuff
+        HashMap sfsToIMs = (HashMap) this.sequentMap.get(currentSeq);
+        if (sfsToIMs == null) {
+          sfsToIMs = new HashMap();
+          this.sequentMap.put(currentSeq, sfsToIMs);
         }
+        List imList = (List) sfsToIMs.get(sequentFormula);
+        if (imList == null) {
+          imList = new ArrayList();
+          sfsToIMs.put(sequentFormula, imList);
+        }
+        imList.add(im);
+        sfsToIMs.put(im.getSequentFormula(), imList);
       }
     }
   }
 
-  /**
-   * This recursive method extends a TheoremApplication as much as
-   * possible by trying to combine its substitution with the
-   * substitutions from InitialMatches from the same sequent.
-   *
-   * @param ta the TheoremApplication to extend
-   * @param entries a List of pairs mapping sequent formulas to lists
-   * of initial matches.
-  public final void extend(TheoremApplication ta,
-  List<Map.Entry<Formula, List<InitialMatch>>> entries) {
-
-  Substitution taSub = ta.getSubstitution();
-  Substitution currentSub = taSub;
-
-  int j = 0;
-  for (Map.Entry<Formula, List<InitialMatch>> pair : entries) {
-  //    while (index < entries.size()) {
-
-  //      Map.Entry<Formula, List<InitialMatch>> pair = entries.get(index);
-  Formula sf = pair.getKey();
-  j++;
-  assert !ta.contains(sf);
-
-  // list of initial matches using sequentFormula.
-  for (InitialMatch im : pair.getValue()) {
-  Substitution ims = im.getSubstitution();
-
-  // check to see if the InitialMatch is compatible
-  // with the current TheoremApplication
-  currentSub = Substitution.compatible(ims, currentSub);
-
-  if (currentSub != null) {  // compatible!
-  TheoremApplication newTA = ta.combine(im, currentSub);
-  List branchTAs;
-  if ((branchTAs = newTA.getLowestFormula().getBirthPlace().
-  getTheoremApplications()) != null
-  && branchTAs.contains(newTA)) {
-  return; // this theorem has already been applied
-  } else if (this.bestTA == null) {
-  this.bestTA = newTA;
-  } else if (this.bestTA.compareTo(newTA) < 0) {
-  this.bestTA = newTA;
-  }
-  this.extend(newTA, entries.subList(j, entries.size()));
-  } else  // not compatible!
-  currentSub = taSub;  // reset the currentSub
-  }
-  }
-  }
-   */
-  /**
-   * Applies a <code>TheoremApplication</code>
-   * @param ta The TheoremApplication to apply
-   * return true if it was applied.
-   */
-  private boolean doTA(final TheoremApplication ta) {
-
-    // get the lowest involved node
-    final TableauNode node = ta.getLowestFormula().getBirthPlace();
-
-    // tell the TA that it has been applied.
-    this.applied.put(ta, "");
-    node.addTheoremApplication(ta);
-
+  private boolean doTA(TheoremApplication ta, final TableauNode node) {
     // get the sequent's unused formulas
     final List<Formula> unusedPositives =
                         ta.getUnusedPositiveSeqFormulas();
@@ -559,6 +528,23 @@ public class EpsilonToolkit {
        */
     }
     return true;
+  }
+
+  /**
+   * Applies a <code>TheoremApplication</code> to the highest node where it
+   * applies and registers the TheoremApplication as applied.
+   * @param ta The TheoremApplication to apply return true if it was applied.
+   * @return true if the TheoremApplication is applied.
+   */
+  private boolean applyTheoremApplication(final TheoremApplication ta) {
+    TableauNode node = ta.getLowestFormula().getBirthPlace();
+    if (this.doTA(ta, node)) {
+      // tell the TA that it has been applied.
+      this.markApplied(ta);
+      node.addTheoremApplication(ta);
+      return true;
+    }
+    return false;
   }
 
   /**

@@ -1,0 +1,230 @@
+(def-target a (implies (or (a) (b)) (implies (a) (b)))); not a theorem
+
+(def-target a (implies (or (a) (b)) (or (c) (b)))); not a theorem
+;; 0.07 no
+
+(def-target a (forall ((x)) (implies (p x) (q x)))) ;not a theorem
+;; 0.07 no
+
+(def-target a (implies (and (for-some ((x)) (p x)) (for-some ((x)) (q x)))
+  (for-some ((y)) (and (p y) (q y)))))
+					;not a theorem
+;; 0.07 no
+
+(def-target a (implies (for-some ((x)) (p x)) (forall ((x)) (p x)))) ;not a theorem
+;; 0.07 no
+
+(def-target a (implies (implies (a) (or (b) (c))) (c))) ;not a theorem
+;; 0.07 no
+
+(def-target a (implies (a) (or (b) (c))))			;not a theorem
+;; 0.07 no
+
+(def-target a (for-some ((x)) (implies (and (implies (and (q (a)) (r (b)))
+					    (p x)) 
+					  (implies (and (q* (c)) (r* (d)))
+					    (p x)) (q x) (r (e)) 
+					    (q* x) (r* (e)) (s (a))
+					    (s (c)) (s (d))) 
+			      (and (p x) (s x))))) ;not a theorem
+;; 0.07 no
+;; 0.11 no
+
+(def-target a (implies (and (r (a)) (not (q (b))))            ;not a theorem
+         (for-some ((x)) (and (implies (p x) (q x)) (r x)))))
+;;0.07 no
+
+(def-target a (implies (and (for-some ((x)) (a x))
+              (for-some ((x)) (b x)) ;not a theorem
+              (implies (r) (for-some ((x)) (and (a x) (b x))))
+              (implies (and (p) (q)) (r)) )
+         (for-some ((x)) (and (implies (p) (a x)) (implies (q) (b x))))))
+;;0.07 no
+
+;;for checking detail.  not a theorem.
+(def-target a (implies
+ (and (implies (and (a) (b)) (c))
+      (implies (and (a1) (a2)) (a))
+      (implies (and (a11) (a12)) (a1))
+      (implies (truth) (a11))
+      (implies (truth) (a12))
+      (implies (truth) (a2))
+      (implies (and (b1) (b2)) (b))
+      (implies (truth) (b1))
+      (implies (and (e) (f)) (c)))
+ (c)))
+;; 0.07 no
+
+(def-target a (implies (and (implies (and (a) (b)) (c))
+	      (implies (truth) (a))) (c))) ;not a theorem
+;; 0.07 no
+
+(def-target a (implies (and (q a b) (r b)
+	      (forall ((y)) (implies (r y) (p (f y) y))))
+  (for-some ((x)) (for-some ((y)) (and (p x y) (q x y))))))
+					;not a theorem
+;; 0.07
+
+(def-target a (implies  (forall ((y)) (implies (implies (r b) (r y))
+				     (p (f y) y)))
+		(for-some ((x)) (for-some ((y)) (and (p x y) (implies (q a b)
+						       (q x y))))) ))
+					;not a theorem
+;; 0.07
+
+(def-target a (for-some ((x)) (and (< a x) (< x b))))    ;not a theorem
+;;0.07
+
+(def-target a (forall ((a) (b))			; not a theorem
+		 (implies (q a)
+		   (for-some ((x)) (and (implies (p x) (p a))
+					(implies (p x) (p b))
+					(q x))))))
+;; 0.11 no (runs forever)
+;; set0.03 yes
+;; relset0.05 no
+
+(def-target a (implies (and (forall ((x) (y) (z))	; not a theorem
+			       (implies (and (r x y) (r y z)) (r x z)))
+			     (forall ((x)) (for-some ((y)) (r x y))))
+		 (for-some ((x)) (r x x))))
+;; 0.06 no
+;; with interaction: yes
+;; 0.07 no
+;; with interaction: yes
+;; 0.08 yes (It would finish sooner if we unified.)
+;; 0.11 no
+;; set0.04 yes
+
+(def-target a (implies (or (r) (p)) (or (and (p) (q)) (r)))) ; not a theorem
+;;; this tests to make sure condense is sound.
+
+(def-target a (forall ((a) (b) (c) (d) (e) (f) (z) (y) (x))
+		 (implies (and (p a b z) (q a b d y) (r a b f) (r e c d))
+		   (and (p x y z) (q a y z c) (r x y z))))) ; not a theorem
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (implies (for-some ((x)) (p x)) (forall ((z)) (p z))))
+					; not a theorem
+;; 0.07 no
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (implies 
+		   (forall ((x)) (for-some ((y)) (a x y)))
+		 (for-some ((z)) (a z z))))		; not a theorem
+;; 0.07 no
+;; 0.08 yes
+;; (shows need to check if a unifier satisfies old goals,
+;; or, as Bledsoe does, apply the old unifier first then
+;; try to get a new one with which the old one will compose.)
+;; 0.11 no
+
+(def-target a (implies (forall ((x)) (for-some ((y)) (p x y)))
+		 (for-some ((y)) (forall ((x)) (p x y))))) ; not a theorem
+;; 0.06 no
+;; 0.08 yes
+;; (this one shows the need for some sort of dependency tracking.)
+;; 0.11 no
+
+(def-target a (forall ((a) (b) (c) (d) (e) (f) (z) (y) (x))
+		 (implies (and (p a b z) (q a b d y) (r a b f) (r e c d))
+		   (and (p x y z) (q a y z c) (r x y z))))) ; not a theorem
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (implies				; not a theorem
+		   (forall ((x)) (for-some ((y)) (a x y)))
+		 (for-some ((z)) (a z z))))
+;; 0.07 no
+;; 0.08 yes
+;; (shows need to check if a unifier satisfies old goals,
+;; or, as Bledsoe does, apply the old unifier first then
+;; try to get a new one with which the old one will compose.)
+;; 0.11 no
+
+(def-target a (implies (forall ((x)) (or (p x) (q x))) ; not a theorem
+		 (or (forall ((x)) (p x)) (forall ((x)) (q x)))))
+;; 0.06 no
+;; 0.08 yes 
+;; (the problem is that the unifier doesn't keep track
+;; of what has been unified with what.)
+;; (shows need to check if a unifier satisfies old goals,
+;; or, as Bledsoe does, apply the old unifier first then
+;; try to get a new one with which the old one will compose.)
+;; 0.11 no (halts)
+
+(def-target a (implies (and (for-some ((x)) (p x)) (for-some ((x)) (q x)))
+		 (for-some ((x)) (and (p x) (q x)))))	; not a theorem
+;; 0.06 no
+;; 0.08 yes (I think I need to keep track of dependencies.)
+;; (shows need to check if a unifier satisfies old goals,
+;; or, as Bledsoe does, apply the old unifier first then
+;; try to get a new one with which the old one will compose.)
+;; 0.11 no (halts)
+
+(def-target a (implies (forall ((x)) (for-some ((y)) (p x y))) ; not a theorem
+		 (for-some ((y)) (forall ((x)) (p x y)))))
+;; 0.06 no
+;; 0.08 yes
+;; (this one shows the need for some sort of dependency tracking.)
+;; 0.11 no (halts)
+
+(def-target a (for-some ((x)) (p x)))			; not a theorem
+;; 0.06 no
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (not (for-some ((x)) (p x))))		; not a theorem
+;; 0.06 no
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (forall ((x)) (p x)))			; not a theorem
+;; 0.06 no
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (not (forall ((x)) (p x))))		; not a theorem
+;; 0.06 no
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (forall ((x)) (implies (implies (p x) (q x)) ; not a theorem
+			       (implies (forall ((x2)) (p x2))
+				 (forall ((x3)) (q x3))))))
+;; 0.06 no 
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (and (forall ((x)) (for-some ((y)) (r x y)))
+		    (not (for-some ((x)) (r x x)))	; not a theorem
+		    (forall ((x) (y) (z)) (implies (and (r x y) (r y z))
+					    (r x z)))))
+;; 0.06 no
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (implies (for-some ((x) (y)) (p x y))
+		 (for-some ((x)) (p x x)))) ; not a theorem
+;; 0.06 no
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (implies (for-some ((x)) (p x)) (for-some ((z)) (p x))))
+					; not a theorem
+;; 0.07 does not parse.
+;; 0.08 does not parse.
+
+(def-target a (implies (for-some ((x)) (p x)) (forall ((z)) (p z))))
+					; not a theorem
+;; 0.07 no
+;; 0.08 no
+;; 0.11 no (halts)
+
+(def-target a (forall ((x)) (implies (for-some ((y)) (p y))
+			       (for-some ((z)) (p x))))) ; not a theorem
+;; 0.08 no
+;; 0.11 no
+

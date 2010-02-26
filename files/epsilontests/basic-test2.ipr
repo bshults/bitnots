@@ -1,0 +1,28 @@
+;; A simple test file to make sure that the epsilon rule is working
+;; correctly.
+
+(def-theorem useless (is-part-of (s) (c))
+  (string "s is a part of c (useless)")
+  )
+
+(def-theorem useless2 (is-part-of (a) (v))
+  (string "a is a part of v (useless)")
+  )
+
+(def-theorem first (is-part-of (a) (b))
+  (string "a is a part of b")
+  )
+
+(def-theorem second (is-part-of (b) (c))
+  (string "b is a part of c")
+  )
+
+(def-theorem transitivity
+  (forall ((x) (y) (z))
+    (implies (and (is-part-of x y) 
+                  (is-part-of y z)) 
+      (is-part-of x z)))
+ (string "the definition of transitivity")
+  )
+
+(def-target the-target (is-part-of (a) (c)))

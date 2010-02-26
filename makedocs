@@ -1,0 +1,23 @@
+rm -r doctemp
+mkdir doctemp
+cd src
+javadoc -source 1.4 -private -verbose -author -version -windowtitle "Bitnots" -doctitle "Bitnots" -footer "(C) Benjamin Shults" -header "(C) Benjamin Shults" -d ../doctemp -use -doctitle "Bitnots" -link "http://java.sun.com/j2se/1.5.0/docs/api" -sourcepath . bitnots.expressions bitnots.util bitnots.parse bitnots.tableaux bitnots.gui bitnots.equality bitnots.eventthreads bitnots.theories bitnots.prover
+cd ../doctemp
+if test -f index.html
+then
+  cd ..
+  rm -r doc
+  mv doctemp doc
+  sleep 1000
+  cd doc
+  tar cf ../CS2docs.tar .
+  cd ..
+  rm -r ~/public_html/IPR/api
+  mkdir ~/public_html/IPR/api
+  tar xf CS2docs.tar -C ~/public_html/IPR/api
+  rm CS2docs.tar.gz
+  rm CS2docs.tgz
+  gzip CS2docs.tar
+  cd
+  ./perms
+fi 

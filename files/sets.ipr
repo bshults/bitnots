@@ -1,0 +1,34 @@
+;;; Elementary Algebra of Classes
+
+(setq *format-only* t)
+
+(def-term (the-intersection-of a b)
+  (the-class-of-all (x) (and (a-member-of x a) (a-member-of x b)))
+  (format "the intersection of ~a and ~a")
+  )
+
+(def-term (the-union-of a b)
+  (the-class-of-all (x) (or (a-member-of x a) (a-member-of x b)))
+  (format "~a U ~a")
+  )
+
+(setq *format-only* nil)
+
+(def-theorem intersection
+  (iff (a-member-of x (the-intersection-of a b))
+       (and (a-member-of x a) (a-member-of x b)))
+  (string "the definition of intersection")
+  )
+
+(def-theorem union
+  (iff (a-member-of x (the-union-of a b))
+       (or (a-member-of x a) (a-member-of x b)))
+  (string "the definition of union")
+  )
+
+(def-theorem kelley-a-4a		; perfect proof found, no search.
+  (forall ((x) (y) (z))
+    (iff (a-member-of z (the-union-of x y))
+	 (or (a-member-of z x) (a-member-of z y))))
+)
+

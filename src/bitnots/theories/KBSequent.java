@@ -52,7 +52,7 @@ public class KBSequent {
    * Gets the positive formulas.
    * @return The list of positive formulas.
    */
-  public List getPositives() {
+  public List<Formula> getPositives() {
     return Collections.unmodifiableList(this.positiveFormulas);
   }
 
@@ -60,7 +60,7 @@ public class KBSequent {
    * Gets the negative formulas.
    * @return The list of negative formulas.
    */
-  public List getNegatives() {
+  public List<Formula> getNegatives() {
     return Collections.unmodifiableList(this.negativeFormulas);
   }
 

@@ -1,0 +1,69 @@
+(implies (forall ((x)) (= x (f x)))
+  (forall ((x)) (= (f x) (f (f (f (f (f x))))))))
+;; 0.13 yes (only with interaction.)
+;; relset0.06 yes (only with interaction.)
+
+(implies (forall ((x)) (= x (f x)))
+  (forall ((x)) (= x (f (f (f (f x)))))))
+
+(forall ((x)) (implies (= x (f x))
+		(= (f x) (f (f (f (f (f x))))))))
+;; 0.13 yes
+
+(forall ((a) (b) (c))
+  (implies (forall ((x))
+	     (and (= (g (f x)) c)
+		  (= (f x) (g x))))
+    (= (g (g a)) (g (f b)))))
+
+(forall ((a) (b) (c))
+  (implies (forall ((x))
+	     (and (= (g (f x)) c)
+		  (or (= (f x) (g x))
+		      (forall ((y)) (and (= y c) (not (= y c)))))))
+    (= (g (g a)) (g (f b)))))
+;;; this shows the need for applying n-unify to equalities in the goals
+;;; from outside the unifier.  Fixed.
+;; settheo0.01 with interaction: bind x0 to (_a) asap. C=1
+
+(forall ((e))				; testing
+  (implies
+      (and ;; (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+       (forall ((x) (y) (z))
+	 (= (* x (* y z)) (* (* x y) z)))
+       (forall ((w)) (= (* w e) w))
+       (forall ((s)) (= (* s (i s)) e)))
+    (forall ((a)) (= (* (i a) a) e))))
+;;;  proof:
+;;;                                 (e) =
+;;;                 (* (i a) (i (i a))) =
+;;;         (* (* (i a) (e)) (i (i a))) =
+;;;         (* (i a) (* (e) (i (i a)))) =
+;;; (* (i a) (* (* a (i a)) (i (i a)))) = 
+;;; (* (i a) (* a (* (i a) (i (i a))))) = (* (i a) (* a (e)))
+;;;                                     = (* (i a) a)
+
+(forall ((e))				; testing
+  (implies
+      (and ;; (forall ((x) (y)) (for-some ((z)) (= (* x y) z)))
+       (forall ((x) (y) (z))
+	 (= (* x (* y z)) (* (* x y) z)))
+       (forall ((w)) (= (* w e) w))
+       (forall ((s)) (= (* s (i s)) e)))
+    (forall ((a)) (= (* e a) a))))
+;;; Now the proof of this is easier if I know the previous theorem.
+;;; So what do I want it to mean by the term "know the previous theorem"?
+
+(forall ((e))
+  (implies (forall ((x) (y) (z))
+	     (and (= (* x (* y z)) (* (* x y) z))
+		  (= (* x e) x)
+		  (= (* x (i x)) e)))
+    (forall ((a)) (= (* e a) a))))
+
+;;; proof:
+;;; (* a (* (i a) a)) = (* (* a (i a)) a)
+;;;                     (* e a)
+;;; 
+;;; 
+;;; 

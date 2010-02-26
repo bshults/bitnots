@@ -1,0 +1,123 @@
+;(implies (p) (p))
+
+;(or (p) (not (p)))
+
+;(not (and (p) (not (p))))
+
+;(implies (a) (implies (b) (implies (b) (a))))
+
+;(iff (p) (p))
+
+; not a taut
+;; (implies (a) (and (b) (c)))
+
+(implies (implies (and (a) (b)) (or (c) (d)))
+         (iff (and (implies (and (or (c) (d)) (e)) (f))
+                   (implies (e) (or (and (a) (b)) (f))))
+              (implies (e) (f))))
+
+;; (and (implies (p) (p)) (or (q) (not (q))))
+
+;; (implies (implies (and (a) (b) (c)) (or (d) (e) (f)))
+;;          (implies (and (a) (b) (c) (r)) (or (d) (e) (f) (s))))
+
+;; (implies (and (a) (b)) (or (a) (c)))
+
+;; (or (implies (a) (b)) (implies (b) (a)))
+
+;; (implies (and (implies (a) (b)) (implies (b) (a)))
+;;          (and (implies (a) (b)) (implies (b) (a))))
+;; (and (implies (not (and (implies (a) (b)) (implies (b) (a))))
+;;               (and (implies (not (a)) (b)) (implies (b) (not (a)))))
+;;      (implies (and (implies (not (a)) (b)) (implies (b) (not (a))))
+;;               (not (and (implies (a) (b)) (implies (b) (a))))))
+
+;; (implies (implies (a) (b)) (implies (implies (b) (c)) (implies (a) (c))))
+
+;; (and (implies (implies (a) (b)) (or (not (a)) (b)))
+;;      (implies (or (not (a)) (b)) (implies (a) (b))))
+
+;; (and (implies (implies (a) (b)) (not (and (a) (not (b)))))
+;;      (implies (not (and (a) (not (b)))) (implies (a) (b))))
+
+;; (iff (implies (a) (implies (b) (c))) (implies (and (a) (b)) (c)))
+
+;; (iff (and (a) (or (b) (c))) (or (and (a) (b)) (and (a) (c))))
+
+;; (iff (or (a) (and (b) (c))) (and (or (a) (b)) (or (a) (c))))
+
+;; (iff (or (and (a) (b)) (not (b))) (or (a) (not (b))))
+
+;; (iff (and (or (a) (b)) (not (b))) (and (a) (not (b))))
+
+;; (iff (implies (a) (b)) (implies (not (b)) (not (a))))
+
+;; (iff (iff (a) (b)) (or (and (a) (b)) (and (not (a)) (not (b)))))
+
+;; (iff (not (or (a) (b))) (and (not (a)) (not (b))))
+
+;; (iff (not (and (a) (b))) (or (not (a)) (not (b))))
+
+;; (iff (or (a) (and (a) (b))) (a))
+
+;; (iff (and (a) (or (a) (b))) (a))
+
+;; (iff (and (a) (b)) (and (b) (a)))
+
+;; (iff (or (a) (b)) (or (b) (a)))
+
+;; (iff (and (and (a) (b)) (c)) (and (a) (and (b) (c))))
+
+;; (iff (or (or (a) (b)) (c)) (or (a) (or (b) (c))))
+
+;; (iff (not (implies (a) (b))) (and (a) (not (b))))
+
+;; (implies (not (or (p) (q))) (not (q)))
+
+;; (implies (not (p)) (not (and (p) (q))))
+
+;; (and (implies (p) (p)) (implies (and (q) (r)) (r)))
+
+;; (implies (g) (and (implies (j) (j)) (g)))
+
+;; (implies (q) (implies (p) (q)))
+
+;; (implies (and (implies (p) (q)) (implies (q) (r))) (implies (p) (r)))
+
+;; (implies (and (implies (p) (q)) (implies (q) (r)))
+;;          (implies (p) (and (q) (r))))
+
+;; (implies (and (and (implies (p) (r)) (implies (q) (r))) (or (q) (p))) (r))
+
+;; (implies (not (and (p) (q))) (or (not (p)) (not (q))))
+
+;; (implies (not (or (p) (q))) (and (not (p)) (not (q))))
+
+;; (implies (or (not (p)) (not (q))) (not (and (p) (q))))
+
+;; (implies (implies (a) (not (b))) (implies (b) (not (a))))
+
+;; (implies (implies (implies (a) (b)) (a)) (a))
+
+;; (implies (and (implies (b) (implies (b) (a)))
+;;               (implies (implies (b) (a)) (b)))
+;;          (a))
+
+;; (implies (iff (a) (or (not (b)) (c))) (implies (not (a)) (b)))
+
+;; (implies (and (implies (a) (or (not (b)) (c)))
+;;               (implies (or (not (b)) (c)) (a)))
+;;          (implies (not (a)) (b)))
+
+;; (or (p) (not (p)))
+
+;; (and (or (p) (not (p))) (implies (q) (q)))
+
+;; (iff (implies (and (p) (q)) (and (r) (s)))
+;;      (and (implies (and (p) (q)) (r))
+;;           (implies (and (p) (q) (r)) (s))))
+
+;; ; not a taut
+;; ;(implies (and (implies (a) (c)) (implies (b) (d)))
+;; ;         (implies (implies (a) (b)) (implies (c) (d))))
+

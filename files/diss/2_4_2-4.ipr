@@ -1,0 +1,72 @@
+;; (format-only true)
+
+;; (def-predicate (a-subset-of a b)
+;;   ()
+;;   (format "~a is a subset of ~a"))
+
+;; (def-predicate (a-vector-space v)
+;;   ()
+;;   (format "~a is a vector space"))
+
+;; (def-term (union a b)
+;;   ()
+;;   (format "the union of ~a and ~a"))
+
+;; (def-predicate (a-vector-subspace-of a b)
+;;   ()
+;;   (format "~a is a subspace of ~a"))
+
+;; (def-term (v-space-to-class v)
+;;   ()
+;;   (format "~a"))
+
+;; (def-term (the-space v + * z)
+;;   ()
+;;   (format "the vector space ~a with ~a, ~a, and ~a"))
+
+;; (def-predicate (lin-ind-subset e v)
+;;   ()
+;;   (format "~a is a linearly independent subset of ~a"))
+
+;; (def-predicate (basis-of b v)
+;;   (and (lin-ind-subset b v)
+;;        (forall ((a)) (implies (and (a-member-of a (v-space-to-class v))
+;; 				   (not (a-member-of a b)))
+;; 		       (not (lin-ind-subset (union b (the-singleton a)) v)))))
+;;   (format "~a is a basis of ~a")
+;; ;;;  (string "the defintion of a basis")
+;;   )
+
+;;(format-only false)
+
+(def-theorem basis-of
+  (implies (basis-of b v) (lin-ind-subset b v))
+  (string "the defintion of a basis"))
+
+(def-theorem bg-2-2-5
+  (implies (and (lin-ind-subset s v) (basis-of t v))
+    (for-some ((u)) (and (a-subset-of u t) (basis-of (union s u) v))))
+  (string "Proposition 2.2.5 from Bishop and Goldberg")
+  )
+
+(def-theorem bg-remark-63-a
+  (implies (a-vector-space a) (for-some ((b)) (basis-of b a)))
+  (string "the first Remark on page 63 of Bishop and Goldberg"))
+
+(def-theorem bg-2-4-a
+  (implies (a-vector-subspace-of a b) (a-vector-space a))
+  (string "the definition of a subspace"))
+
+(def-theorem BG-2-4-2
+  (implies (a-vector-subspace-of (the-space w + * z)
+				 (the-space v + * z))
+    (iff (lin-ind-subset e (the-space w + * z))
+	 (lin-ind-subset e (the-space v + * z))))
+  (string "Proposition 2.4.2 in Bishop and Goldberg"))
+
+(def-theorem BG-2-4-3
+  (implies (and (a-vector-subspace-of (the-space w + * z) (the-space v + * z))
+                (a-vector-space (the-space v + * z)))
+    (for-some ((e) (f)) (and (basis-of (union e f) (the-space v + * z))
+                             (basis-of e (the-space w + * z))))))
+

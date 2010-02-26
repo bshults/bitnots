@@ -1,0 +1,872 @@
+;;; Schubert's steamroller:
+
+
+(implies (and (forall ((x)) (implies (wolf x) (animal x)))
+	      (forall ((x)) (implies (fox x) (animal x)))
+	      (forall ((x)) (implies (bird x) (animal x)))
+	      (forall ((x)) (implies (catepillar x) (animal x)))
+	      (forall ((x)) (implies (snail x) (animal x)))
+	      (for-some ((wolf)) (wolf wolf))
+	      (for-some ((fox)) (fox fox))
+	      (for-some ((bird)) (bird bird))
+	      (for-some ((catepillar)) (catepillar catepillar))
+	      (for-some ((snail)) (snail snail))
+	      (forall ((x)) (implies (grain x) (plant x)))
+	      (for-some ((grain)) (grain grain))
+	      (forall ((x)) 
+		(implies (animal x) 
+		  (or (forall ((p)) (implies (plant p) (eats x p)))
+		      (forall ((a)) (implies (and (animal a) (smaller-than a x)
+						  (for-some ((p))
+						    (and (plant p)
+							 (eats a p))))
+				      (eats x a))))))
+	      (forall ((b) (c) (s) (f) (w))
+		(implies (and (bird b) (catepillar c) (snail s) (wolf w)
+			      (fox f))
+		  (and (smaller-than c b) (smaller-than s b)
+		       (smaller-than b f) (smaller-than f w))))
+	      (forall ((w) (f) (g))
+		(implies (and (wolf w) (fox f) (grain g))
+		  (and (not (eats w f)) (not (eats w g)))))
+	      (forall ((b) (c) (s))
+		(implies (and (bird b) (catepillar c) (snail s))
+		  (and (eats b c) (not (eats b s)))))
+	      (forall ((c))
+		(implies (catepillar c)
+		  (for-some ((p)) (and (plant p) (eats c p)))))
+	      (forall ((s))
+		(implies (snail s)
+		  (for-some ((p)) (and (plant p) (eats s p))))))
+  (for-some ((a)) (and (animal a) (for-some ((ag) (g))
+				    (and (grain g) (animal ag) (eats ag g)
+					 (eats a ag))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Pelletier
+;;; JAR v.2 n.2 1986
+;;; Seventy-Five Problems for Testing Automatic Theorem Provers
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Propositional Logic
+
+;;; 1
+
+(iff (implies (p) (q)) (implies (not (q)) (not (p))))
+
+;;; 2
+
+(iff (not (not (p))) (p))
+
+;;; 3
+
+(implies (not (implies (p) (q))) (implies (q) (p)))
+
+;;; 4
+
+(iff (implies (not (p)) (q)) (implies (not (q)) (p)))
+
+;;; 5
+
+(implies (implies (or (p) (q)) (or (p) (r))) (or (p) (implies (q) (r))))
+
+;;; 6
+
+(or (p) (not (p)))
+
+;;; 7
+
+(or (p) (not (not (not (p)))))
+
+;;; 8
+
+(implies (implies (implies (p) (q)) (p)) (p))
+
+;;; 9
+
+(implies (and (or (p) (q)) (or (not (p)) (q)) (or (p) (not (q))))
+  (not (or (not (p)) (not (q)))))
+
+;;; 10
+
+(implies (and (implies (q) (r))
+	      (implies (r) (and (p) (q)))
+	      (implies (p) (or (q) (r))))
+  (iff (p) (q)))
+
+;;; 11
+
+(iff (p) (p))
+
+;;; 12
+
+(iff (iff (iff (p) (q)) (r)) (iff (p) (iff (q) (r))))
+
+;;; 13
+
+(iff (or (p) (and (q) (r))) (and (or (p) (q)) (or (p) (r))))
+
+;;; 14
+
+(iff (iff (p) (q)) (and (or (q) (not (p))) (or (not (q)) (p))))
+
+;;; 15
+
+(iff (implies (p) (q)) (or (not (p)) (q)))
+
+;;; 16
+
+(or (implies (p) (q)) (implies (q) (p)))
+
+;;; 17
+
+(iff (implies (and (p) (implies (q) (r)))
+       (s))
+     (and (or (not (p)) (q) (s))
+	  (or (not (p)) (not (r)) (s))))
+
+;;; Monadic Predicate Logic
+
+;;; 18
+
+(for-some ((y)) (forall ((x)) (implies (f y) (f x))))
+
+;;; 19
+
+(for-some ((x)) (forall ((y) (z))	; mixed finds a shorter proof!
+		  (implies (implies (p y) (q x))
+		    (implies (p x) (q z)))))
+
+;;; 20
+
+(implies (forall ((x) (y))
+	   (for-some ((z))
+	     (forall ((w))
+	       (implies (and (p x) (q y))
+		 (and (r z) (s w))))))
+  (for-some ((x) (y))
+    (implies (and (p x) (q y))
+      (for-some ((z)) (r z)))))
+
+;;; 21
+
+(implies (and (for-some ((x)) (implies (p) (f x)))
+	      (for-some ((x)) (implies (f x) (p))))
+  (for-some ((x)) (iff (p) (f x))))
+
+;;; 22
+
+(implies (forall ((x)) (iff (p) (f x))) (iff (p) (forall ((x)) (f x))))
+
+;;; 23
+
+(iff (forall ((x)) (or (p) (f x))) (or (p) (forall ((x)) (f x))))
+
+;;; 24
+
+
+(implies (and (not (for-some ((x)) (and (s x) (q x))))
+	      (forall ((x)) (implies (p x) (or (q x) (r x))))
+	      (implies (not (for-some ((x)) (p x))) (for-some ((x)) (q x)))
+	      (forall ((x)) (implies (or (q x) (r x)) (s x))))
+  (for-some ((x)) (and (p x) (r x))))
+
+;;; 25
+
+(implies (and (for-some ((x)) (p x))
+	      (forall ((x)) (implies (f x) (and (not (g x)) (r x))))
+	      (forall ((x)) (implies (p x) (and (g x) (f x))))
+	      (or (forall ((x)) (implies (p x) (q x)))
+		  (for-some ((x)) (and (p x) (r x)))))
+  (for-some ((x)) (and (q x) (p x))))
+
+;;; 26
+
+(implies (and (iff (for-some ((x)) (p x)) (for-some ((x)) (q x)))
+	      (forall ((x) (y)) (implies (and (p x) (q y))
+				  (iff (r x) (s y)))))
+  (iff (forall ((x)) (implies (p x) (r x)))
+       (forall ((x)) (implies (q x) (s x)))))
+
+;;; 27
+
+
+(implies (and (for-some ((x)) (and (f x) (not (g x))))
+	      (forall ((x)) (implies (f x) (h x)))
+	      (forall ((x)) (implies (and (j x) (i x)) (f x)))
+	      (implies (for-some ((x)) (and (h x) (not (g x))))
+		(forall ((x)) (implies (i x) (not (h x))))))
+  (forall ((x)) (implies (j x) (not (i x)))))
+
+;;; 28
+
+(implies (and (forall ((x)) (implies (p x) (forall ((x)) (q x))))
+	      (implies (forall ((x)) (or (q x) (r x)))
+		(for-some ((x)) (and (q x) (s x))))
+	      (implies (for-some ((x)) (s x))
+		(forall ((x)) (implies (f x) (g x)))))
+  (forall ((x)) (implies (and (p x) (f x)) (g x))))
+
+;;; 29
+
+(implies (and (for-some ((x)) (f x))
+	      (for-some ((x)) (g x)))
+  (iff (and (forall ((x)) (implies (f x) (h x)))
+	    (forall ((x)) (implies (g x) (j x))))
+       (forall ((x) (y))
+	 (implies (and (f x) (g y)) (and (h x) (j y))))))
+
+;;; 30
+
+(implies (and (forall ((x)) (implies (or (f x) (g x)) (not (h x))))
+	      (forall ((x)) (implies (implies (g x) (not (i x)))
+			      (and (f x) (h x)))))
+  (forall ((x)) (i x)))
+
+;;; 31
+
+(implies (and (not (for-some ((x)) (and (f x) (or (g x) (h x)))))
+	      (for-some ((x)) (and (i x) (f x)))
+	      (forall ((x)) (implies (not (h x)) (j x))))
+  (for-some ((x)) (and (i x) (j x))))
+
+;;; 32
+
+(implies (and (forall ((x)) (implies (and (f x) (or (g x) (h x)))
+			      (i x)))
+	      (forall ((x)) (implies (and (i x) (h x)) (j x)))
+	      (forall ((x)) (implies (k x) (h x))))
+  (forall ((x)) (implies (and (f x) (k x)) (j x))))
+
+;;; 33
+
+(forall ((a) (b) (c))
+  (iff (forall ((x)) (implies (and (p a) (implies (p x) (p b)))
+		       (p c)))
+       (and (forall ((x)) (or (not (p a)) (p x) (p c)))
+	    (or (not (p a)) (not (p b)) (p c)))))
+
+;;; 34
+
+(iff (iff (for-some ((x)) (forall ((y)) (iff (p x) (p y))))
+	  (iff (for-some ((x)) (q x)) (forall ((y)) (q y))))
+     (iff (for-some ((x)) (forall ((y)) (iff (q x) (q y))))
+	  (iff (for-some ((x)) (p x))
+	       (forall ((y)) (p y)))))
+;; 22.3s relset0.04
+;; we are still getting cycles.  Is it worth it to look for them?
+;; 112 branches
+;; 581 nodes (387 nodes after collapse relset0.04)
+;; 3.6 sec relset0.04 2-28-94 with no unecessary unifying.
+;; 56 branches
+;; 191 nodes
+;; 11.43 sec relset0.04 3-1-94
+;; 269 nodes
+;; 70 branches
+;; 6.49 sec relset0.05 3-7-94
+;; 269 nodes
+;; 70 branches
+;; 6.3 in delete repeats mode
+;; 3.29 sec in delete mode relset0.05 3-15-94
+;; 217 nodes
+;; 46 branches
+;; 2.8 sec in keep repeats mode relset0.05 3-14-94
+;; 3.49s in relset0.06
+;; 46 branches
+;; 217 nodes
+
+;;; Full Predicate Logic
+
+;;; 35
+
+(for-some ((x) (y))
+  (implies (p x y) (forall ((x) (y)) (p x y))))
+
+;;; 36
+
+(implies (and (forall ((x)) (for-some ((y)) (f x y)))
+	      (forall ((x)) (for-some ((y)) (g x y)))
+	      (forall ((x) (y))
+		(implies (or (f x y) (g x y))
+		  (forall ((z))
+		    (implies (or (f y z) (g y z)) (h x z))))))
+  (forall ((x)) (for-some ((y)) (h x y))))
+
+;;; 37
+
+(implies (and (forall ((z))
+		(for-some ((w))
+		  (forall ((x))
+		    (for-some ((y))
+		      (and (implies (p x z) (p y w))
+			   (p y z)
+			   (implies (p y w) (for-some ((u)) (q u w))))))))
+	      (forall ((x) (z))
+		(implies (not (p x z)) (for-some ((y)) (q y z))))
+	      (implies (for-some ((x) (y)) (q x y))
+		(forall ((x)) (r x x))))
+  (forall ((x)) (for-some ((y)) (r x y))))
+
+;;; 38
+
+(forall ((a))
+  (iff (forall ((x))
+	 (implies (and (p a) (implies (p x)
+			       (for-some ((y)) (and (p y) (r x y)))))
+	   (for-some ((z) (w)) (and (p z) (r x w) (r w z)))))
+       (forall ((x))
+	 (and (or (not (p a)) (p x) (for-some ((z) (w))
+				      (and (p z) (r x w) (r w z))))
+	      (or (not (p a)) (not (for-some ((y)) (and (p y) (r x y))))
+		  (for-some ((z) (w))
+		    (and (p z) (r x w) (r w z))))))))
+;; 14 branches
+;; 68 nodes (53 after collapse)
+;; .39 sec
+
+;;; 39
+
+(not (for-some ((x)) (forall ((y))	; not a theorem
+		       (iff (a-member-of y x) (a-member-of y y)))))
+
+;;; 40
+
+(implies (for-some ((y))
+	   (forall ((x)) (iff (a-member-of x y) (a-member-of x x))))
+  (not (forall ((x))
+	 (for-some ((y))
+	   (forall ((z)) (iff (a-member-of z y) (not (a-member-of z x))))))))
+;; relset0.05
+;; .07 sec 
+
+;;; 41
+
+(implies (forall ((z))
+	   (for-some ((y))
+	     (forall ((x))
+	       (iff (a-member-of x y) (and (a-member-of x z)
+					   (not (a-member-of x x)))))))
+  (not (for-some ((z)) (forall ((x)) (a-member-of x z)))))
+
+;;; 42
+
+(not (for-some ((y)) (forall ((x)) (iff (a-member-of x y)
+					(not (for-some ((z))
+					       (and (a-member-of x z) 
+						    (a-member-of z x))))))))
+
+;;; 43
+
+(implies (forall ((x) (y))
+	   (iff (eq x y) (forall ((z))
+			   (iff (a-member-of z x) (a-member-of z y)))))
+  (forall ((x) (y))
+    (iff (eq x y) (eq y x))))
+;; relset0.05
+;; .5 sec
+
+;;; 44
+
+(implies (and (forall ((x)) (implies (f x) 
+			      (and (for-some ((y))
+				     (and (g y) (h x y)))
+				   (for-some ((y))
+				     (and (g y) (not (h x y)))))))
+	      (for-some ((x)) (and (j x) (forall ((y))
+					   (implies (g y) (h x y))))))
+  (for-some ((x)) (and (j x) (not (f x)))))
+
+;;; 45
+
+(implies (and (forall ((x)) (and (f x) (implies (forall ((y))
+						  (implies (and (g y) (h x y))
+						    (j x y)))
+					 (forall ((y))
+					   (implies (and (g y) (h x y))
+					     (k y))))))
+	      (not (for-some ((y)) (and (l y) (k y))))
+	      (for-some ((x))
+		(and (f x) (forall ((y))
+			     (implies (h x y) (l y)))
+		     (forall ((y)) (implies (and (g y) (h x y)) (j x y))))))
+  (for-some ((x)) (and (f x) (not (for-some ((y)) (and (g y) (h x y)))))))
+
+;;; 46
+
+(implies (and (forall ((x)) (implies (and (f x) (forall ((y))
+						  (implies (and (f y)
+								(h y x))
+						    (g y))))
+			      (g x)))	; no can do with c=8
+	      (implies (for-some ((x)) (and (f x) (not (g x))))
+		(for-some ((x)) (and (f x) (not (g x)) 
+				     (forall ((y))
+				       (implies (and (f y) (not (g y)))
+					 (j x y))))))
+	      (forall ((x) (y))
+		(implies (and (f x) (f y) (h x y)) (not (j y x)))))
+  (forall ((x)) (implies (f x) (g x))))
+
+;; 47 Schubert's Steamroller
+
+(implies (and (forall ((x)) (implies (wolf x) (animal x)))
+	      (forall ((x)) (implies (fox x) (animal x)))
+	      (forall ((x)) (implies (bird x) (animal x)))
+	      (forall ((x)) (implies (catepillar x) (animal x)))
+	      (forall ((x)) (implies (snail x) (animal x)))
+	      (for-some ((wolf)) (wolf wolf))
+	      (for-some ((fox)) (fox fox))
+	      (for-some ((bird)) (bird bird))
+	      (for-some ((catepillar)) (catepillar catepillar))
+	      (for-some ((snail)) (snail snail))
+	      (forall ((x)) (implies (grain x) (plant x)))
+	      (for-some ((grain)) (grain grain))
+	      (forall ((x)) 
+		(implies (animal x) 
+		  (or (forall ((p)) (implies (plant p) (eats x p)))
+		      (forall ((a)) (implies (and (animal a) (smaller-than a x)
+						  (for-some ((p))
+						    (and (plant p)
+							 (eats a p))))
+				      (eats x a))))))
+	      (forall ((b) (c) (s) (f) (w))
+		(implies (and (bird b) (catepillar c) (snail s) (wolf w)
+			      (fox f))
+		  (and (smaller-than c b) (smaller-than s b)
+		       (smaller-than b f) (smaller-than f w))))
+	      (forall ((w) (f) (g))
+		(implies (and (wolf w) (fox f) (grain g))
+		  (and (not (eats w f)) (not (eats w g)))))
+	      (forall ((b) (c) (s))
+		(implies (and (bird b) (catepillar c) (snail s))
+		  (and (eats b c) (not (eats b s)))))
+	      (forall ((c))
+		(implies (catepillar c)
+		  (for-some ((p)) (and (plant p) (eats c p)))))
+	      (forall ((s))
+		(implies (snail s)
+		  (for-some ((p)) (and (plant p) (eats s p))))))
+  (for-some ((a)) (and (animal a) (for-some ((ag) (g))
+				    (and (grain g) (animal ag) (eats ag g)
+					 (eats a ag))))))
+
+;;; Full Predicate Logic with Identity
+
+;;; 48
+
+(forall ((a) (b) (c) (d))
+  (implies (and (or (= a b) (= c d))
+		(or (= a c) (= b d)))
+    (or (= a d) (= b c))))
+
+;;; 49
+
+(forall ((a) (b))			; no can do ^#$%
+  (implies (and (for-some ((x) (y)) (forall ((z))
+				      (or (= z x) (= z y))))
+		(and (p a) (p b))
+		(not (= a b)))
+    (forall ((x)) (p x))))
+
+;;; 50
+
+(forall ((a))
+  (implies (forall ((x)) (or (f a x) (forall ((y)) (f x y))))
+    (for-some ((x)) (forall ((y)) (f x y)))))
+
+;;; 51
+
+(implies (for-some ((z) (w))		; no can do
+	   (forall ((x) (y))
+	     (iff (f x y) (and (= x z) (= y w)))))
+  (for-some ((z)) (forall ((x))
+		    (iff (for-some ((w)) (forall ((y))
+					   (iff (f x y)
+						(= y w))))
+			 (= x z)))))
+
+;;; 52
+
+(implies (for-some ((z) (w))		; no can do
+	   (forall ((x) (y))
+	     (iff (f x y)
+		  (and (= x z)
+		       (= y w)))))
+  (for-some ((w))
+    (forall ((y))
+      (iff (for-some ((z)) (forall ((x))
+			     (iff (f x y)
+				  (= x z))))
+	   (= y w)))))
+
+;;; 53
+
+(implies (for-some ((x) (y))
+	   (and (not (= x y))
+		(forall ((z)) (or (= z x) (= z y)))))
+  (iff (for-some ((z)) (forall ((x))
+			 (iff (for-some ((w)) (forall ((y))
+						(iff (f x y)
+						     (= y w))))
+			      (= x z))))
+       (for-some ((w)) (forall ((y))
+			 (iff (for-some ((z)) (forall ((x))
+						(iff (f x y) (= x z))))
+			      (= y w))))))
+;; no can do
+
+;;; 54
+
+(implies (forall ((y)) (for-some ((z)) (forall ((x))
+					 (iff (f x z) (= x y)))))
+  (not (for-some ((w))
+	 (forall ((x))
+	   (iff (f x w) (forall ((u))
+			  (implies (f x u)
+			    (for-some ((y))
+			      (and (f y u)
+				   (not (for-some ((z))
+					  (and (f z u)
+					       (f z y)))))))))))))
+
+;;; 55
+
+(forall ((agatha) (butler) (charles))
+  (implies (and (for-some ((x)) (resident x) (killed x agatha))
+		(resident agatha)
+		(resident butler)
+		(resident charles)
+		(forall ((x)) (implies (resident x)
+				(or (= x agatha)
+				    (= x butler)
+				    (= x charles))))
+		(forall ((y) (x)) (implies (killed x y)
+				    (hates x y)))
+		(forall ((x) (y))
+		  (implies (killed x y) (not (richer-than x y))))
+		(forall ((x))
+		  (implies (hates agatha x) (not (hates charles x))))
+		(forall ((x))
+		  (implies (not (= x butler)) (hates agatha x)))
+		(forall ((x))
+		  (implies (not (richer-then x agatha)) (hates butler x)))
+		(forall ((x))
+		  (implies (hates agatha x) (hates butler x)))
+		(forall ((x)) (for-some ((y)) (hates x y)))
+		(not (= agatha butler)))
+    (killed agatha agatha)))
+;; no can do
+
+;;; Full Predicate Logic with Identity and Arbitrary Functions
+
+;;; 56
+
+(iff (forall ((x)) (implies (for-some ((y)) (and (phi y) (= x (f y))))
+		     (phi x)))
+     (forall ((x)) (implies (phi x) (phi (f x)))))
+
+;;; 57
+
+(forall ((a) (b) (c))
+  (implies (and (phi (f a b) (f b c))
+		(phi (f b c) (f a c))
+		(forall ((x) (y) (z))
+		  (implies (and (phi x y) (phi y z))
+		    (phi x z))))
+    (phi (f a b) (f a c))))
+
+;;; 58
+
+
+(implies (forall ((x) (y))		; no can do because two vars in the 
+					; formula in hypothesis
+	   (= (f x) (g y)))
+  (forall ((x) (y)) (= (f (f x)) (f (g y)))))
+;; with interaction
+
+;;; 59
+
+(implies (forall ((x)) (iff (phi x) (not (phi (f x)))))
+  (for-some ((x)) (and (phi x) (not (phi (f x))))))
+
+;;; 60
+
+(forall ((x))
+  (iff (phi x (f x))
+       (for-some ((y))
+	 (and (forall ((z))
+		(implies (phi z y)
+		  (phi z (f x))))
+	      (phi x y)))))
+
+;;; 61
+
+(implies (forall ((x) (y) (z))
+	   (= (f x (f y z)) (f (f x y) z)))
+  (forall ((x) (y) (z) (w))
+    (= (f x (f y (f z w))) (f (f (f x y) z) w))))
+;; no can do
+
+;;; 62
+
+(forall ((a))
+  (implies (forall ((x)) (implies (and (phi a) (implies (phi x) (phi (f x))))
+			   (phi (f (f x)))))
+    (forall ((x))
+      (and (or (not (phi a)) (phi x) (phi (f (f x))))
+	   (or (not (phi a)) (not (phi (f x))) (phi (f (f x))))))))
+
+;;; 63
+
+(forall ((a))				; no can do for too many vars in hyp
+  (implies (and (forall ((x) (y) (z)) (= (f (f x y) z) (f x (f y z))))
+		(forall ((x)) (= (f a x) x))
+		(forall ((x)) (for-some ((y)) (= (f y x) a))))
+    (forall ((x) (y) (z))
+      (implies (= (f x y) (f z y))
+	(= x z)))))
+
+;;; 64
+
+(forall ((a))				; no can do ""
+  (implies (and (forall ((x) (y) (z)) (= (f (f x y) z) (f x (f y z))))
+		(forall ((x)) (= (f a x) x))
+		(forall ((x)) (for-some ((y)) (= (f y x) a))))
+    (forall ((x) (y)) (implies (= (f y x) a)
+			(= (f x y) a)))))
+
+;;; 65
+
+(forall ((a))				; no can do ""
+  (implies (and (forall ((x) (y) (z)) (= (f (f x y) z) (f x (f y z))))
+		(forall ((x)) (= (f a x) x)))
+    (implies (forall ((x)) (= (f x x) a))
+      (forall ((x) (y))
+	(= (f x y) (f y x))))))
+
+;;; 66
+
+(implies (and (forall ((x) (y)) (t (i x (i y x))))
+	      (forall ((x) (y) (z)) (t (i (i x (i y z)) (i (i x y) (i x z)))))
+	      (forall ((x) (y)) (t (i (i (n x) (n y)) (i y x))))
+	      (forall ((x) (y)) (implies (and (t (i x y)) (t x)) (t y))))
+  (forall ((x)) (t (i x (n (n x))))))
+
+;;; 67
+
+(implies (and (forall ((x) (y)) (t (i x (i y x))))
+	      (forall ((x) (y) (z)) (t (i (i x (i y z)) (i (i x y) (i x z)))))
+	      (forall ((x) (y)) (t (i (i (n x) (n y)) (i y x))))
+	      (forall ((x) (y)) (implies (and (t (i x y)) (t x)) (t y))))
+  (forall ((x)) (t (i (n (n x)) x))))
+
+;;; 68
+
+(implies (and (forall ((x) (y)) (t (i x (i y x))))
+	      (forall ((x) (y) (z)) (t (i (i x (i y z)) (i (i x y) (i x z)))))
+	      (forall ((x) (y)) (t (i (i y x) (i (n x) (n y)))))
+	      (forall ((x) (y)) (implies (and (t (i x y)) (t x)) (t y))))
+  (forall ((x)) (t (i x (n (n x))))))
+
+
+;;; 69
+
+(implies (and (forall ((x) (y)) (t (i x (i y x))))
+	      (forall ((x) (y) (z)) (t (i (i x (i y z)) (i (i x y) (i x z)))))
+	      (forall ((x) (y)) (t (i (i (n x) (n y)) (i y x))))
+	      (forall ((x) (y)) (implies (and (t (i x y)) (t x)) (t y)))
+	      (forall ((x) (y)) (t (i (b1 (i x y)) (i (b x) (b y)))))
+	      (forall ((x)) (t (i (b1 x) x)))
+	      (forall ((x)) (implies (t x) (t (b1 x)))))
+  (forall ((x)) (t (i (b1 x) (n (b1 (n x)))))))
+
+;;; 70
+
+;;;(forall ((x) (y)) (t (i x (i y x))))
+;;;(forall ((x) (y) (z)) (t (i (i x (i y z)) (i (i x y) (i x z)))))
+;;;(forall ((x) (y)) (t (i (i (n x) (n y)) (i y x))))
+;;;(forall ((x) (y)) (implies (and (t (i x y)) (t x)) (t y))))
+;;;(forall ((x) (y)) (t (i (b2 (i x y)) (i (b2 x) (b2 y)))))
+;;;(forall ((x)) (implies (t x) (t (b2 x))))
+
+;;; 71
+
+;;; compare proof time, length, number of steps, etc.
+;;; hope for linearity
+;; got it:
+
+
+(iff (p1) (p1))			; 0.0
+;; .01
+
+(iff (p1) (iff (p2) (iff (p1) (p2)))) ; 0.05
+;; .02
+
+(iff (p1) (iff (p2) (iff (p3) (iff (p1) (iff (p2) (p3)))))) ; 0.42
+;; .15
+
+(iff (p1) (iff (p2) (iff (p3)	; 3.9
+			 (iff (p4) (iff (p1) 
+					(iff (p2) (iff (p3) (p4))))))))
+;; 1.98
+
+;;; . . . 
+
+;;; 72
+
+;; propositional pigeon hole problems
+
+;;; 73
+
+;; predicate pigeon hole problem
+
+;; n = 3:  complexity should increase polynomial in n
+
+(not (and (for-some ((x) (y) (z) (w))
+	    (and (obj x) (obj y) (obj z) (obj w) (not (= x y))
+		 (not (= x z)) (not (= x w)) (not (= y z))
+		 (not (= y w)) (not (= z w))))
+	  (for-some ((x) (y) (z))
+	    (and (hole x) (hole y) (hole z)
+		 (not (= x y)) (not (= x z)) (not (= y z))
+		 (forall ((w))
+		   (implies (hole w)
+		     (or (= w x) (= w y) (= w z))))))
+	  (forall ((x)) (implies (obj x) (for-some ((y))
+					   (and (hole y)
+						(in x y)))))
+	  (forall ((x))
+	    (implies (hole x)
+	      (forall ((y) (z))
+		(implies (and (obj y) (obj z) (in y x) (in z x))
+		  (= y z)))))))
+;; no can do
+
+;;; 74
+
+;; graph problems
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Bledsoe 
+;;; Challenge Problems in Elementary Calculus
+;;; JAR v.6 n.3 1990
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
+;;; 1: 1-6, 7.2, 9.11, 10.11, 10.3, 11.3, 12
+
+;;; 2: 1-6, 7.1, 8.1, 9.11, 10.11, 10.3, 11.3, 12
+
+;;; 3: 1-6, 7.1, 8, 9.1, 9.2, 10.1, 10.2, 11.3, 12, 14, 15, 15.1
+
+;;; 4: 1-6, 7, 8, 9.1, 9.2, 10.1, 10.2, 11.3, 12, 14, 15, 15.1, 16, 17, 20, 21, 22, 24, 25, 26
+
+;;; 5: 1-6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15.1, 16, 17, 18, 20, 21, 22, 24, 25, 26
+
+;;; 5=h: 1-6, 7, 8, 9.1, 9.2, 10.1, 10.2, 11.3, 12, 14, 15, 15.1, 16, 17
+
+;;; 5=: 1-18
+
+;; 1
+(or (<= e 0) (not (<= (d1 e) 0)))
+;; 2
+(or (<= e 0) (not (<= (d2 e) 0)))
+;; 3
+(or (<= e 0) (not (<= (|| (+ x (- (a)))) (d1 e)))
+    (<= ))
+;; 4
+
+;; 5
+
+;; 6
+
+;; 7
+
+;; 8
+
+;; 9
+
+;; 10
+
+;; 11
+
+;; 12
+
+;; 13
+
+;; 14
+
+;; 15
+
+;; 16
+
+;; 17
+
+;; 18
+
+;; 19
+
+;; 20
+
+;; 21
+
+;; 22
+
+;; 23
+
+;; 24
+
+;; 25
+
+;; 26
+
+;; 27
+
+;; 28
+
+;; 29
+
+;; 7.1
+
+;; 7.2
+
+;; 8.1
+
+;; 9.1
+
+;; 9.11
+
+;; 9.2
+
+;; 10.1
+
+;; 10.11
+
+;; 10.2
+
+;; 10.3
+
+;; 11.1
+
+;; 11.2
+
+;; 11.3
+
+;; 13.1
+
+;; 15.1
+
+;; 16.1
+
+;; 17.1
+
+;; 17.2
+
+;;; my very own
+

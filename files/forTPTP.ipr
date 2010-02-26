@@ -1,0 +1,383 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; requires q >= 2
+(implies (forall ((x) (y))
+           (iff (eq x y)
+                (forall ((z))
+                  (iff (a-member-of z x) (a-member-of z y)))))
+  (forall ((x) (y)) (iff (eq x y) (eq y x))))
+
+(forall ((peanuts) (john) (bill) (sue) (apples) (chicken))
+  (implies                              ;for checking out detail
+      (and 
+       (forall ((x)) (forall ((y)) (implies (and (alive y)
+                                                 (eats y chicken)) 
+                                     (likes y x))))
+       (forall ((x)) (implies (food x) (likes john x))) 
+       (food apples) 
+       (food chicken) 
+       (forall ((x)) (implies (for-some ((y)) (and (eats y x)
+                                                   (not-killed-by y x)))
+                       (food x))) 
+       (eats bill peanuts) 
+       (alive bill) 
+       (forall ((x)) (implies (eats bill x) (eats sue x))) 
+       (forall ((y)) (implies (alive y)
+                       (forall ((x)) (not-killed-by y x)))))
+    (likes john peanuts)))
+
+;; From Smullyan FOL 1968
+;; fails with q=2
+;; out of memory with q=3
+(implies (and (forall ((x)) (implies (implies (and (F x) (G x)) (H x))
+                              (for-some ((y)) (and (f y) (not (g y))))))
+              (or (forall ((w)) (implies (f w) (g w)))
+                  (forall ((z)) (implies (f z) (h z)))))
+  (implies (forall ((r)) (implies (and (f r) (h r))
+                           (g r)))
+    (for-some ((v)) (and (f v) (g v) (not (h v))))))
+
+;;; Group with stupid equality.
+
+;; slow (quit)
+;; I suspect this requires q>2 but haven't checked.
+(forall ((e))
+  (implies
+      (and (forall ((x) (y)) (for-some ((z)) (p x y z)))
+           (forall ((x) (y) (z) (u) (v) (w))
+             (implies (and (p x y u) (p y z v) (p u z w))
+               (p x v w)))
+           (forall ((x) (y) (z) (u) (v) (w))
+             (implies (and (p x y u) (p y z v) (p x v w))
+               (p u z w)))
+           (forall ((x)) (p x e x))
+           (forall ((x)) (p e x x))
+           (forall ((x)) (p x (i x) e))
+           (forall ((x)) (p (i x) x e)))
+    (implies (forall ((x)) (p x x e))
+      (forall ((u) (v) (w)) (implies (p u v w) (p v u w))))))
+
+;; slow (quit)
+;; I suspect this requires q>2 but haven't checked.
+(forall ((e))
+  (implies
+      (and (forall ((x) (y)) (for-some ((z)) (p x y z)))
+           (forall ((x) (y) (z) (u) (v) (w))
+             (implies (and (p x y u) (p y z v) (p u z w))
+               (p x v w)))
+           (forall ((x) (y) (z) (u) (v) (w))
+             (implies (and (p x y u) (p y z v) (p x v w))
+               (p u z w)))
+           (forall ((x)) (p x e x))
+           (forall ((x)) (p e x x))
+           (forall ((x)) (p x (i x) e))
+           (forall ((x)) (p (i x) x e)))
+    (forall ((u) (v) (w) (x))
+      (implies (and (p (i u) (i v) w)
+                    (p v u x))
+        (p (i w) (i x) e)))))
+
+;; requires q >= 2
+(forall ((c) (b))
+  (implies
+      (forall ((z)) (q (f z))) 
+    (for-some ((x)) (for-some ((y)) (and (implies (p (f y)) (p x)) 
+                                         (implies (r y)
+                                           (and (r b) (r c)))
+                                         (q x))))))
+
+;; requires q >= 2
+(forall ((b) (c))
+  (implies
+      (forall ((z)) (q (f z))) 
+    (for-some ((x)) (for-some ((y)) (and (implies
+                                             (p (f y)) 
+                                           (and (p x)
+                                                (implies
+                                                    (r y)
+                                                  (and (r b) (r c)))))
+                                         (q x))))))
+
+;; requires q >= 2
+(forall ((b) (c))
+  (implies
+      (q (f b)) 
+    (for-some ((x)) (for-some ((y))
+                      (and (implies
+                               (p (f y)) 
+                             (and (p x) (implies
+                                            (r y)
+                                          (and (r b) (r c))))) 
+                           (q x))))))
+
+(implies (and (forall ((x)) (implies (a x) (or (b x) (c x))))
+              (not (forall ((x)) (implies (a x) (b x)))))
+  (for-some ((x)) (and (a x) (c x))))
+
+;; From Smullyan FOL 1968
+(implies (and (forall ((x) (y)) (implies (r x y) (r y x)))
+              (forall ((x) (y) (z)) (implies (and (r x y) (r y z)) (r x z))))
+  (forall ((x) (y)) (implies (r x y) (r x x))))
+
+(forall ((a))
+  (for-some ((x) (x2) (x3) (x4) (y))
+    (implies (and (p a) (e a)
+                  (implies (e x)
+                    (or (g x) (s x (f x))))
+                  (implies (e x2)
+                    (or (g x2) (c (f x2)))) 
+                  (implies (s a y) (p y))) 
+      (or (and (p x3) (g x3)) 
+          (and (p x4) (c x4))))))
+
+(forall ((a) (b) (c))
+  (implies (and (s a) (s b) (r b c)
+                (forall ((x)) (implies (s x) (p x)))
+                (forall ((x)) (forall ((y)) (implies (r x y) (q x y)))))
+    (for-some ((x)) (for-some ((y)) (and (p x) (q x y))))))
+
+(forall ((peanuts) (john) (bill) (sue) (apples) (chicken))
+  (implies 
+      (and (forall ((x)) (implies (food x) (likes john x))) 
+           (food apples) 
+           (food chicken) 
+           (forall ((x)) (implies
+                             (for-some ((y)) (and (eats y x)
+                                                  (not-killed-by y x) ))
+                           (food x))) 
+           (eats bill peanuts) 
+           (alive bill) 
+           (forall ((x)) (implies (eats bill x) (eats sue x))) 
+           (forall ((y)) (implies (alive y)
+                           (forall ((x)) (not-killed-by y x)))))
+    (likes john peanuts)))
+
+;; From Smullyan FOL 1968
+(implies (and (implies (forall ((x)) (implies (and (F x) (G x)) (H x)))
+                (for-some ((x)) (and (F x) (not (G x)))))
+              (or (forall ((w)) (implies (F w) (G w)))
+                  (forall ((z)) (implies (F z) (H z)))))
+  (implies (forall ((r)) (implies (and (F r) (H r))
+                           (G r)))
+    (for-some ((v)) (and (F v) (G v) (not (H v))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; requires q >= 2
+(implies (forall ((x)) (p x)) (forall ((a) (b)) (and (p a) (p b))))
+
+(implies (and (forall ((x)) (p x)) (for-some ((y)) (q y)))
+  (for-some ((z)) (forall ((y)) (or (p y) (r z)))))
+
+(implies (forall ((x)) (for-some ((y)) (and (p x) (q y))))
+  (for-some ((z)) (forall ((y)) (or (p y) (r z)))))
+
+(implies
+    (forall ((x)) (for-some ((y)) (and (a x y) (a y y))))
+  (for-some ((z)) (a z z)))
+
+(forall ((a) (b) (c))
+  (implies (and (s a) (s b) (r b c)
+                (forall ((x)) (implies (s x) (p x)))
+                (forall ((x)) (forall ((y)) (implies (r x y) (q x y)))))
+    (for-some ((x)) (for-some ((y)) (and (p x) (q x y))))))
+
+;; requires q >= 2
+(forall ((a) (b))
+  (implies (forall ((y)) (implies (q y) (p y)))
+    (for-some ((x)) (and (implies (p x) (p a)) 
+                         (implies (q x) (p b))))))
+
+(implies (for-some ((x)) (p x))
+  (and (for-some ((x)) (p x))
+       (implies (a) (and (or (b) (not (b))) (implies (q) (q))))))
+
+(implies (forall ((x)) (p x)) (for-some ((y)) (p y)))
+
+(implies (forall ((x)) (implies (p x) (q x)))
+  (implies (forall ((x)) (p x))
+    (forall ((x)) (q x))))
+
+;; requires q >= 2
+(forall ((a) (b)) (implies (forall ((z)) (implies (q z) (p z)))
+                    (for-some ((x)) (and (implies (p x) (p a)) 
+                                         (implies (q x) (p b))))))
+
+(implies (forall ((x)) (implies (a x) (b x)))
+  (implies (for-some ((x)) (a x)) (for-some ((x)) (b x))))
+
+(implies (for-some ((x)) (implies (a x) (b x)))
+  (implies (forall ((x)) (a x)) (for-some ((x)) (b x))))
+
+(not (for-some ((y)) (forall ((x)) (iff (a x y) (not (a x x))))))
+
+(implies (and (for-some ((x)) (a x)) (forall ((x)) (b x)))
+  (for-some ((x)) (and (a x) (b x))))
+
+(implies (for-some ((x)) (b x)) (for-some ((x)) (or (a x) (b x))))
+
+(iff (for-some ((x) (y)) (a x y)) (for-some ((y) (x)) (a x y)))
+
+;; From Smullyan FOL 1968
+;; requires q >= 2
+(for-some ((x)) (forall ((y))
+                  (implies (implies (p y) (q x))
+                    (implies (p x) (q x)))))
+
+;; From Smullyan FOL 1968
+;; requires q >= 2
+(iff (forall ((x)) (and (p x) (q x)))
+     (and (forall ((x)) (p x)) (forall ((x)) (q x))))
+
+;; From Smullyan FOL 1968
+(implies (or (forall ((x)) (p x)) (forall ((x)) (q x)))
+  (forall ((x)) (or (p x) (q x))))
+
+;; requires q >= 2
+;; From Smullyan FOL 1968
+(iff (for-some ((x)) (or (p x) (q x)))
+     (or (for-some ((x)) (p x)) (for-some ((x)) (q x))))
+
+;; requires q >= 2
+(forall ((a) (b)) (implies (forall ((x)) (p x)) (and (p a) (p b))))
+
+;; requires q >= 2
+(implies (forall ((x)) (p x)) 
+  (and (forall ((x)) (p x)) (forall ((y)) (p y))))
+
+(iff (for-some ((x)) (p x)) (for-some ((y)) (p y)))
+
+(implies (for-some ((x)) (p x)) (for-some ((z)) (p z)))
+
+;; requires q >= 2
+(for-some ((z))				; thm1
+  (forall ((x))
+    (for-some ((y))
+      (and (implies (p y x) (for-some ((w)) (p w y))) 
+           (implies (and (p z y) (p y z)) (p y x))))))
+
+;; requires q >= 2
+(implies (forall ((x) (y))
+           (iff (eq x y)
+                (forall ((z))
+                  (iff (a-member-of z x) (a-member-of z y)))))
+  (forall ((a) (b))
+    (implies (eq a b) (eq b a))))
+
+;; requires q >= 2
+(forall ((a) (b))
+  (implies (forall ((y)) (implies (q y) (p y)))
+    (for-some ((x)) (and (implies (p x) (p a)) 
+                         (implies (q x) (p b))))))
+
+;; requires q >= 2
+(for-some ((x))
+  (forall ((y)) (implies (p x) (p y))))
+
+
+
+(forall ((b))
+  (implies (and (forall ((x)) (implies (p x) (q x))) (r b)) 
+    (implies (forall ((y)) (implies (r y) (p y))) (q b))))
+
+;; From Smullyan FOL 1968
+(for-some ((y)) (implies (p y) (forall ((x)) (p x))))
+
+(forall ((a) (b))
+  (for-some ((x) (y))
+    (implies (implies (p x)
+               (r y))
+      (implies (p a) (r b)))))
+
+(for-some ((y)) (implies (for-some ((x)) (p x))
+                  (p y)))
+
+;; From Smullyan FOL 1968
+(implies (for-some ((x)) (and (p x) (q x)))
+  (and (for-some ((x)) (p x)) (for-some ((x)) (q x))))
+
+(implies (for-some ((x)) (forall ((y)) (p x y)))
+  (forall ((y)) (for-some ((x)) (p x y))))
+
+;;;;;;;;  Tested MCB1.13 Q=2
+
+(implies (p z) (p z))
+
+;; From Smullyan FOL 1968
+(forall ((y)) (implies (forall ((x)) (p x)) (p y)))
+
+;; From Smullyan FOL 1968
+(implies (forall ((x)) (p x)) (for-some ((x)) (p x)))
+
+;; From Smullyan FOL 1968
+(implies (not (for-some ((y)) (p y)))
+  (forall ((y)) (implies (for-some ((x)) (p x))
+                  (p y))))
+
+(implies (for-some ((x)) (p x)) (for-some ((y)) (p y)))
+
+;; From Smullyan FOL 1968
+(iff (forall ((x)) (or (p x) (c)))
+     (or (forall ((x)) (p x)) (c)))
+
+;; From Smullyan FOL 1968
+(iff (for-some ((x)) (and (p x) (c)))
+     (and (for-some ((x)) (p x))
+          (c)))
+
+;; From Smullyan FOL 1968
+(iff (for-some ((x)) (c)) (c))
+
+;; From Smullyan FOL 1968
+(iff (forall ((x)) (c)) (c))
+
+;; From Smullyan FOL 1968
+(iff (for-some ((x)) (implies (c) (p x)))
+     (implies (c) (for-some ((x)) (p x))))
+
+;; From Smullyan FOL 1968
+(iff (for-some ((x)) (implies (p x) (c)))
+     (implies (forall ((x)) (p x)) (c)))
+
+;; From Smullyan FOL 1968
+(iff (forall ((x)) (implies (c) (p x)))
+     (implies (c) (forall ((x)) (p x))))
+
+;; From Smullyan FOL 1968
+(iff (forall ((x)) (implies (p x) (c)))
+     (implies (for-some ((x)) (p x)) (c)))
+
+(implies (forall ((x) (y)) (p x y))
+  (forall ((x)) (p x x)))
+
+(forall ((a))
+  (implies (and (or (f) (g)) (forall ((x)) (and (p x) (q x))))
+    (q a)))
+
+(or (iff (a) (b)) (a) (b))
+
+(implies (and (a) (b)) (iff (a) (b)))
+
+(forall ((a) (b))			; thm2
+  (for-some ((x) (y))
+    (implies
+        (and (implies (q x) (p x a))
+             (q a)
+             (q b)
+             (implies (r y) (p b y))
+             (r a)
+             (r b)
+             (implies (s a) (p x y))
+             (s a))
+      (p a b))))
+
+(forall ((b))
+  (implies
+      (forall ((y)) (implies (implies (r b) (r y)) (p (f y) y)))
+    (for-some ((x)) (for-some ((y)) (and (p x y) (implies (q (f b) b)
+                                                   (q x y)))))))
+
+(implies (and (forall ((x)) (implies (p x) (q x)))
+              (for-some ((y)) (implies (q y) (r y)))) 
+  (for-some ((z)) (implies (p z) (r z))))
+

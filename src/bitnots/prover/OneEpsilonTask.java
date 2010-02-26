@@ -18,6 +18,7 @@ public class OneEpsilonTask
   }
 
   public void run() {
+    throw new UnsupportedOperationException();/*
     // expand tree as much as possible with alphas, deltas,
     // gammas, and betas - when that is done, apply an epsilon;
     // then apply all the other formulas again
@@ -25,6 +26,6 @@ public class OneEpsilonTask
       return;
     if (Prover.unifyEquality(this.tableau) != null)
       return;
-    this.tableau.getEpsilonToolkit().applyOneEpsilon();
+    this.tableau.getEpsilonToolkit().applyOneEpsilon();*/
   }
 } // OneEpsilonTask

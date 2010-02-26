@@ -1,0 +1,5 @@
+
+(def-target the-target
+  (implies (forall ((x)) (a-member-of x (the-class-of-all (y) (p)))) 
+           (p))         
+)

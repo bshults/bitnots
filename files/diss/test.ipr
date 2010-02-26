@@ -1,0 +1,61 @@
+(def-theorem kelley-p90a
+  (a-continuous-function-from-onto
+   (the-ath-projection-function a x_ a_)
+   (the-product-top-space-over x_ a_)
+   (apply x_ a)))
+
+(def-theorem kelley-3-2
+  (an-open-function-from-onto 
+   (the-ath-projection-function a x_ a_)
+   (the-product-top-space-over x_ a_)
+   (apply x_ a)))
+
+(def-theorem kelley-p-147e
+  (implies (and (an-open-function-from-onto f a b)
+		(a-continuous-function-from-onto f a b)
+		(a-locally-compact-top-space a))
+    (a-locally-compact-top-space b)))
+
+(def-theorem kelley-5-19a		; the hyp the a is in A is unneeded
+  (implies (a-locally-compact-top-space
+	    (the-product-top-space-over X_ A_))
+    (forall ((a))
+      (implies (a-member-of a A_)
+	(a-locally-compact-top-space (apply X_ a)))))
+  (proof
+   (promote
+    (implies
+	(a-locally-compact-top-space
+	 (the-product-top-space-over (_x_) (_a_)))
+      (forall ((a)) (implies (a-member-of a (_a_))
+		      (a-locally-compact-top-space (apply (_x_) a))))))
+   (consider
+    (forall ((a)) (implies (a-member-of a (_a_))
+		    (a-locally-compact-top-space (apply (_x_) a))))
+    skolem _a)
+   (promote
+    (implies (a-member-of (_a) (_a_))
+      (a-locally-compact-top-space (apply (_x_) (_a)))))
+   (apply-theorem kelley-p\.147e
+		  ((a the-product-top-space-over (_x_) (_a_))
+		   (b apply (_x_) (_a))))
+   (and-split
+    (and (an-open-function-from-onto
+	  f (the-product-top-space-over (_x_) (_a_)) (apply (_x_) (_a)))
+	 (a-continuous-function-from-onto
+	  f (the-product-top-space-over (_x_) (_a_)) (apply (_x_) (_a)))))
+   ((apply-theorem kelley-3\.2
+		   ((a _a) (a_ _a_) (x_ _x_) (p . *param-4))))
+   ((apply-theorem kelley-p\.90a
+		   ((a _a) (a_ _a_) (x_ _x_) (p . *param-5))))))
+
+(def-theorem kelley-5-19b
+  (implies (a-locally-compact-top-space
+	    (the-product-top-space-over X_ A_))
+    (a-finite-set (the-class-of-all (p)
+		    ;; so p is an ordered pair
+		    (and (for-some ((a))
+			   (and (a-member-of a A_)
+				(= p (apply X_ a))))
+			 (not (a-compact-top-space p)))))))
+

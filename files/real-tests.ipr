@@ -1,0 +1,85 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; splitting tests:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def-theorem a (forall ((a) (b))
+		 (for-some ((x)) (implies (and (p a) (q a))
+				   (and (p x) (q x))))))
+;; 0.11 yes
+
+(def-theorem a (forall ((a) (b))
+		 (for-some ((x)) (implies (and (p a) (q b))
+				   (and (p x) (q x)))))) ; not a theorem
+;; 0.11 no (runs forever at this point.)
+;; very important example. (not a theorem)
+;; MUST apply the first subst to the conclusion of the second proof!
+;; but, even if you don't do that, the higher goal fails if
+;; a generalized substitution is returned.
+
+(def-theorem a (forall ((a) (b))
+		 (for-some ((x)) (implies (p x)
+				   (and (p a) (p b))))))
+;; 0.11 yes (beautifully and automatically)
+
+;; This seems impossible.  However, I do see reasons for doing it.
+;; Otherwise, what do you do in the case of failure?
+;; How do you know which of the goals to try again?
+
+(def-theorem a
+  (forall ((a)) (implies (and (p a) (forall ((x)) (implies (p x) (q x))))
+		  (q a))))
+;; 0.11 yes
+  
+(def-theorem a (forall ((a) (b) (c))
+		 (implies (and (p a) (p b) (p c))
+		   (for-some ((x)) (and (p x) (q x)))))) ; not a theorem
+;; 0.11 no (runs forever)
+
+(def-theorem a
+  (forall ((a) (b) (c))
+    (implies (and (p a) (q b) (p c) (q c))
+      (for-some ((x)) (and (p x) (q x))))))
+;; 0.11 yes
+
+;; the following three say the same thing:
+
+(def-theorem a (forall ((a) (b))
+		 (implies (forall ((x)) (p x)) (and (p a) (p b)))))
+;; 0.11 yes
+
+(def-theorem a (forall ((a) (b))
+		 (for-some ((x)) (implies (p x) (and (p a) (p b))))))
+;; 0.11 yes
+
+(def-theorem a
+  (forall ((a) (b))
+    (for-some ((x)) (and (implies (p x) (p a)) (implies (p x) (p b))))))
+;; 0.11 yes (beautifully and automatically)
+
+(def-theorem a (forall ((a) (b))
+		 (implies (forall ((z)) (implies (q z) (p z)))
+		   (for-some ((x)) (and (implies (p x) (p a))
+					(implies (q x) (p b)))))))
+					; not a theorem
+;; 0.11 no (runs forever)
+
+(def-theorem a (forall ((a) (b))
+		 (implies (q a)
+		   (for-some ((x)) (and (implies (p x) (p a))
+					(implies (p x) (p b))
+					(q x))))))
+;; 0.11 no (runs forever)
+;; set0.03 yes
+
+(def-theorem a (for-some ((x) (y)) 
+		 (implies (and (p (f x)) (q (g x)))
+		   (and (p y) (q x)))))
+;; 0.11 yes
+
+(def-theorem a (forall ((a) (b))
+		 (for-some ((x) (y))
+		   (implies (q a (f b))
+		     (and (implies (p (f x)) (and (p (f a)) (p y)))
+			  (q x y))))))	; not a theorem
+;; 0.11 no (runs forever)
+

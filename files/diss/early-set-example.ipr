@@ -1,0 +1,285 @@
+From bshults@math.utexas.edu Thu Aug 18 12:02:12 1994
+Received-Date: Thu, 18 Aug 94 12:02:11 -0500
+Date: Thu, 18 Aug 94 12:02:08 -0500
+From: bshults@math.utexas.edu
+Posted-Date: Thu, 18 Aug 94 12:02:08 -0500
+To: bledsoe@cs
+Cc: bshults@tanya.ma.utexas.edu
+Subject: some theorems proved by the use of definitions and previously known theorems
+
+Woody,
+
+Below I demonstrate some things that my prover has done.  I realize
+that this is still some simple "mathematics" but I do not consider
+myself to have really accomplished anything great yet.  I only want to
+let you know that I am making progress.
+
+See what the prover (IPR) can do now: The user can load a group of
+axioms, definitions and theorems (presumably the theorems will have
+been previously proved).  Then the user enters a new theorem and the
+prover (IPR) uses the knowledge as needed to prove the new theorem.
+
+Here is an example:
+
+First the user loads the following definitions and axioms:
+
+(In my set theory 'an-element and 'a-member-of are undefinied.  The
+prover has the axiom schema of "comprehension" or "classification"
+wired in so that it can deal with 'the-class-of-all.  I call these
+schema "church-schema" and "class-schema".  Both are used in the
+proofs.)
+
+(def-term (the-universe-class)
+  (the-class-of-all (x) (= x x))
+  (theory my-set-theory))
+
+(def-term (the-empty-set)
+  (the-class-of-all (x) (not (= x x)))
+  (theory my-set-theory))
+
+(def-predicate (a-set a)		; Suppes/Fraenkel
+  (for-some ((x) (y)) 
+    (or (and (a-member-of x a) (a-member-of a y))
+	(= a (the-empty-set)))))
+
+(def-predicate (an-ur-element a)
+  (and (an-element a) (not (a-set a))))
+
+(def-axiom an-element
+  (forall ((x) (y))
+    (implies (a-member-of x y)
+      (an-element x))))
+
+(def-axiom a-class
+  (forall ((y) (z))
+    (implies (or (a-set y) (a-member-of z y))
+      (a-class y))))
+
+(def-predicate (a-proper-class a)
+  (not (an-element a)))
+
+(def-axiom large-base
+  (a-proper-class (the-class-of-all (p) (an-ur-element p))))
+
+(def-axiom extensionality
+  (forall ((x) (y))
+    (implies (and (a-class x) (a-class y))
+      (iff (forall ((u)) (iff (a-member-of u x)
+			      (a-member-of u y)))
+	   (= x y))))
+  (theory my-set-theory))
+
+(def-term (the-singleton a)
+  (the-class-of-all (x) (= x a))
+  (theory my-set-theory))
+
+(def-term (the-pair a b)
+  (the-class-of-all (x) (or (= x a) (= x b)))
+  (theory my-set-theory))
+
+Actually, some of the axioms and definitions are transformed into
+several theorems in the knowledge-base.  Specifically, the above puts
+19 theorems into the knowledge-base.  I admit that this is a small
+number.  The computer finds the following proofs completely
+automatically.  Of course, these are fairly simple theorems but I
+think this shows that my ideas have potential.  Notice that each proof
+is "the shortest possible" given the knowledge.  Also, this is only a
+taste of what it will be capable of when I improve equality.  I
+consider Boyer's challenge, which we discussed earlier and I am
+working toward, to be quite possible.  In fact, I think the prover
+will be even more capable.
+
+The proofs are of the form ((*rule* &rest args) ... )
+If a rule splits the proof then the subproofs are given in a list
+below the rule which caused the split. As in:
+((*splitting-rule* args) (*subproof1* *subproof2*))
+
+I will let you know as the prover improves.
+
+Benji
+
+Here are some theorems it proves given the above knowledge.  Notice
+that a lot of the knowledge is irrelevant but the prover is not
+bothered by this.
+
+(def-theorem test  ; the-empty-set is a set, not an ur-element
+
+  (implies (an-ur-element a)
+    (not (= a (the-empty-set))))
+
+  (proof
+   (promote (implies (an-ur-element (_a))
+	      (not (= (_a) (the-empty-set)))))
+   (flip (not (= (_a) (the-empty-set))))
+   (apply-theorem an-ur-element2 ((a _a)))
+   (apply-theorem a-set3 ((a _a)))))
+
+(def-theorem test  ; everything is either a set, ur-element or a proper-class
+
+  (or (a-set x) (an-ur-element x) (a-proper-class x))
+
+  (proof
+   (apply-theorem a-proper-class2 ((a _x)))
+   (apply-theorem an-ur-element3 ((a _x)))))
+
+(def-theorem test   ; uses extensionality
+
+  (forall ((a))
+    (= (the-class-of-all (x) (= x a))
+       (the-class-of-all (x) (or (= x a) (= x a)))))
+
+  (proof
+   (consider
+    (forall ((a))
+      (= (the-class-of-all (x) (= x a))
+	 (the-class-of-all (x) (or (= x a) (= x a)))))
+    skolem _a)
+   (apply-theorem extensionality
+		  ((*thm-y the-class-of-all
+			   (*var158) (or (= *var158 (_a)) (= *var158 (_a))))
+		   (*thm-x the-class-of-all (*var157) (= *var157 (_a)))))
+   (and-split
+    (and
+     (forall ((u))
+       (iff
+	(a-member-of u (the-class-of-all (x) (= x (_a))))
+	(a-member-of u (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))
+     (a-class
+      (the-class-of-all (x) (= x (_a))))
+     (a-class
+      (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))
+   ((consider
+     (forall ((u)) (iff (a-member-of u (the-class-of-all (x) (= x (_a))))
+			(a-member-of u (the-class-of-all (x)
+					 (or (= x (_a)) (= x (_a)))))))
+     skolem _u)
+    (iff
+     (iff
+      (a-member-of (_u) (the-class-of-all (x) (= x (_a))))
+      (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))
+    ((promote
+      (implies (a-member-of (_u) (the-class-of-all (x) (= x (_a))))
+	(a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))
+     (church-schema
+      (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a))))))
+     ((church-schema
+       (a-member-of (_u) (the-class-of-all (x) (= x (_a))))))
+     ((church-schema
+       (a-member-of (_u) (the-class-of-all (x) (= x (_a)))))))
+    ((promote
+      (implies (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))
+	(a-member-of (_u) (the-class-of-all (x) (= x (_a))))))
+     (church-schema
+      (a-member-of (_u) (the-class-of-all (x) (= x (_a)))))
+     ((church-schema
+       (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a))))))
+      (or-split
+       (or (= (_u) (_a)) (= (_u) (_a)))) nil nil)
+     ((church-schema
+       (a-member-of (_u) (the-class-of-all (x) (or (= x (_a)) (= x (_a)))))))))
+   ((class-schema
+     (a-class (the-class-of-all (x) (= x (_a))))))
+   ((class-schema
+     (a-class (the-class-of-all (x) (or (= x (_a)) (= x (_a))))))))
+  )
+
+(def-theorem test     ; x = V-(V-x)
+
+  (forall ((x) (y))
+    (iff (a-member-of y x)
+	 (a-member-of y (the-class-of-all (z)
+			  (not (a-member-of z (the-class-of-all (w)
+						(not (a-member-of w x)))))))))
+
+  (proof
+   (consider
+    (forall ((x) (y))
+      (iff (a-member-of y x)
+	   (a-member-of
+	    y (the-class-of-all (z)
+		(not (a-member-of z (the-class-of-all (w)
+				      (not (a-member-of w x)))))))))
+    skolem _x)
+   (iff
+    (iff (a-member-of (_y) (_x))
+	 (a-member-of
+	  (_y) (the-class-of-all (z)
+		 (not (a-member-of z (the-class-of-all (w)
+				       (not (a-member-of w (_x))))))))))
+   ((promote
+     (implies (a-member-of (_y) (_x))
+       (a-member-of
+	(_y) (the-class-of-all (z)
+	       (not (a-member-of z (the-class-of-all (w)
+				     (not (a-member-of w (_x))))))))))
+    (church-schema
+     (a-member-of (_y) (the-class-of-all (z)
+			 (not (a-member-of z (the-class-of-all (w)
+					       (not (a-member-of w (_x)))))))))
+    ((flip
+      (not (a-member-of (_y) (the-class-of-all (w) (not (a-member-of w (_x)))))))
+     (church-schema
+      (a-member-of (_y) (the-class-of-all (w) (not (a-member-of w (_x))))))
+     (flip
+      (not (a-member-of (_y) (_x)))))
+    ((apply-theorem an-element ((*thm-y _x) (*thm-x _y)))))
+   ((promote
+     (implies (a-member-of
+	       (_y) (the-class-of-all (z)
+		      (not (a-member-of z (the-class-of-all (w)
+					    (not (a-member-of w (_x))))))))
+       (a-member-of (_y) (_x))))
+    (church-schema
+     (a-member-of (_y) (the-class-of-all (z)
+			 (not (a-member-of z (the-class-of-all (w)
+					       (not (a-member-of w (_x)))))))))
+    (flip
+     (not (a-member-of (_y) (the-class-of-all (w) (not (a-member-of w (_x)))))))
+    (church-schema
+     (a-member-of (_y) (the-class-of-all (w) (not (a-member-of w (_x))))))
+    ((flip
+      (not (a-member-of (_y) (_x)))))
+    nil)))
+
+(def-theorem test   ; if x is a proper-class then {x} = 0
+                    ; just as in Goedel's set theory
+
+  (forall ((x))
+    (iff (forall ((z))
+	   (not (a-member-of z (the-class-of-all (a) (= a x)))))
+	 (not (an-element x))))
+
+  (proof 
+   (consider
+    (forall ((x))
+      (iff (forall ((z)) (not (a-member-of z (the-class-of-all (a) (= a x)))))
+	   (not (an-element x))))
+    skolem _x)
+   (iff
+    (iff (forall ((z))
+	   (not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+	 (not (an-element (_x)))))
+   ((promote
+     (implies (forall ((z))
+		(not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+       (not (an-element (_x)))))
+    (flip
+     (not (an-element (_x))))
+    (show-there-is
+     (forall ((z)) (not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+     var z)
+    (flip
+     (not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+    (church-schema
+     (a-member-of z (the-class-of-all (a) (= a (_x))))) nil nil)
+   ((consider
+     (forall ((z)) (not (a-member-of z (the-class-of-all (a) (= a (_x))))))
+     skolem _z1)
+    (flip
+     (not (a-member-of (_z1) (the-class-of-all (a) (= a (_x))))))
+    (church-schema
+     (a-member-of (_z1) (the-class-of-all (a) (= a (_x)))))))
+  )
+
+
+

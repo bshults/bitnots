@@ -24,6 +24,8 @@ public class BranchCloser {
 
   /**
    * The collection of theorems used to prove this.
+   * @todo currently, this only seems to contain the sequents associated with
+   * branch-closing TheoremApplications.
    */
   private Collection sequents;
 
@@ -77,6 +79,7 @@ public class BranchCloser {
     return this.subst;
   }
 
+  @Override
   public String toString() {
     return this.getHome().path().toString() + "\nsubs: " +
       this.getSubst().toString();

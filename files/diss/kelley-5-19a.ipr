@@ -1,0 +1,351 @@
+;(setq *strings-only* t)	; when this is T predicate definitions
+;; are not loaded.  Only their strings.
+
+(def-predicate (a-continuous-function-from-onto f x y)
+  (p)
+  "~1 is a continuous function from ~2 to ~3"
+  "the definition of an onto continuous function"
+  )
+
+(def-term (the-projection-function a x b)
+  (p)
+  "the ~1th projection function from the product of ~2 over ~3"
+  "the definition of the projection function"
+  )
+
+(def-term (apply f x)
+  (p)
+  ". ~1 ~2"
+  "the definition of function application")
+
+;;(setq *strings-only* nil)
+
+(def-term (the-product-over x_ a_)
+  (the-class-of-all (x)
+    (and (a-function-on x a_)
+	 (forall ((a))
+	   (a-member-of (apply x a) (apply x_ a)))))
+  "the product of ~1 over the index set ~2"
+  "the definition of a product space")
+
+(def-term (the-ath-coordinate-set a x_)
+  (apply x_ a)
+  "the {~1} coordinate set of ~2"
+  "the definition of a coordinate set"
+  )
+
+(def-term (the-ath-coordinate a x)
+  (apply x a)
+  "the {~1} coordinate of ~2"
+  "the definition of a coordinate")
+
+(def-term (the-ath-projection-function a x_ a_)
+  (the-class-of-all (p)
+    (for-some ((x))
+      (and (= p (the-ordered-pair x (apply x a)))
+	   (a-member-of x (the-product-over x_ a_)))))
+  "the {~1} projection function of ~2 over ~3"
+  "the definition of a projection function"
+  )
+;;;  (the (p) (and (a-function-on p prod)
+;;;		(= (apply p x) (apply x a))))
+
+(def-theorem
+  (= (the-exponent-set y a_)
+     (the-product-of-over (the-class-of-all (x)
+			    (for-some ((a))
+			      (and (a-member-of a a_)
+				   (= x (the-ordered-pair a y)))))
+			  a_))
+  "a theorem about the power set (kelley-p-31a)")
+
+(def-term (euclidian-n-set n)
+  (the-exponent-set (the-reals) (the-first-n-numbers n))
+  "Euclidean ~1-space"
+  "the definition of Euclidian space")
+
+;;; there is some talk of choice functions at the end of the
+;;; section which I am skipping.
+
+(def-term (the-domain-of-the-product-top-space-over x_ a_)
+  ;; here x_ is a function from a_ to top-spaces
+  ;; this can be done without 'the.
+  (the-product-over 
+   (the-class-of-all (p)
+     (for-some ((a))
+       (and (= p (the-ordered-pair a (coerce-to-set (apply x_ a))))
+	    (a-member-of a a_)))) a_)
+  "the product of ~1 over ~2"
+  "the definition of the product space")
+;;;   (the (x1_) (forall ((a))
+;;;		(implies (a-member-of a a_)
+;;;		  (= (apply x1_ a) (coerce-to-set (apply x_ a))))))
+
+(def-term (the-product-top-space-over x_ a_)
+  ;; here x_ is a function from a_ to top-spaces
+  (the-topological-space
+   (the-domain-of-the-product-top-space-over x_ a_)
+   (the-smallest-topology-containing
+    (the-domain-of-the-product-top-space-over x_ a_)
+    (the-class-of-all (s)
+      (for-some ((a) (u))
+	(and (a-member-of a a_)
+	     (open-in u (apply x_ a))
+	     (= s (the-inverse-image (the-ath-projection-function a x_ a_) 
+				     u)))))))
+  "the product of ~1 over ~2"
+  "the definition of the product space")
+
+(def-theorem 
+  (a-continuous-function-from-onto
+   (the-ath-projection-function a x_ a_)
+   (the-product-top-space-over x_ a_)
+   (apply x_ a))
+  "a theorem on p.90 of Kelley (kelley-p-90a)")
+
+(def-theorem 
+  (open-in (the-inverse-image-of
+	    (the-ath-projection-function a x_ a_))
+	   (the-product-top-space-over x_ a_))
+  "a theorem near the top of p.90 of Kelley")
+
+(def-theorem
+  (a-subbase-for (the-class-of-all (m)
+		   (for-some ((u) (a))
+		     (and (a-member-of a a_)
+			  (open-in u (apply x_ a))
+			  (= (m (the-class-of-all (x)
+				  (and (a-member-of x x_)
+				       (a-member-of (apply x a) u))))))))
+		 (the-product-top-space-over x_ a_))
+  "a theorem near the middle of p.90 of Kelley")
+
+(def-predicate (an-open-function-from-onto f a b)
+  (and (a-function-from-onto f (coerce-to-set a) (coerce-to-set b))
+       (implies (open-in u a)
+	 (open-in (the-image-of f u) b)))
+  "~1 is an open function from ~2 onto ~3"
+  "the definition of an open function"
+  )
+
+(def-theorem
+  (an-open-function-from-onto
+   (the-ath-projection-function a x_ a_)
+   (the-product-top-space-over x_ a_)
+   (apply x_ a))
+  "Theorem 3.2 in Kelley")
+
+(def-theorem
+  (iff (a-continuous-function-from-to x (the-product-over x_ a_))
+       (forall ((p) (a))
+	 (implies (= p (the-ath-projection-function a x_ a_))
+	   (a-continuous-function-from-to (the-composition-of p f)
+					  x (apply x_ a)))))
+  "Theorem 3.3 in Kelley")
+
+(def-predicate (a-coordinate-of-the-product-top-space-over s x_ a_)
+  (for-some ((a))
+    (and (a-member-of a a_)
+	 (= s (apply x_ a))))
+  "~1 is a coordinate of the product of ~2 over ~3"
+  "the definition of a coordinate")
+
+(def-theorem
+  (implies (and (an-open-cover-of a x)
+		(a-closed-bounded-subset-of x (the-reals)))
+    (for-some ((b))
+      (a-finite-subcover-of b a)))
+  "the Hiene-Borel-Lebesgue theorem")
+
+(def-predicate (a-compact-top-space x)
+  (forall ((a))
+    (implies (an-open-cover-of a x)
+      (for-some ((b))
+	(a-finite-subcover-of b a))))
+  "~1 is compact"
+  "the definition of compact")
+
+(def-predicate (a-compact-subset-of a b)
+  (and (a-subset-of (the-set a) (the-set b))
+       (a-compact-top-space (the-relative-top-space b a)))
+  "~1 is a compact subset of ~2"
+  "the definition of a compact subset")
+
+(def-theorem
+  (implies (and (a-subbase-for s x)
+		(forall ((c))
+		  (implies (and (a-cover-of c x)
+				(a-subset-of c s))
+		    (for-some ((f))
+		      (a-finite-subcover-of f c)))))
+    (a-compact-top-space x))
+  "the Alexander theorem")
+
+(def-theorem
+  (implies (and (a-function-from-onto x_ a_ y_)
+		(forall ((y))
+		  (implies (a-member-of y y_)
+		    (a-compact-top-space y))))
+    (a-compact-top-space
+     (the-product-top-space-over x_ a_)))
+  "Tychonoff's theorem")
+
+(def-predicate (bounded-in-the-psuedo-metric-top-space x pmts)
+  (a-member-of (the-diameter-of-the-set x pmts) (the-set-of-reals))
+  "~1 is bounded in ~2"
+  "the definition of bounded")
+
+(def-theorem
+  (iff (bounded-in-the-psuedo-metric-top-space x (the-real-top-space))
+       (for-some ((u) (l))
+	 (and (an-upper-bound-on u x)
+	      (a-lower-bound-on l x))))
+  "a theorem on p.144 of Kelley")
+
+(def-theorem
+  (iff (a-compact-subset x (euclidean-n-space n))
+       (and (closed-in x (euclidean-n-space n))
+	    (bounded-in-the-psuedo-metric-top-space
+	     x (equclidean-n-space n))))
+  "Theorem 5.14 of Kelley")
+
+(def-theorem
+  (a-compact-subset (the-n-dimensional-cube n) (euclidean-n-space n))
+  "a theorem on p.145 of Kelley")
+
+(def-theorem
+  (iff (a-tychonoff-top-space x)
+       (for-some ((y) (s))
+	 (and (homeomorphic x y)
+	      (a-compact-top-space s)
+	      (a-hausdorff-top-space s)
+	      (a-sub-top-space-of y s))))
+  "Theorem 5.15 of Kelley")
+
+(def-predicate (nowhere-dense-set-in-the-top-space a b)
+  (and (a-suclass-of-the-top-space a b)
+       (= (the-empty-set)
+	  (the-interior-of (the-closure-of a b) b)))
+  "~1 is nowhere dense in ~2"
+  "the definition of nowhere dense")
+
+(def-theorem
+  (implies (not (a-finite-set
+		 (the-class-of-all (x)
+		   (and (for-some ((a))
+			  (and (a-member-of a a_)
+			       (= x (apply x_ a))))
+			(not (a-compact-top-space x))))))
+    (implies (a-compact-subspace-of c (the-product-top-space-over x_ a_))
+      (nowhere-dense-set-in-the-top-space
+       (coerce-to-set c) (the-product-top-space-over x_ a_))))
+  "Theorem 5.16 of Kelley")
+
+;;;(def-predicate (a-locally-compact-top-space x_)
+;;;  (forall ((x))
+;;;    (implies (a-member-of x x_)
+;;;      (for-some ((c))
+;;;	(and (a-nbhd-of c x x_)
+;;;	     (a-compact-subset-of c x_)))))
+;;;  (string "the definition of locally compact")
+;;;  (format "~1 is a locally compact space")
+;;;  )
+
+(def-theorem
+  (implies (a-compact-top-space x)
+    (a-locally-compact-top-space x))
+  "a theorem on p.146 of Kelley")
+
+(def-theorem
+  (implies (a-discrete-top-space x)
+    (a-locally-compact-top-space x))
+  "a theorem near the top of p.146 of Kelley")
+
+(def-theorem
+  (implies (and (a-locally-compact-top-space x)
+		(a-closed-top-subspace-of c x))
+    (a-locally-compact-top-space c))
+  "a theorem in the middle p.146 of Kelley")
+
+(def-theorem
+  (implies (and (a-locally-compact-top-space x_)
+		(or (a-regular-top-space x_)
+		    (a-hausdorff-top-space x_)))
+    (forall ((x))
+      (implies (a-member-of x x_)
+	(a-base-for
+	 (the-class-of-all (z)
+	   (and (closed-in z x_)
+		(a-nbhd-of z x x_)
+		(a-compact-subset-of z x_)))
+	 (the-nbhd-system-of x x_)))))
+  "Theorem 5.17 in Kelley")
+
+(def-theorem
+  (implies (and (a-locally-compact-top-space x_)
+		(a-hausdorff-top-space x_))
+    (a-regular-top-space x_))
+  "a theorem near the bottom of p.146 of Kelley")
+
+(def-theorem
+  (implies (and (a-nbhd-of-the-set u_ a_ x_)
+		(closed-in a_ x_)
+		(a-compact-subset-of a_ x_)
+		(a-regular-top-space x_)
+		(a-locally-compact-top-space x_))
+    (for-some ((v))
+      (and (closed-in v_ x_)
+	   (a-nbhd-of-the-set v_ a_ x_)
+	   (a-compact-subset-of v_ x_)
+	   (a-subset-of a_ v_)
+	   (a-subset-of v_ u_)
+	   (for-some ((f))
+	     (and (a-continuous-function-from-onto
+		   f _x (the-closed-unit-interval-top-space))
+		  (= (the-image-of f a_) (the-singleton (real-zero)))
+		  (= (the-image-of f (the-relative-complement x_ v_))
+		     (the-singleton (real-one))))))))
+  "Theorem 5.18 in Kelley")
+
+(def-theorem
+  (implies (and (a-locally-compact-top-space x_)
+		(a-regular-top-space x_))
+    (a-completely-regular-top-space x_))
+  "a theorem on p.147 of Kelley")
+
+(def-theorem
+  (implies (and (a-locally-compact-top-space x_)
+		(a-hausdorff-top-space x_))
+    (a-tychonoff-top-space x_))
+  "a theorem near the top of p.147 of Kelley")
+
+(def-theorem
+  (not (forall ((x_) (f) (y_))
+	 (implies (and (a-continuous-function-from-to f x_ y_)
+		       (a-locally-compact-top-space x_))
+	   (a-locally-top-space y_))))
+ "a theorem near the top of p.147 of Kelley")
+
+(def-theorem
+  (implies (and (an-open-function-from-to f x-t y-u)
+		(a-continuous-function-from-to f x-t y-u)
+		(a-member-of x (coerce-to-set x-t))
+		(a-nbhd-of c x x-t)
+		(a-compact-subset-of c x-t))
+    (and (a-nbhd-of (the-image-of f c) (apply f x) y-u)
+	 (a-compact-subset-of (the-image-of f c) y-u)))
+  "a theorem further down on p.147 of Kelley")
+
+(def-theorem
+  (implies (and (an-open-function-from-onto f a b)
+		(a-continuous-function-from-onto f a b)
+		(a-locally-compact-top-space a))
+    (a-locally-compact-top-space b))
+  "a theorem near the bottom of p.147 of Kelley")
+
+(conjecture	; the hyp the a is in A is unneeded
+  (implies (a-locally-compact-top-space
+	    (the-product-top-space-over X_ A_))
+    (forall ((a)) (a-locally-compact-top-space (apply X_ a))))
+  "the first half of Theorem 5.19 of Kelley")
+

@@ -1,0 +1,69 @@
+(format-only true)              ; when this is T predicate definitions
+;; are not loaded.  Only their strings.
+
+(def-predicate (a-continuous-function-from-onto f x y)
+  ()
+  (format "~a is a continuous function from ~a to ~a"))
+
+(def-term (the-projection-function a x b)
+  ()
+  (format "the ~ath projection function from the product of ~a over ~a"))
+
+(def-term (the-product-top-space-over x a)
+  ()
+  (format "the product topological space of ~a over the index set ~a"))
+
+(def-term (apply f x)
+  ()
+  (format "{~a}(~a)"))
+
+(def-predicate (an-open-function-from-onto f a b)
+  ()
+  (format "~a is an open function from ~a onto ~a"))
+
+(def-predicate (a-locally-compact-top-space a)
+  ()
+  (format "~a is a locally compact topological space"))
+
+(format-only false)
+
+(def-theorem kelley-p90a
+  (forall ((a) (x_) (a_)) (a-continuous-function-from-onto
+                           (the-projection-function a x_ a_)
+                           (the-product-top-space-over x_ a_)
+                           (apply x_ a)))
+  (string "the statement on the top of page 90 of Kelley"))
+
+(def-theorem kelley-3-2
+  (forall ((x_) (a_) (a)) (an-open-function-from-onto 
+                           (the-projection-function a x_ a_)
+                           (the-product-top-space-over x_ a_)
+                           (apply x_ a)))
+  (string "Theorem 2 in chapter 3 of Kelley"))
+
+(def-theorem kelley-p-147e
+  (forall ((f) (a) (b)) (implies (and (an-open-function-from-onto f a b)
+                                      (a-continuous-function-from-onto f a b)
+                                      (a-locally-compact-top-space a))
+                          (a-locally-compact-top-space b)))
+  (string "a statement near the bottom of page 147 of Kelley"))
+
+(def-target kelley-5-19a
+  (forall ((X_) (A_))
+    (implies (a-locally-compact-top-space
+              (the-product-top-space-over X_ A_))
+      (forall ((a))
+        (a-locally-compact-top-space (apply X_ a)))))
+
+  (string "the first half of Theorem 19 in Chapter 5 of Kelley"))
+
+;;(def-theorem kelley-5-19b
+;;  (implies (a-locally-compact-top-space
+;;	    (the-product-top-space-over X_ A_))
+;;    (a-finite-set (the-class-of-all (p)
+;;		    ;; so p is an ordered pair
+;;		    (and (for-some ((a))
+;;			   (and (a-member-of a A_)
+;;				(= p (apply X_ a))))
+;;			 (not (a-compact-top-space p)))))))
+

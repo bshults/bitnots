@@ -1,0 +1,76 @@
+; A combined test file for the epsilon rule.
+
+(def-theorem useless (is-part-of (s) (c))
+    (string "s is a part of c (useless)")
+)
+
+(def-theorem useless2 (is-part-of (a) (v))
+    (string "a is a part of v (useless)")
+)
+
+(def-theorem transitivity (forall ((x) (y) (z))(implies 
+                          (and (is-part-of x y) 
+                               (is-part-of y z)) 
+                          (is-part-of x z)))
+    (string "the definition of transitivity")
+)
+
+(def-theorem half-meaning 
+  (forall ((x) (y))
+    (implies (half x y)
+      (or (obtains x) (obtains y))))
+  (string "the definition of 'half'")
+)
+
+(def-theorem two-thirds-meaning 
+             (forall ((x) (y) (z))
+             (implies (two-thirds x y z) 
+                      (or (and (obtains x) (obtains y)) 
+                          (and (obtains x) (obtains z))
+                          (and (obtains y) (obtains z)))))
+    (string "the definition of 'two-thirds'")
+)
+
+(def-theorem ninth (two-thirds (m) (n) (p))
+    (string "at least two of m, n, and p obtain")
+)
+
+(def-theorem eighth (obtains (m))
+    (string "m obtains")
+)
+
+(def-theorem seventh (not (obtains (n)))
+    (string "n does not obtain")
+)
+
+(def-theorem sixth (not (obtains (b)))
+    (string "b does not obtain")
+)
+
+(def-theorem fifth (half (a) (b))
+    (string "either a obtains, or b obtains")
+)
+
+(def-theorem fourth (is-part-of (b) (c))
+    (string "b is a part of c")
+)
+
+(def-theorem third (is-part-of (a) (b))
+    (string "a is a part of b")
+)
+
+(def-theorem second (implies (a) (b))
+    (string "if a, then b")
+)
+
+(def-theorem first (a)
+    (string "a")
+)
+
+(def-target target1 (b))
+
+(def-target target2 (is-part-of (a) (c)))
+
+(def-target target3 (obtains (a)))
+
+(def-target target4 (obtains (p)))

@@ -351,9 +351,7 @@ public class TableauNode implements Serializable, Comparable,
    */
   public Collection<TableauFormula> getNewHypsUnusedAnywhere() {
     ArrayList<TableauFormula> value = new ArrayList<TableauFormula>();
-    Iterator<TableauFormula> it = this.newHyps.iterator();
-    while (it.hasNext()) {
-      TableauFormula pf = it.next();
+    for (TableauFormula pf : this.newHyps) {
       if (!pf.isUsedAnywhere())
         value.add(pf);
     }
@@ -1293,7 +1291,6 @@ public class TableauNode implements Serializable, Comparable,
    * Creates a BranchCloser and adds it to the list of BranchClosers
    * for this node and to the list of trivial-closures if it is
    * trivial.
-   */
   public void createBranchCloser(Substitution s, Collection usedHyps,
                                  Collection usedGoals, Collection sequents) {
     BranchCloser bc = new BranchCloser(s, usedHyps, usedGoals, this, sequents);
@@ -1301,6 +1298,7 @@ public class TableauNode implements Serializable, Comparable,
     if (s.isEmpty())
       this.addTrivialCloser(bc);
   }
+   */
 
   /**
    * Creates a BranchCloser and adds it to the list of BranchClosers
@@ -1480,9 +1478,11 @@ public class TableauNode implements Serializable, Comparable,
       for (TableauNode child : this.children) {
         child.parent = this;
       }
-    } /*else {
-    this.children = new ArrayList<TableauNode>(0);
-    }*/
+    } else {
+      // this needs to be here because if I call this with null, that means
+      // I want there to be no children.
+      this.children = new ArrayList<TableauNode>(0);
+    }
   }
 
   public Tableau getTableau() {
@@ -1894,14 +1894,14 @@ public class TableauNode implements Serializable, Comparable,
    * 
    * @param node
    * @param mbc
+   * @todo handle splits and theoremApps here too.
    */
   public void cleanUp(final MultiBranchCloser mbc) {
     // FIXME this doesn't seem to be working or maybe is not being called when it should
     bitnots.util.Collections.deleteIf(this.branchClosers, new PredicateBlock() {
-
       @Override
       public boolean test(Object o) {
-        return !mbc.getBranchClosers().contains(o);
+        return !mbc.getBranchClosers().contains((BranchCloser) o);
       }
     });
   }

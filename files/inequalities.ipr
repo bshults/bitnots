@@ -1,0 +1,48 @@
+;;;****************  Examples  *********************************
+
+(forall ((x) (e) (a2) (b2) (a) (d))	; see orig
+  (implies (implies (< (zero) E)         ;Like LIM+   ??
+	     (and (< (zero) (DS1 E))
+		  (implies (and (< (+ X (- (A))) (DS1 E))
+				(< (- (+ X (- (A)))) (DS1 E)))
+		    (and (< (+ (F X) (- (F (A)))) E)
+			 (< (- (+ (F X) (- (F (A))))) E)))))
+    (implies (and (< D (F A)) (< (F A) E))
+      (and (< A2 A) (< A B2)
+	   (implies (and (< A2 (XS1 B2 A2)) (< (XS1 B2 A2) B2))
+	     (and (< D (F (XS1 B2 A2)))
+		  (< (F (XS1 B2 A2)) E)))))))
+
+(forall ((a) (b) (d) (c))
+  (implies (and (<= a b) (<= b c) (<= c d))
+    (and (<= a c) (<= b d))))
+
+(forall ((x))
+  (<= (+ X (- (A)))))
+
+(implies (NOT (and (<= (+ (A) (- X))) (< (+ X (- (B)))))) (C))
+
+(forall ((x)) (and (<= (+ (A) (- X))) (<= (+ X (- (B))))))
+
+(DEFVAR e3 '(implies (OR (<= (+ (A) (- X))) (< (+ X (- (B))))) (C)))
+
+(DEFVAR e4 '(implies (implies (<= (+ X (- (A)))) (<= (+ X (- (B))))) (C)))
+
+(DEFVAR e5 '(NOT (OR (<= (+ (A) (- X))) (< (+ X (- (B)))))))
+
+(DEFVAR e6 '(implies (and (OR (<= (+ (A) (- X))) (< (+ X (- (B))))) (Q)) (C)))
+
+(defvar e7 '(OR (and (<= (+ (A) (- X))) (< (+ X (- (B)))))
+		(and (<= (+ (C) (- X))) (< (+ X (- (D)))))))
+
+(defvar e8 '(implies (or (<= (a) x) (< x (b))) (and (<= (c) x) (< x (d)))))
+
+(defvar e9 '(and (OR (and (<= (+ (A) (- X))) (< (+ X (- (B))))) (Q))
+		 (<= (+ (C) (- X)))
+		 (< (+ X (- (D))))))
+
+(defvar e10 '(implies (OR (and (OR (<= (+ (A) (- X))) (< (+ X (- (B))))) (Q))
+			  (<= (+ (C) (- X))) (< (+ X (- (D)))))
+	       (C)))
+
+

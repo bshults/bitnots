@@ -1,0 +1,174 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Pelletier
+;;; JAR v.2 n.2 1986
+;;; Seventy-Five Problems for Testing Automatic Theorem Provers
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Monadic Predicate Logic
+
+;;; 18
+
+(def-target 18 (for-some ((y)) (forall ((x)) (implies (f y) (f x)))))
+
+;;; 21
+
+(def-target 21 (implies (and (for-some ((x)) (implies (p) (f x)))
+                             (for-some ((x)) (implies (f x) (p))))
+                 (for-some ((x)) (iff (p) (f x)))))
+
+;;; 26
+
+(def-target 26 (implies (and (iff (for-some ((x)) (p x))
+                                  (for-some ((x)) (q x)))
+                             (forall ((x) (y)) (implies (and (p x) (q y))
+                                                 (iff (r x) (s y)))))
+                 (iff (forall ((x)) (implies (p x) (r x)))
+                      (forall ((x)) (implies (q x) (s x))))))
+
+;;; 27
+
+(def-target 27 (implies (and (for-some ((x)) (and (f x) (not (g x))))
+                             (forall ((x)) (implies (f x) (h x)))
+                             (forall ((x)) (implies (and (j x) (i x)) (f x)))
+                             (implies (for-some ((x)) (and (h x) (not (g x))))
+                               (forall ((x)) (implies (i x) (not (h x))))))
+                 (forall ((x)) (implies (j x) (not (i x))))))
+
+;;; 29
+
+(def-target 29 (implies (and (for-some ((x)) (f x))
+                             (for-some ((x)) (g x)))
+                 (iff (and (forall ((x)) (implies (f x) (h x)))
+                           (forall ((x)) (implies (g x) (j x))))
+                      (forall ((x) (y))
+                        (implies (and (f x) (g y)) (and (h x) (j y)))))))
+
+;;; 37
+
+(def-target 37 (implies (and (forall ((z))
+                               (for-some ((w))
+                                 (forall ((x))
+                                   (for-some ((y))
+                                     (and (implies (p x z) (p y w))
+                                          (p y z)
+                                          (implies (p y w)
+                                            (for-some ((u)) (q u w))))))))
+                             (forall ((x) (z))
+                               (implies (not (p x z)) (for-some ((y)) (q y z))))
+                             (implies (for-some ((x) (y)) (q x y))
+                               (forall ((x)) (r x x))))
+                 (forall ((x)) (for-some ((y)) (r x y)))))
+
+;;; 42
+
+(def-target 42 (not (for-some ((y))
+                      (forall ((x))
+                        (iff (a-member-of x y)
+                             (not (for-some ((z))
+                                    (and (a-member-of x z) 
+                                         (a-member-of z x)))))))))
+
+;;; 43
+
+(def-target 43 (implies (forall ((x) (y))
+                          (iff (eq x y)
+                               (forall ((z))
+                                 (iff (a-member-of z x)
+                                      (a-member-of z y)))))
+                 (forall ((x) (y))
+                   (iff (eq x y) (eq y x)))))
+
+;;; 44
+
+(def-target 44 (implies (and (forall ((x))
+                               (implies (f x) 
+                                 (and (for-some ((y))
+                                        (and (g y) (h x y)))
+                                      (for-some ((y))
+                                        (and (g y) (not (h x y)))))))
+                             (for-some ((x))
+                               (and (j x) (forall ((y))
+                                            (implies (g y) (h x y))))))
+                 (for-some ((x)) (and (j x) (not (f x))))))
+
+;;; 50
+
+(def-target 50 (forall ((a))
+                 (implies (forall ((x)) (or (f a x) (forall ((y)) (f x y))))
+                   (for-some ((x)) (forall ((y)) (f x y))))))
+
+;;; 59
+
+(def-target 59 (implies (forall ((x)) (iff (phi x) (not (phi (f x)))))
+                 (for-some ((x)) (and (phi x) (not (phi (f x)))))))
+
+;; ;; (take too long)
+
+;; ;;; 34
+
+;; (def-target 34 (iff (iff (for-some ((x)) (forall ((y)) (iff (p x) (p y))))
+;;                          (iff (for-some ((x)) (q x)) (forall ((y)) (q y))))
+;;                     (iff (for-some ((x)) (forall ((y)) (iff (q x) (q y))))
+;;                          (iff (for-some ((x)) (p x))
+;;                               (forall ((y)) (p y))))))
+
+;; ;;; 38
+
+;; (def-target 38 (forall ((a))
+;;                  (iff (forall ((x))
+;;                         (implies (and (p a) (implies (p x)
+;;                                               (for-some ((y))
+;;                                                 (and (p y) (r x y)))))
+;;                           (for-some ((z) (w)) (and (p z) (r x w) (r w z)))))
+;;                       (forall ((x))
+;;                         (and (or (not (p a)) (p x)
+;;                                  (for-some ((z) (w))
+;;                                    (and (p z) (r x w) (r w z))))
+;;                              (or (not (p a))
+;;                                  (not (for-some ((y)) (and (p y) (r x y))))
+;;                                  (for-some ((z) (w))
+;;                                    (and (p z) (r x w) (r w z)))))))))
+
+;; ;;; 45
+
+;; (def-target 45 (implies (and (forall ((x))
+;;                                (and (f x)
+;;                                     (implies (forall ((y))
+;;                                                (implies (and (g y) (h x y))
+;;                                                  (j x y)))
+;;                                       (forall ((y))
+;;                                         (implies (and (g y) (h x y))
+;;                                           (k y))))))
+;;                              (not (for-some ((y)) (and (l y) (k y))))
+;;                              (for-some ((x))
+;;                                (and (f x) (forall ((y))
+;;                                             (implies (h x y) (l y)))
+;;                                     (forall ((y))
+;;                                       (implies (and (g y) (h x y)) (j x y))))))
+;;                  (for-some ((x))
+;;                    (and (f x) (not (for-some ((y)) (and (g y) (h x y))))))))
+
+;; ;;; 24
+
+;; (def-target 24 (implies (and (not (for-some ((x)) (and (s x) (q x))))
+;;                              (forall ((x)) (implies (p x) (or (q x) (r x))))
+;;                              (implies (not (for-some ((x)) (p x)))
+;;                                (for-some ((x)) (q x)))
+;;                              (forall ((x)) (implies (or (q x) (r x)) (s x))))
+;;                  (for-some ((x)) (and (p x) (r x)))))
+
+;; ;;; 69
+
+;; (def-target 69 (implies (and (forall ((x) (y)) (t (i x (i y x))))
+;;                              (forall ((x) (y) (z))
+;;                                (t (i (i x (i y z)) (i (i x y) (i x z)))))
+;;                              (forall ((x) (y)) (t (i (i (n x) (n y)) (i y x))))
+;;                              (forall ((x) (y))
+;;                                (implies (and (t (i x y)) (t x)) (t y)))
+;;                              (forall ((x) (y))
+;;                                (t (i (b1 (i x y)) (i (b x) (b y)))))
+;;                              (forall ((x)) (t (i (b1 x) x)))
+;;                              (forall ((x)) (implies (t x) (t (b1 x)))))
+;;                  (forall ((x)) (t (i (b1 x) (n (b1 (n x))))))))
+

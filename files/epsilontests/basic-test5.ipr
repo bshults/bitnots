@@ -1,0 +1,36 @@
+;; A simple test file to make sure that the epsilon rule is working
+;; in such a way to prove the yumminess of big macs.
+
+(def-theorem ingredients  
+  (and (has (bigmac) (bun)) 
+       (has (bigmac) (meat)) 
+       (has (bigmac) (lettuce))
+       (has (bigmac) (cheese))
+       (has (bigmac) (juiciness)))
+   
+  (string "the ingredients of a big mac")
+  )
+
+(def-theorem closer
+  (and (has-sugar (bigmac)) 
+       (looks-pretty (bigmac)) 
+       (i-want-to-eat (bigmac)))
+  (string "closer")
+  )
+  
+(def-theorem yumminess
+  (forall ((x)) 
+    (implies (or 
+              (is-pizza x)
+              (is-donut x)
+              (and (has x (meat)) (has x (lettuce))) 
+              (and (has x (bacon)) (has x (cheese))) 
+              (and (has x (bun)) (has x (meat))) 
+              (and (has x (lettuce)) (has x (juiciness)))
+              (and (has-sugar x) (looks-pretty x) (i-want-to-eat x))) 
+      (is-yummy x)))
+    
+  (string "the definition of yumminess")
+  )
+    
+(def-target the-target (is-yummy (bigmac)))

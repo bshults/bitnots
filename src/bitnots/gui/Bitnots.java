@@ -48,7 +48,6 @@ import bitnots.tableaux.TableauFormula;
 import bitnots.test.Test;
 import bitnots.theories.Theory;
 
-
 /**
  * This is a source of the following bound properties: "tableau" and "theory".
  * @author bshults
@@ -57,12 +56,10 @@ import bitnots.theories.Theory;
 public class Bitnots extends JFrame {
 
   public static final int DEFAULT_Q_LIMIT = 0;
-  
   public static Bitnots FRAME;
-
   public static final ConfirmingExecutorService taskQueue =
-    new ConfirmingExecutorService();
-  
+                                                new ConfirmingExecutorService();
+
   /**
    * 
    * @param args
@@ -72,25 +69,26 @@ public class Bitnots extends JFrame {
    * @throws UnsupportedLookAndFeelException 
    */
   public static void main(String[] args) throws ClassNotFoundException,
-  InstantiationException, IllegalAccessException,
-  UnsupportedLookAndFeelException {
-    
+                                                InstantiationException,
+                                                IllegalAccessException,
+                                                UnsupportedLookAndFeelException {
+
     // set up LAF
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-    
+
     // load classes
     Bitnots.loadClasses();
-    
+
     Bitnots.FRAME = new Bitnots();
-    
+
     Bitnots.FRAME.init();
-    
+
     // set up and display frame
     Bitnots.FRAME.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     Bitnots.FRAME.pack();
     Bitnots.FRAME.setVisible(true);
   }
-  
+
   public static void loadClasses() {
     try {
       TableauFormula.registerConstructor(
@@ -153,60 +151,55 @@ public class Bitnots extends JFrame {
       TableauFormula.registerConstructor(Forsome.class, PositiveForsome.SIGN,
                                          PositiveForsome.class.getConstructor(
           new Class[] {Formula.class}));
-    }
-    catch (NoSuchMethodException e) {
+    } catch (NoSuchMethodException e) {
       e.printStackTrace();
     }
   }
-
   // TODO ensure that tableau and theory data are not touched from the
   // AWT thread and ensure that GUI data is not touched from my TaskQueue.
-  
   private Theory currentTheory;
-  
   private Tableau currentTableau;
-
   // TODO: create a table of possible value of this keyed on the names.
   private GoActionListener goAction;
-  
+
   public Theory getTheory() {
     return this.currentTheory;
   }
-  
+
   public void setTheory(Theory t) {
     Theory old = this.currentTheory;
     this.currentTheory = t;
     this.firePropertyChange("theory", old, t);
   }
-  
+
   public Tableau getTableau() {
     return this.currentTableau;
   }
-  
+
   public void setTableau(Tableau t) {
     Tableau old = this.currentTableau;
     this.currentTableau = t;
     this.firePropertyChange("tableau", old, t);
   }
-  
+
   public GoActionListener getGoAction() {
     return this.goAction;
   }
 
   private void init() {
     // load a theory from a file
-    
+
     // TODO set up menus to load a theory file.
-    
+
     // TODO write a wrapper around taskQueue.enqueue that checks to see if
     // the thread is busy and, if so, enqueues the runnable with some
     // additional code to 1) the runnable to notify the user and prompts
     // about continuing to wait, 2) notify the waiting dialog when it
     // is dequeued.
-    
+
     // TODO: Figure out synchronization between the threads and consider
     // putting more code on the engine thread.
-    
+
     // TODO switch to java.util.concurrent classes for event thread:
     // Execurors.newSingleThreadExecutor():ExecutorService
     // Have a single object that increments its counter when something
@@ -214,25 +207,36 @@ public class Bitnots extends JFrame {
     // Then I can check this number to know if the thread is busy.
 
     // FIXME add menu to load new file.
-    
+
+    // XXX: DUPLICATE CODE between this and around line 224
+
     this.goAction =
-      new GoActionListener("Step", new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
+    new GoActionListener("Step", new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (Bitnots.this.getTableau().getCloser() != null)
+          JOptionPane.showMessageDialog(Bitnots.this,
+                                        "Done: " + Bitnots.this.getTableau().
+              getCloser());
+        else {
+          Bitnots.taskQueue.executeWithPrompt(new SomeEpsilonsTask(Bitnots.this.
+              getTableau()));
           if (Bitnots.this.getTableau().getCloser() != null)
             JOptionPane.showMessageDialog(Bitnots.this,
-                                          "Done: " + Bitnots.this.getTableau().getCloser());
-          else
-            Bitnots.taskQueue.executeWithPrompt(new SomeEpsilonsTask(Bitnots.this.getTableau()));
-          Test.validateAncestorPath(Bitnots.this.currentTableau.getRoot().getFirstLeaf());
-        }});
+                                          "Done: " + Bitnots.this.getTableau().
+                getCloser());
+        }
+        Test.validateAncestorPath(Bitnots.this.currentTableau.getRoot().
+            getFirstLeaf());
+      }
+    });
     this.goAction.putValue(Action.NAME, "Go");
 
     this.currentTheory = TheoryLoader.loadDefaultFile();
 
     // create and set up the initial tableau
-    Formula currentFormula = 
-      this.currentTheory.getConjectures().iterator().next().getFormula();
+    Formula currentFormula =
+            this.currentTheory.getConjectures().iterator().next().getFormula();
     this.currentTableau = new Tableau(currentFormula, this.currentTheory);
     // this.currentTableau.setQLimit(2);
     this.currentTableau.setMakeLemmas(true);
@@ -245,9 +249,8 @@ public class Bitnots extends JFrame {
     splitPane.setResizeWeight(.7);
     this.add(splitPane);
   }
-  
+
   public Bitnots() {
     super("Bitnots");
   }
-  
 }

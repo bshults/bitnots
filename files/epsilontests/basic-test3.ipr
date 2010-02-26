@@ -1,0 +1,24 @@
+; Another simple test file for the epsilon rule
+
+(def-theorem first (two-thirds (a) (b) (c))
+    (string "at least two of a, b, and c obtain")
+)
+
+(def-theorem second (obtains (a))
+    (string "a obtains")
+)
+
+(def-theorem third (not (obtains (b)))
+    (string "b does not obtain")
+)
+
+(def-theorem two-thirds-meaning 
+             (forall ((x) (y) (z))
+             (implies (two-thirds x y z) 
+                      (or (and (obtains x) (obtains y)) 
+                          (and (obtains x) (obtains z))
+                          (and (obtains y) (obtains z)))))
+    (string "the definition of 'two-thirds'")
+)
+
+(def-target the-target (obtains (c)))

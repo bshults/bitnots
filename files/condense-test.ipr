@@ -1,0 +1,58 @@
+;used fo
+
+(def-target target
+(or (and (A) (B))
+    (and (C) (D))
+    (and (implies (Q) (Q)) (implies (P) (P)))
+    (and (E) (F)))
+)
+
+(def-target target
+(forall ((peanuts) (john) (bill) (sue) (apples) (chicken))
+        (implies            ;for checking out detail
+         (and 
+          (forall ((x)) (forall ((y)) (implies (and (alive y)
+                                                    (eats y chicken)) 
+                                               (likes y x))))
+          (forall ((x)) (implies (food x) (likes john x))) 
+          (food apples) 
+          (food chicken) 
+          (forall ((x)) (implies (for-some ((y)) (and (eats y x)
+                                                      (not-killed-by y x)))
+                                 (food x))) 
+          (eats bill peanuts) 
+          (alive bill) 
+          (forall ((x)) (implies (eats bill x) (eats sue x))) 
+          (forall ((y)) (implies (alive y)
+                                 (forall ((x)) (not-killed-by y x)))))
+         (likes john peanuts)))
+)
+
+(def-target target
+(forall ((peanuts) (john) (bill) (sue) (apples) (chicken))
+        (implies 
+         (and (forall ((x)) (implies (food x) (likes john x))) 
+              (food apples) 
+              (food chicken) 
+              (forall ((x)) (implies
+                             (for-some ((y)) (and (eats y x)
+                                                  (not-killed-by y x) ))
+                 (food x))) 
+              (eats bill peanuts) 
+              (alive bill) 
+              (forall ((x)) (implies (eats bill x) (eats sue x))) 
+              (forall ((y)) (implies (alive y)
+                                     (forall ((x)) (not-killed-by y x)))))
+         (likes john peanuts)))
+)
+
+;; requires q >= 2
+(def-target target
+(forall ((a) (b)) (implies (forall ((x)) (p x)) (and (p a) (p b))))
+)
+
+;; requires q >= 2
+(def-target target
+(implies (forall ((x)) (p x)) 
+         (and (forall ((x)) (p x)) (forall ((y)) (p y))))
+)

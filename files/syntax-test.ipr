@@ -1,0 +1,798 @@
+;;;*********************************************************************
+;;;
+;;;               EXAMPLE-THEOREMS.ipr
+;;;                            
+;;;              These are bledsoe's IMPLY theorems translated 
+;;;              so as to be readable by IPR
+;;;
+;;;              Benjamin Shults
+;;;
+;;;***********************************************************************
+  
+
+(implies (or (a) (b)) (or (c) (b)))     ; not a theorem
+;; 0.07 no
+  
+(forall ((x)) (implies (p x) (q x)))    ;not a theorem
+;; 0.07 no
+  
+(implies (and (for-some ((x)) (p x)) (for-some ((x)) (q x)))
+  (for-some ((y)) (and (p y) (q y))))
+  					;not a theorem
+;; 0.07 no
+  
+(implies (for-some ((x)) (p x)) (forall ((x)) (p x))) ;not a theorem
+;; 0.07 no
+  
+(forall ((a)) (implies (forall ((x)) (p x)) (p a)))
+;; 0.07 yes
+  
+(forall ((a)) (implies (and (p a) (forall ((x)) (implies (p x) (q x)))) (q a)))
+;; 0.07 yes
+  
+(implies (implies (truth) (c)) (c))
+;; 0.07 yes
+  
+(implies (implies (a) (or (b) (c))) (c)) ;not a theorem
+;; 0.07 no
+  
+(implies (and (not (a)) (not (b)) (implies (truth) (or (a) (b) (c)))) (c))
+;; 0.07 yes
+  
+(implies (or (b) (a)) (or (a) (b)))
+;; 0.07 yes
+  
+(implies (a) (or (b) (c)))              ;not a theorem
+;; 0.07 no
+  
+(implies (and (a) (or (not (a)) (b))) (b)) ;reducer needed
+;; 0.07 yes
+  
+(implies (and (not (a)) (b)) (not (a)))
+;; 0.07 yes
+  
+(implies (and (implies (b) (a)) (implies (c) (b))
+  	      (implies (not (a)) (c))) (a))
+;; 0.07 yes
+  
+(implies (and (= a b) (p a)) (p b))
+;; 0.07 no
+  
+(forall ((a) (b)) (implies (forall ((x)) (p x)) (and (p a) (p b))))
+;; 0.07 no
+;; with interaction: yes
+;; 0.11 yes
+  
+(forall ((a) (b)) (implies (or (p a) (p b)) (for-some ((x)) (p x))))
+;; 0.07 no
+;; with interaction: yes
+;; 0.11 yes
+  
+(forall ((a) (b)) (implies (and (q a) (q b))
+  		    (for-some ((x)) (and (implies (p x) (and (p a) (p b))) 
+  					 (q x)))))
+;; 0.07 no
+;; 0.11 no (reject stuff not working)
+  
+(forall ((a) (b) (c)) (implies (forall ((x)) (p x)) (and (p a) (p b) (p c))))
+;; 0.07 no
+;; with interaction: yes
+;; 0.11 yes
+  
+(implies (and (a) (b) (implies (a) (implies (b) (c)))) (c))
+;; 0.07 yes
+  
+(implies (and (or (a) (b)) (implies (b) (a)) (implies (a) (b)))
+  (and (a) (b)))                        ;full set on 2 syms
+;; 0.07 yes
+  
+(forall ((a) (b) (c)) 
+  (implies (and (p a) (p b) (q b)) (for-some ((x)) (and (p x) (q x)))))
+;; 0.07 no
+;; with interaction: yes
+;; 0.11 yes
+  
+(implies (and (p (a) (c)) (p (b) (d)) (p (a) (e)) (q (f) (c)) 
+              (q (a) (e)))
+  (for-some ((x)) (for-some ((y)) (and (p x y) (q x y)))))
+;; 0.07 no
+;; with interaction: yes (with minor error)
+  
+(forall ((a) (b) (c) (d) (e))
+  (implies (and (p a) (p b) (q c) (q d) (r a e) (r b d)) 
+    (for-some ((x)) (for-some ((y)) (and (implies (e*) (and (p x) (q y)))
+                                         (r x y))))))
+;; 0.07 no
+;; with interaction: yes
+  
+(forall ((a) (b) (c) (d) (e) (f))
+  (implies (and (p a) (p b) (p c) (r c) (r d)
+                (r e) (q f c) (q b e)) 
+    (for-some ((x)) (for-some ((y)) (and (p x) (r y) (q x y))))))
+;; 0.07 no
+;; with interaction: yes
+
+(forall ((a) (b) (c) (d) (e) (f))
+  (implies (and (p a) (p b) (p c)
+                (r c) (r d) (r e) (q f c) (q b e)) 
+    (for-some ((x)) (for-some ((y)) (and (q x y) (p x) (r y))))))
+;; 0.07 no
+;; with interaction: yes
+  
+(forall ((a) (b) (c) (d) (e) (f))
+  (implies (and (p a) (p b) (p c) (r c) (r d) (r e) (q f c)
+                (q b e)) 
+    (for-some ((x)) (for-some ((y)) (and (p x) (q x y) (r y))))))
+;; 0.07 no
+;; with interaction: yes
+  
+(forall ((a) (b)) (for-some ((x)) (implies (and (p x) (q a) (q b))
+  				    (and (p a) (p b) (q x)))))
+;; 0.07 no
+;; 0.11 yes
+  
+(implies (and (r (a)) (not (p (a))) (q (b)))
+  (for-some ((x)) (and (implies (p x) (q x)) (r x))))
+;;0.07 no
+;; with interaction: yes
+;; 0.11 yes
+  
+(implies (and (r (a)) (not (q (b))))    ;not a theorem
+  (for-some ((x)) (and (implies (p x) (q x)) (r x))))
+;;0.07 no
+;; 0.11 no
+  
+(implies (and (for-some ((x)) (a x))
+              (for-some ((x)) (b x))    ;not a theorem
+              (implies (r) (for-some ((x)) (and (a x) (b x))))
+              (implies (and (p) (q)) (r)))
+  (for-some ((x)) (and (implies (p) (a x)) (implies (q) (b x)))))
+;;0.07 no
+;; 0.11 yes
+  
+  ;;;(defvar hwe16-clauses    ;cs385f homework problem e16 in clausal form
+(and (or (<= (+ (c) (- (f x)))) (<= (+ (d) (- (f x)))) (<= (+ (e) (- (f x)))))
+     (or (< (+ (f x) (- (c)))) (< (+ (f x) (- (d)))) (< (+ (f x) (- (e)))))
+     (<= (+ (d) (- (c)))) (<= (+ (c) (- (d)))) (<= (+ (e) (- (c))))
+     (<= (+ (c) (- (e)))))
+;; note that in this example a deduction of [] is not possible without
+;;  retaining tautologies, unless we try ground-inequality-prover first,
+;;  obtain equality units (c=d and c=e) and sub=.
+;; 0.07 no
+  
+(for-some ((x)) (implies (and (implies (and (q (a)) (r (b)))
+                                (p x)) 
+                              (implies (and (q* (c)) (r* (d)))
+                                (p x)) 
+                              (q x) (r x) (q* x) (r* x) (s (a)) 
+                              (s (c)) (s (d)))
+                  (and (p x) (s x))))
+;; 0.07 no
+;; 0.11 yes
+  
+(for-some ((x)) (implies (and (implies (and (q (a)) (r (b))) (p x)) 
+  			      (implies (and (q* (c)) (r* (d)))
+                                (p x)) (q x) (r (e)) 
+                              (q* x) (r* x) (s (a)) 
+                              (s (c)) (s (d)))
+                  (and (p x) (s x))))
+;; 0.07 no
+;; 0.11 yes
+  
+(for-some ((x)) (implies (and (implies (and (q (a)) (r (b)))
+                                (p x)) 
+                              (implies (and (q* (c)) (r* (d)))
+                                (p x)) (q x) (r (e)) 
+                              (q* x) (r* (e)) (s (a))
+                              (s (c)) (s (d))) 
+                  (and (p x) (s x))))                     ;not a theorem
+;; 0.07 no
+;; 0.11 no
+  
+(forall ((a)) 
+  (for-some ((x))
+  (for-some ((x2))
+            (for-some ((x3))
+                      (for-some ((x4))
+                                (for-some 
+                                 ((y))
+                                 (implies (and (p a) (e a)
+                                               (implies (e x)
+                                                 (or (g x) (s x (f x))))
+                                               (implies (e x2)
+                                                 (or (g x2) (c (f x2)))) 
+                                               (implies (s a y) (p y))) 
+                                   (or (and (p x3) (g x3)) 
+                                       (and (p x4) (c x4))))))))))
+;; 0.07 no
+;; with interaction: yes
+  
+(forall ((a) (b)) (implies (forall ((z)) (implies (q z) (p z)))
+                    (for-some ((x)) (and (implies (p x) (p a)) 
+                                         (implies (q x) (p b))))))
+;; 0.07 no
+  
+(forall ((a) (b))
+  (implies (forall ((z)) (forall ((x)) (and (implies (q z) (p z))
+                                            (or (p x) (q x)) 
+                                            (implies (p a) (q x))
+                                            (implies (p b) (p x)))))
+  (and (p a) (p b))))
+;; 0.07 no
+;; 0.11 yes
+  
+(implies
+    (and (implies (and (a) (b)) (c))
+  	 (implies (and (a1) (a2)) (a))
+  	 (implies (and (a11) (a12)) (a1))
+  	 (implies (truth) (a11))
+  	 (implies (truth) (a12))
+  	 (implies (truth) (a2))
+  	 (implies (and (b1) (b2)) (b))
+  	 (implies (truth) (b))
+  	 (implies (and (e) (f)) (c)))
+  (c))
+;; 0.07 no
+;; 0.11 yes
+  
+(implies;;for testing back-chain and prove-the-premise 
+    (and (implies (h1) (c1)) (implies (h2) (c2))
+  	 (implies (h3) (and (c1) (c2) (c3)))
+  	 (implies (h4) (or (c4) (c5) (c6))) (implies (h5) (implies (h6) (c7)))
+  	 (h1) (h2) (h3) (h4) (h5) (h6) 
+  	 (not (c4)) (not (c5)) (not (c6)) )
+  (and (c1) (c2) (c3) (c4) (c5) (c6) (c7)))
+;; 0.07 yes
+  
+(implies (and (implies (and (a) (b)) (c))
+              (implies (truth) (a))) (c))            ;not a theorem
+;; 0.07 no
+  
+(forall ((a) (b) (c))
+  (implies (and (s a) (s b) (r b c)
+                (forall ((x)) (implies (s x) (p x)))
+                (forall ((x)) (forall ((y)) (implies (r x y) (q x y)))))
+    (for-some ((x)) (for-some ((y)) (and (p x) (q x y))))))
+;; 0.07 no
+;; with interaction: yes
+  
+(forall ((b))
+  (implies (forall ((y)) (implies (implies (r b) (r y)) (p (f y) y)))
+    (for-some ((x)) (for-some ((y)) (and (p x y) (implies (q (f b) b)
+                                                   (q x y))))) ))
+;; 0.07 no
+;; with interaction: yes
+;; 0.11 yes
+  
+(forall ((b) (a))
+  (implies (forall ((y)) (implies (implies (r b) (r y))
+                           (or (p (f y) y)
+                               (and (p a) (not (p a))))))
+    (for-some ((x)) (for-some ((y)) (and (p x y)
+                                         (implies (q (f b) b)
+                                           (q x y))))) ))
+;; 0.07 no
+;; with interaction: yes
+;; 0.11 yes
+  
+(forall ((b))
+  (implies (and (r b) (q (f b) b) (p b)
+  (forall ((y)) (implies (r y)
+                  (or (p (f y) y) (not (p y))))))
+    (for-some ((x)) (for-some ((y)) (and (p x y) (q x y)))) ))
+;; 0.07 no
+;; with interaction: yes
+  
+(forall ((peanuts) (john) (bill) (sue) (apples) (chicken))
+  (implies 
+      (and (forall ((x)) (implies (food x) (likes john x))) 
+           (food apples) 
+           (food chicken) 
+           (forall ((x)) (implies
+                             (for-some ((y)) (and (eats y x)
+                                                  (not-killed-by y x) ))
+                           (food x))) 
+           (eats bill peanuts) 
+           (alive bill) 
+           (forall ((x)) (implies (eats bill x) (eats sue x))) 
+           (forall ((y)) (implies (alive y)
+                           (forall ((x)) (not-killed-by y x)))))
+    (likes john peanuts)))
+;; 0.07 no
+;; with interaction: yes
+;; 0.11 yes
+;; 0.12 yes
+  
+(forall ((peanuts) (john) (bill) (sue) (apples) (chicken))
+  (implies                              ;for checking out detail
+      (and 
+       (forall ((x)) (forall ((y)) (implies (and (alive y)
+                                                 (eats y chicken)) 
+                                     (likes y x))))
+       (forall ((x)) (implies (food x) (likes john x))) 
+       (food apples) 
+       (food chicken) 
+       (forall ((x)) (implies (for-some ((y)) (and (eats y x)
+                                                   (not-killed-by y x)))
+                       (food x))) 
+       (eats bill peanuts) 
+       (alive bill) 
+       (forall ((x)) (implies (eats bill x) (eats sue x))) 
+       (forall ((y)) (implies (alive y)
+                       (forall ((x)) (not-killed-by y x)))))
+    (likes john peanuts)))
+;; 0.07 no
+;; with interaction: yes
+;; 0.12 yes
+  
+(for-some ((z))
+  	  (forall ((x)) (for-some ((y)) (and (implies (p y x)
+                                               (for-some ((w)) (p w y))) 
+          (implies (and (p z y) (p y z))
+            (p y x))))))
+;; 0.07 no
+;; with interaction: yes
+;; 0.11 yes
+  
+(implies (and (forall ((x)) (implies (p x) (q x)))
+              (for-some ((y)) (implies (q y) (r y)))) 
+  (for-some ((z)) (implies (p z) (r z))))
+;; 0.07 yes
+  
+(forall ((a) (b))
+  (implies (forall ((y)) (implies (q y) (p y)))
+    (for-some ((x)) (and (implies (p x) (p a)) 
+                         (implies (q x) (p b))))))
+;; 0.07 no
+;; 0.11 yes
+  
+(forall ((b))
+  (implies (and (forall ((x)) (implies (p x) (q x))) (r b)) 
+    (implies (forall ((y)) (implies (r y) (p y))) (q b))))
+;; 0.07 no
+;; with interaction: yes
+;; 0.11 yes
+  
+(forall ((c) (b))
+  (implies (forall ((z)) (q (f z))) 
+    (for-some ((x)) (for-some ((y)) (and (implies (p (f y)) (p x)) 
+    (implies (r y)
+      (and (r b) (r c)))
+    (q x))))))
+;; 0.07 no
+;; 0.11 yes
+  
+(forall ((b) (c))
+  (implies (forall ((z)) (q (f z))) 
+    (for-some ((x)) (for-some ((y)) (and (implies (p (f y)) 
+                                           (and (p x)
+                                                (implies (r y)
+                                                  (and (r b) (r c)))))
+    (q x))))))
+;; 0.07 no
+;; 0.11 yes
+  
+(forall ((b) (c))
+  (implies (q (f b)) 
+    (for-some ((x)) (for-some
+                     ((y)) (and (implies (p (f y)) 
+                                  (and (p x) (implies (r y)
+                                               (and (r b) (r c))))) 
+                     (q x))))))
+;; 0.07 no
+;; 0.11 yes
+  
+(forall ((a) (b))
+  (implies (and (q a b) (r b)
+                (forall ((y)) (implies (r y) (p (f y) y))))
+    (for-some ((x)) (for-some ((y)) (and (p x y) (q x y))))))
+  					;not a theorem
+;; 0.07
+;; 0.11 no
+  
+(implies  (forall ((y)) (implies (implies (r b) (r y))
+                          (p (f y) y)))
+  (for-some ((x)) (for-some ((y)) (and (p x y) (implies (q a b)
+  (q x y))))) )
+  					;not a theorem
+;; 0.07
+  
+(forall ((a)) (forall ((b)) (subset a (union a b)))) ;needs reduce
+;; 0.07
+  
+(forall ((a)) (forall ((b)) (set-= (subsets (intersection a b)) 
+  				   (intersection 
+  				    (subsets a) (subsets b)))));;needs reduce
+;; 0.07
+  
+(implies (element a g)
+  (subset a (union-of-sets g)))        ;needs reduce
+;; 0.07
+  
+(forall ((x)) (forall ((t)) (implies (and (element x (omega))
+  					  (element t x)) 
+  			      (element t (omega)))))
+  					;needs reduce.  use induction
+;; 0.07
+  
+(forall ((x)) (forall ((t)) (implies (h) (implies (and (element x (omega))
+                                                     (element t x)) 
+                                         (element t (omega))))))
+;; 0.07
+  
+(implies (and (element (x) (omega)) (element (t) (x)))
+  (element (t) (omega)))
+;; 0.07
+  
+(implies (and (element (scsr x) (omega))
+              (element (t) (scsr x))) 
+  (element (t) (omega)))
+;; 0.07
+  
+(implies (and (element (f x) (omega)) (element (t) (f x))) 
+  (element (t) (omega)))
+;; 0.07
+  
+(forall ((a) (c) (b))
+  (implies (and (forall ((x)) (implies (p x) (< (f x) a)))
+                (p c) (implies (p c) (<= a b)))
+    (< (f c) b)))
+;; 0.07
+  
+(implies (and (forall
+                  ((j)) (closed (clsr j)))
+  	      (forall ((k)) (implies (lf k) (lf (clsr k)))) 
+  	      (forall ((m)) (implies (cover m) (cover (clsr m)))) 
+  	      (forall ((p)) (forall ((q)) (forall 
+                                              ((r)) (implies (and (ref p q)
+                                                                  (ref q r))
+                                                      (ref p r)))))
+  	      (forall ((u)) (forall ((v)) (implies (ref u v)
+  					    (ref (clsr u) (clsr v))))) 
+  	      (forall ((f)) (implies (and (open f) (cover f)) 
+  			      (for-some 
+  			       ((g)) (and (open g) (cover g)
+  					  (ref (clsr g) f))))) 
+  	      (forall ((f*)) (implies (and (open f*) (cover f*)) 
+  			       (for-some ((g*)) (and (open g*) (cover g*) 
+  						     (ref g* f*) (lf g*))))))
+  (forall ((ff)) (implies (and (open ff) (cover ff)) 
+  		   (for-some ((h)) (and (closed h) (cover h) 
+  					(ref h ff) (lf h))))))
+  					;needs reduce, put, reorder, induction
+;; 0.07
+  
+(implies (and (parent m v) (parent v p) (parent p h) 
+              (forall ((x)) (forall ((y)) (implies (parent x y)
+                                            (ancester x y))))
+              (forall ((x)) (forall ((y)) (forall
+                                              ((z)) (implies (and (ancester x y)
+                                                                  (ancester y z))
+                                                      (ancester x z)))))) 
+  (ancester m h))
+;; 0.07
+  
+(implies (and (parent m v) (parent v p) (parent p h)
+              (forall ((x)) (forall ((y)) (implies (parent x y)
+                                            (ancester x y))))
+              (forall ((x)) (forall ((y)) (forall
+  					      ((z)) (implies (and (ancester x y)
+                                                                  (parent y z)) 
+                                                      (ancester x z)))))) 
+  (ancester m h))
+;; 0.07
+  
+(set-= (intersection (subsets a) (subsets b)) 
+       (subsets (intersection a b)))
+;; 0.07
+  
+(implies (forall ((x42)) (implies (element x42 (omega)) 
+                           (element (scsr x42) (omega))))
+  (set-= (union-of (omega)) (omega)))
+;; 0.07
+  
+(forall ((x)) (implies (element x (omega))
+                (element (scsr x)(omega))))
+;; 0.07
+  ;;;useless benji 6/4/92 (conclusion is a reduce rule)
+  ;;;(defvar ex42-lemma2 '(forall x (implies (element x (omega))
+  ;;;(element x (scsr x)))))
+  
+(implies (forall ((e))                  ;trivial
+           (for-some ((d))
+                     (forall ((x))
+                       (implies (< (|| (+ x (- a))) d)
+                         (< (|| (+ (- (l)) (f x))) e)))))
+  (forall ((e))
+    (for-some ((d))
+              (forall ((x))
+                (implies (< (|| (+ x (- a))) d)
+                  (< (|| (+ (f x) (- (l)))) e))))))
+;;0.07
+  
+(for-some ((x)) (and (implies (<= a c) (<= a x))
+                     (implies (<= c b) (<= x b))))
+;;0.07
+  
+(implies (< a b) (for-some ((x)) (and (< a x) (< x b))))
+;;0.07
+  
+(implies (and (p a) (< a b))
+  (for-some ((x)) (and (< a x) (p a) (< x b))))
+;;0.07
+  
+(implies (<= a b) (for-some ((x)) (and (<= a x) (<= x b))))
+;;0.07
+  
+(implies (and (< c b) (< a c))
+  (for-some ((x)) (and (< a x) (< x b))))
+;;0.07
+  
+(implies (and (< a c) (< c b)) (< a b))
+;;0.07
+  
+(for-some ((x)) (and (implies (and (< a b) (< a d))
+                       (and (< a x) (< x b)))
+                     (implies (and (< c b) (< c d))
+                       (and (< c x) (< x d))) ))
+;;0.07
+  
+(implies (and (< a b) (< a d) (< c b) (< c d))
+  (for-some ((x)) (and (< a x) (< x b) (< c x) (< x d))) )
+;;0.07
+  
+(implies (cont-de f a) (cont-n f a))
+;;0.07
+  
+(forall ((x)) (forall ((y)) (forall ((d))  (implies (and (< y (+ x d))
+                                                         (< x (+ y d)))
+                                             (< (|| (+ x (-y))) d)))))
+;;0.07
+  
+(forall ((x)) (forall ((y)) (forall ((d))  (implies (< (|| (+ x (-y))) d)
+                                             (and (< y (+ x d))
+                                                  (< x (+ y d)))))))
+;;0.07
+  
+(implies (diff-de f a) (cont-de f a))
+;;0.07
+  
+(iff (diff-l f a) (diff-de f a))
+;;0.07
+  
+(implies (diff-l f a) (cont-de f a))
+;;0.07
+  
+(implies (diff-l f a) (cont-n f a))
+;;0.07
+  
+(for-some ((x)) (and (< a x) (< x b)))
+;;0.07
+  
+(implies (< a b) (for-some ((x)) (and (< a x) (< x b))))
+;;0.07
+  
+(implies (and (forall ((y)) (< (f y) y)) (< a b))
+  (for-some ((x)) (and (< a x) (< (f x) b))) )
+;;0.07
+  
+(implies (and (lim f a l) (lim g a k)) (lim (+ f g) a (+ l k)))
+  					;(defvar lim+ ex58)
+;;0.07
+  
+(and (or (<= e1) (< (- (d1s e1))))
+     (or (<= e2) (<= (+ (- (a)) x2 (d1s e2))) (<= (+ (- x2) (d1s e2) (a)))
+  	 (< (+ (- e2) (- (f x2)) (f (a)))))
+     (or (<= e3) (<= (+ (- (a)) x3 (d1s e3))) (<= (+ (- x3) (d1s e3) (a)))
+  	 (< (+ (- e3) (- (f (a))) (f x3))))
+       
+     (or (<= e4) (< (- (d2s e4))))
+     (or (<= e5) (<= (+ (- (a)) x5 (d2s e5))) (<= (+ (- x5) (d2s e5) (a)))
+  	 (< (+ (- e5) (- (g x5)) (g (a)))))
+     (or (<= e6) (<= (+ (- (a)) x6 (d2s e6))) (<= (+ (- x6) (d2s e6) (a)))
+  	 (< (+ (- e6) (- (g (a))) (g x6))))
+       
+     (< (- (ee)))
+     (or (<= d7) (< (+ (- d7) (- (xs d7)) (a))))
+     (or (<= d8) (< (+ (- d8) (- (a)) (xs d8))))
+     (or (<= d9) (<= (+ (- (f (a))) (- (g (a))) (f (xs d9)) (g (xs d9)) (ee)))
+  	 (<= (+ (- (f (xs d9))) (- (g (xs d9))) (ee) (f (a)) (g (a))))))
+;;0.07
+  
+(and (or (<= e1 0) (< 0 (d1 e1)))
+     (or (<= e1 0) (< (+ (d1 e1) y) (x0)) (< (+ (d1 e1) (x0)) y)
+  	 (<= (l) (+ (f y) e1)))
+     (or (<= e1 0) (< (+ (d1 e1) y) (x0)) (< (+ (d1 e1) (x0)) y)
+  	 (<= (f y) (+ (l) e1)))
+     (or (<= e2 0) (< 0 (d2 e2)))
+     (or (<= e2 0) (< (+ (d2 e2) z) (x0)) (< (+ (d2 e2) (x0)) z)
+  	 (<= (k) (+ (g z) e2)))
+     (or (<= e2 0) (< (+ (d2 e2) z) (x0)) (< (+ (d2 e2) (x0)) z)
+  	 (<= (g z) (+ (k) e2)))
+     (< 0 (e0))
+     (or (<= d 0)  (<= (x0) (+ (x d) d)))
+     (or (<= d 0)  (<= (x d) (+ (x0) d)))
+     (or (<= d 0)  (< (+ (l) (+ (k) (e0))) (+ (f (x d)) (g (x d)))) 
+  	 (< (+ (f (x d)) (+ (g (x d)) (e0))) (+ (l) (k)))))
+;;0.07
+  
+(implies (and (forall
+  		  ((e1)) (implies (< 0 e1) 
+                           (for-some ((d1)) (and (< 0 d1) 
+                                                 (forall
+                                                     ((x1)) (implies
+                                                                (and (< (- x1 a) d1) 
+                                                                     (< (- a x1) d1))
+                                                              (and (< (- (f x1) l) e1)
+                                                                   (< (- l (f x1)) e1))))))))
+              (forall ((e2)) (implies (< 0 e2) 
+                               (for-some
+                                ((d2)) (and (< 0 d2) 
+                                            (forall
+                                                ((x2)) (implies (and (< (- x2 a) d2)
+                                                                     (< (- a x2) d2))
+                                                         (and (< (- (g x2) k) e2)
+                                                              (< (- k (g x2)) e2)))))))))
+  (forall ((e)) (implies (< 0 e) 
+                  (for-some
+                   ((d)) (and (< 0 d) 
+                              (forall ((x)) 
+  				(implies (and (< (- x a) d) (< (- a x) d))
+  				  (and (< (- (+ (f x) (g x)) (+ l k)) e)
+  				       (< (- (+ l k) (+ (f x) (g x))) e))))))
+                  )))
+  
+;;0.07
+  
+(implies (and (forall ((e))             ;lim++
+                (forall
+                    ((x)) (implies (< 0 e)
+                            (and (< 0 (ds e))
+                                 (implies
+                                     (and (< (|| x) (/ (ds e) 2))
+                                          (< (|| (- (a))) (/ (ds e) 2)))
+                                   (< (|| (+ (f x) (- (l)))) e))))))
+              (forall ((e1))
+                (forall ((x1))
+                  (implies (< 0 e1)
+                    (and (< 0 (ds1 e1))
+                         (implies (and (< (|| x1)
+                                          (/ (ds1 e1) 2))
+                                       (< (|| (- (a)))
+                                          (/ (ds1 e1) 2)))
+                           (< (|| (+ (g x1) (- (k)))) e1)))))))
+  (for-some ((d))
+            (implies (< 0 (e))
+              (and (< 0 d)
+                   (implies (< (|| (+ (xs d) (- (a)))) d)
+                     (and (< (|| (+ (f (xs (k))) (- (l)))) 
+                             (/ (e) 2))
+                          (< (|| (+ (g (xs (k))) (- (k)))) 
+                             (/ (e) 2))))))))
+;;0.07
+  
+(implies (and (lim f a l) (lim g a k)) (lim (* f g) a (* l k)))
+;;0.07
+  
+(implies (for-some ((e1))
+                   (for-some ((e2))
+                             (for-some
+                              ((x)) (for-some
+                                     ((x1)) (and (implies (< 0 e1)
+                                                   (and (< 0 (d1s e1))
+                                                        (implies (< (|| (+ x (- (a)))) (d1s e1))
+                                                          (< (|| (+ (f x) (- (l)))) e1))))
+                                                 (implies (< 0 e2)
+                                                   (and (< 0 (d1s1 e2))
+                                                        (implies
+                                                            (< (|| (+ x1 (- (a)))) (d1s1 e2))
+                                                          (< (|| (+ (g x1) (- (k)))) 
+                                                             e2)))))))))
+  (for-some ((d))
+            (implies (< 0 (e))
+              (and (< 0 d)
+                   (implies (< (|| (+ (xs d) (- (a)))) d)
+                     (and (< (|| (* (g (xs d)) (+ (f (xs d)) (- (l)))))
+                             (/ (e) 2))
+                          (< (|| (* (l) (+ (g (xs d)) (- (k)))))
+                             (/ (e) 2))))))))
+;;0.07
+  
+(forall ((z)) (forall ((e)) (forall ((e2)) (forall
+                                               ((t)) (implies
+                                                         (and (<= (* (|| z) e) e2)
+                                                              (not (= z 0))
+                                                              (< (|| t) e))
+                                                       (< (|| (* z t)) e2)) ))))
+;; |z|.e \< e'  and  (z' /= 0)  and  |t| < e  -implies  |z.t| < e'
+;;0.07
+  
+(= (|| (* x y)) (* (|| x) (|| y)))
+;;0.07
+  
+(forall ((z)) (forall ((a)) (forall ((b)) (implies (and (not (= z 0))
+                                                        (< a b)) 
+                                            (< (* z a) (* z b))))))
+  					;z/=0 and a<b -implies z.a<z.b
+;;0.07
+  
+(forall ((z)) (implies (not (= z 0)) (not (= (|| z) 0))))
+;;z/=0 implies |z| /= 0
+;;0.07
+  
+(forall ((a)) (forall ((m)) (forall ((e)) (forall
+                                              ((e4)) (implies (and (<= a m)
+                                                                   (<= (* m e)
+                                                                       e4)) 
+                                                       (<= (* a e) e4))))))
+;;0.07
+  
+(forall ((a)) (forall ((b)) (<= (|| a) (+ (|| (+ a (- b))) (|| b)))))
+;;0.07
+  
+(forall ((x)) (implies (< 0 (|| x)) (not (= x 0))))
+;;0.07
+  
+(forall ((y)) (implies (element y (omega)) ;matt kaufmann's
+                (for-some ((x)) (and (is-int-sqrt x y)
+                                     (element x (omega))))))
+;;0.07
+  
+(for-some ((x)) (and (not (< 0 (* x x)))
+                     (< 0 (* (+ x 1) (+ x 1)))))
+;;0.07
+  
+(implies (and (<= (+ (- (y)) (* (x2) (x2))))
+              (< (+ (y) (- (* (x2) (x2))) (- (x2)) (- (x2)) -1)))
+      
+  (for-some ((x)) (and (<= (+ (- (y)) -1 (* x x)))
+                       (< (+ (y) 1 (- (* x x)) (- x) (- x) -1)))))
+;;0.07
+  
+(forall ((x)) (for-some ((y)) (and (< x y) (prime y))))
+;;0.07
+  
+(implies (and (< c d) (<= (+ (f a) (- c))))
+  					;for use with rep, e = (f x)
+  (for-some ((x)) (<  (+ (f  x ) (- d)))))
+;;0.07
+  
+(or (null l) (= l (cons (car l) (cdr l))))
+                                        ; induction
+;;0.07
+  
+(implies (and (clauses s1) (clauses s2) (subset s1 s2)
+              (integer n))
+  (subset (res s1 n) (res s2 n)))
+;;0.07
+  
+(implies (and (clauses s) (integer n) (integer m))
+  (= (res (res s n) m) (res s (+ n m))))
+;;0.07
+  
+(implies (and (clauses s) (ground s) (unsatisfiable s)
+              (subset c1 c) (element c s)
+              (= s1 (union (set-diff s (sng c)) (sng c1))))
+  (and (clauses s1)(ground s1) (unsatisfiable s1)))
+;;0.07
+  
+(implies (element l c) (subset (sng l) c))           
+;;0.07
+  
+(implies (clauses s) (subset s (res s 1)))
+;;0.07
+  
+(forall ((a)) (forall ((b)) (forall ((x)) 
+                              (implies (and (subset a b) (element x a)) 
+                                (element x b)))))
+;;0.07
+  
+(implies (and (clauses s) (element c s) (subset c1 c)
+              (not (= c1 c))
+              (= s1 (union (set-diff s (sng c)) (sng c1))))
+  (< (excess-literal s1) (excess-literal s)))
+;;0.07
+  
+(implies (clauses s) (element (excess-literal s) (omega)))
+;;0.07
+  

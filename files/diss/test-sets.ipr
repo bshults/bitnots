@@ -1,0 +1,39 @@
+(forall ((x) (y))
+  (implies (and (pred1 x (the (x) (pred2 x (term1 x y) y)) (term2 x y))
+		(pred1 y (the-class-of-all (y)
+			   (pred3 y x (the (z) (pred4 z y x))))))
+    (for-some ((a) (b))
+      (or (pred5 (the (b) (forall ((a)) (pred6 a b x y))) b a x y)
+	  (pred7 a (the-class-of-all (x) ; not a theorem
+		     (= (the (y) (and (= x y) (= y a)))
+			(the-class-of-all (b) (= b a)))))))))
+
+(forall ((a))
+  (implies (and				; definition of singleton:
+	    (= (the-singleton a) (the-class-of-all (x) (= a x)))
+					; a is not a proper class:
+	    (an-element a)
+					; special case of church's schema:
+	    (forall ((b))
+	      (implies (an-element b)
+		(iff (a-member-of b (the-class-of-all (x) (= a x)))
+		     (= a b)))))
+    (a-member-of a (the-singleton a))))
+;;; relset0.01 yes  (11/11/93) q.e.d.  f.o.l.
+
+(forall ((a))
+  (implies (and
+	    (= (the-singleton a) (the-class-of-all (x) (= a x)))
+	    (= (the-ordered-pair (the-singleton a) a)
+	       (the-class-of-all (x) (or (= x a) (= x (the-singleton a)))))
+					; theorem about the-first
+	    (= (the-first (the-ordered-pair (the-singleton a) a)) 
+	       (the-singleton a))
+	    (an-element a)
+	    (forall ((b))
+	      (implies (an-element b)
+		(iff (a-member-of b (the-class-of-all (x) (= a x)))
+		     (= a b)))))
+    (a-member-of a (the-first (the-ordered-pair (the-singleton a) a)))))
+;;; relset0.01 yes  (11/11/93) q.e.d.  f.o.l.
+

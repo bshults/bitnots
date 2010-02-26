@@ -1,0 +1,254 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; non theorems:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(forall ((a)) (a-member-of a (the-class-of-all (x) (= x a))))
+
+(forall ((a)) (a-member-of a (the-first (the-ordered-pair
+					 (the-singleton a) a))))
+
+(and (truth) (u (the (x) (u x))))
+
+(forall ((c) (b))
+  (implies (and (u c) (forall ((r))
+			(implies (and (an-element r) (u r)) (= r c))))
+    (implies (= b (the (x) (u x))) (u b))))
+
+(forall ((a) (b))
+  (implies (and (u a) (u b) (not (= a b)))
+    (= (the (r) (u r)) (the-undefined-thing))))
+
+(forall ((a) (b))
+  (implies (and (an-element a)
+		(u a) (u b) (not (= a b)))
+    (= (the (r) (u r)) (the-undefined-thing))))
+
+(forall ((c))
+  (implies (and (u c) (forall ((r)) (implies (u r) (= r c))))
+    (= c (the (r) (u r)))))
+
+(forall ((a)) (= a (the (x) (= x a))))
+
+(forall ((a) (b))
+  (implies (= a (the (x) (= x b)))
+    (= a b)))
+
+(forall ((a) (b))
+  (implies (and (an-element a)
+		(= a (the (x) (= x b))))
+    (= a b)))
+
+(forall ((c)) 
+  (iff (u c) (a-member-of c (the-class-of-all (x) (u x)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; theorems:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def-theorem kelley-a-4a		; perfect proof found, no search.
+  (forall ((x) (y) (z))
+    (iff (a-member-of z (the-class-of-all (a) (or (a-member-of a x)
+						  (a-member-of a y))))
+	 (or (a-member-of z x) (a-member-of z y)))))
+
+(implies (u (the-undefined-thing))
+  (u (the (x) (u x))))
+
+(forall ((b))
+  (implies (not (an-element b))
+    (= (the (x) (= x b)) (the-undefined-thing))))
+
+(forall ((a) (b))
+  (implies (and (an-element b) (= a (the (x) (= x b))))
+    (= a b)))
+
+(forall ((a))
+  (implies (an-element a)
+    (a-member-of a (the-class-of-all (x) (= x a)))))
+;;; relset0.02 yes "s" (11/11/93)
+
+(forall ((a))
+  (implies (an-element a)
+    (= (the (x) (= x a)) a)))
+;;; relset0.02 yes (11/12/93)
+
+(forall ((a) (b))
+  (implies (an-element a)
+    (a-member-of a (the-class-of-all (x) (or (= x a) (= x b))))))
+;;; relset0.02 yes (11/12/93)
+
+(forall ((b))
+  (implies (not (an-element b))
+    (= (the-undefined-thing) (the (s) (= s b)))))
+;;; relset0.02 yes (11/12/93)
+
+(forall ((a) (b))
+  (implies (a-member-of a (the-class-of-all (x) (= x b)))
+    (= b a)))
+;;; relset0.02 yes (12/29/93)
+
+(forall ((a) (b))		; true because the hyps are basically unsat.
+  (implies (and (a-proper-class b)
+		(a-member-of a (the-class-of-all (x) (= x b))))
+    (= b a)))
+;;; relset0.02 yes (12/29/93)
+
+(implies (forall ((x) (y)) 
+	   (= (the-union x y) (the-class-of-all (z) 
+				(or (a-member-of z x) (a-member-of z y)))))
+  (forall ((z) (x) (y)) 
+    (iff (a-member-of z (the-union x y))
+	 (or (a-member-of z x) (a-member-of z y)))))
+;;; this also shows why scripts would be useful.
+;;; in this case I have to do some silly replacing 3 times.
+;;; Currently equality can't handle this.
+
+(forall ((c))
+  (implies (an-element c)
+    (iff (a-member-of c (the-class-of-all (x) (u c)))
+	 (u c))))
+;;; set0.02 (12-29-93)
+
+(forall ((c))
+  (implies (an-element c)
+    (implies (and (u c) (forall ((r)) (implies (u r) (= r c))))
+      (= c (the (r) (u r))))))
+;;; Also, does it make sense that a constant depends on a constant?
+;;; It must depend on a variable which has already been bound to a 
+;;; constant.  Would it show a term if it were bound to that?
+;;; something is very wrong with
+;;; assigning free params to constants which did not exist when the
+;;; free param was created. (if that's a problem, I've got it.)
+;;; 
+;;;  There are two things here.  First, it IS permissible for a free
+;;; param to be bound to a newer constant as long as the constant was not
+;;; in the free param's scope originally.  
+;;;  To deal with the ugliness of this may be very complex.
+;;; It is just this ugliness that's bothering me.
+;;; 
+;;; Second, it is NOT permissible for a free param to be bound to a newer
+;;; constant if the constant was in its scope.
+;;; 
+
+(or (for-some ((r))
+      (and (u r) (an-element r) 
+	   (forall ((n)) (implies (and (u n) (an-element n)) (= r n)))))
+    (= (the (c) (u c))
+       (the-undefined-thing)))
+;;; 12-29-93 relset0.02
+;;; Q is helped if you raise copy-max to 5 when it gets stuck
+;;; and there's no set-theory to be done.
+;;; s is about 40 times faster than Q and needs no help.
+;;; looking at the proof afterward shows the disadvantage to
+;;; changing the formula slot of a hash.  I.e. it shows up previous
+;;; to when it was done.  This has now been corrected relset0.07.
+
+(implies (not (for-some ((x)) (u x)))
+  (= (the (y) (u y)) (the-undefined-thing)))
+;;; 12-29-93 relset0.02
+
+(forall ((a) (b))			; *copy-max* = 3
+  (implies (and (an-element a) (an-element b)
+		(u a) (u b) (not (= a b)))
+    (= (the (r) (u r)) (the-undefined-thing))))
+;;; 12-29-93 relset0.02
+
+(forall ((c) (b))
+  (implies (and (an-element c) (an-element b)
+		(u c) (forall ((r))
+			(implies (and (an-element r) (u r)) (= r c))))
+    (implies (= b (the (x) (u x))) (u b))))
+;;; this shows that the reducer is not working.
+;;; and whatever problem it is causing is serious.  (unsound.)
+;;; This problem may be related to the (setf (formula .) .) problem
+;;; I think I figured out that the above problem (unsoundness)
+;;; was really in the equality reasoner.  I think it is fixed now
+;;; at least partly.  Still I could go further in making the equality
+;;; structure new to each sequent.  I think what I did may have solved
+;;; it completely, though.  (I.e. made the intern caches disjoint.)
+;;; Also, maybe go-here should first try to mark-done-goals to see
+;;; if the current proof is already done.
+
+(forall ((c))
+  (implies (and (an-element c) (u c)
+		(forall ((r)) (implies (and (an-element r) (u r))
+				(= r c))))
+    (u (the (x) (u x)))))		; try this one with all the same 
+					; bound variables.
+;;; 12-29-93 relset0.02
+
+(forall ((c))
+  (implies (and (an-element c) (u c)
+		(forall ((r)) (implies (and (an-element r) (u r))
+				(= r c))))
+    (u (the (c) (u c)))))
+;;; 12-29-93 relset0.02
+
+(forall ((c))
+  (implies (and (an-element c) (u c)
+		(forall ((r)) (implies (and (an-element r) (u r))
+				(= r c))))
+    (u (the (r) (u r)))))
+;;; 12-29-93 relset0.02
+
+(forall ((a)) (implies (an-element a)
+		(= (the (x) (= x a)) a)))
+;;; 12-29-93 relset0.02
+
+(implies (forall ((r)) (iff (u r) (b r))) ; I need the ability to unify with
+  (= (the (x) (u x)) (the (y) (b y))))	; old juncts in the goal.
+;;; s gets it in 4 seconds.  12-29-93  relset0.02
+;;; C=4
+
+(forall ((a))
+  (implies (and (an-element a) (b a))
+    (= (the (x) (and (b a) (c a x))) (the (x) (c a x)))))
+;;; s does it.  12-30-93  relset0.02
+;;; C=2   
+
+(forall ((z))
+  (implies (and (forall ((x) (y)) 
+		  (= (the-union x y)
+		     (the-class-of-all (z) 
+		       (or (a-member-of z x) (a-member-of z y)))))
+		(= z (the-class-of-all (z) (u z))))
+    (= (the-union z z) z)))
+;;; problem: safe-replace is not working or not being called.
+;; no can do without extensionality.
+
+(forall ((a))
+  (implies (and				; definition of singleton:
+	    (= (the-singleton a) (the-class-of-all (x) (= a x)))
+	    (an-element a))		; a is not a proper class
+    (a-member-of a (the-singleton a))))
+;;; relset0.02 with interaction:
+;;; claim (a-member-of a (the-class-of-all (x) (= a x)))
+;;;                    or
+;;; "R" replace the 1st occurrece of
+;;; (singleton a) in the goal with {x|a=x} (11/17/93)
+
+(forall ((x))
+  (implies (a-member-of x (the-singleton x))
+    (an-element x)))
+
+(forall ((a))
+  (= (the (x) (for-some ((c) (b))
+		(and (= (the-ordered-pair a (up a))
+			(the-ordered-pair c b))
+		     (= c x))))
+     a))
+
+(forall ((a))
+  (implies (and
+	    (= (the-singleton a) (the-class-of-all (x) (= a x)))
+	    (= (the-ordered-pair (the-singleton a) a)
+	       (the-class-of-all (x) (or (= x a) (= x (the-singleton a)))))
+					; theorem about the-first
+	    (= (the-first (the-ordered-pair (the-singleton a) a)) 
+	       (the (x) (for-some ((c) (b))
+			  (and (= (the-ordered-pair (the-singleton a) a)
+				  (the-ordered-pair c b))
+			       (= x c)))))
+	    (an-element a))
+    (a-member-of a (the-first (the-ordered-pair (the-singleton a) a)))))
+

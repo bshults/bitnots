@@ -1,0 +1,56 @@
+(implies (a-member-of t (the-class-of-all (a)
+			  (or (a-member-of a (the-class-of-all (s)
+					       (forall ((b))
+						 (implies (a-member-of b s)
+						   (a-member-of b x)))))
+			      (a-member-of a (the-class-of-all (s)
+					       (forall ((b))
+						 (implies (a-member-of b s)
+						   (a-member-of b y))))))))
+  (a-member-of t (the-class-of-all (a)
+		   (forall ((b))
+		     (implies (a-member-of b a)
+		       (a-member-of b (the-class-of-all (s)
+					(or (a-member-of s x)
+					    (a-member-of s y)))))))))
+
+;;; The other way:
+
+;;; This is found if the copy-max is incremented by 1.
+
+(iff (a-member-of t (the-class-of-all (a)
+		      (forall ((b))
+			(implies (a-member-of b a)
+			  (a-member-of b (the-class-of-all (s)
+					   (and (a-member-of s x)
+						(a-member-of s y))))))))
+     (a-member-of t (the-class-of-all (a)
+		      (and (a-member-of a (the-class-of-all (s)
+					    (forall ((b))
+					      (implies (a-member-of b s)
+						(a-member-of b x)))))
+			   (a-member-of a (the-class-of-all (s)
+					    (forall ((b))
+					      (implies (a-member-of b s)
+						(a-member-of b y)))))))))
+
+;;; in this direction, the copy max does not need to be incremented
+;;; but some search may happen if things are not done in the perfect
+;;; order.
+
+(implies (a-member-of t (the-class-of-all (a)
+			  (and (a-member-of a (the-class-of-all (s)
+						(forall ((b))
+						  (implies (a-member-of b s)
+						    (a-member-of b x)))))
+			       (a-member-of a (the-class-of-all (s)
+						(forall ((b))
+						  (implies (a-member-of b s)
+						    (a-member-of b y))))))))
+  (a-member-of t (the-class-of-all (a)
+		   (forall ((b))
+		     (implies (a-member-of b a)
+		       (a-member-of b (the-class-of-all (s)
+					(and (a-member-of s x)
+					     (a-member-of s y)))))))))
+

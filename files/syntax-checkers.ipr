@@ -1,0 +1,2 @@
+(implies (p x) (q))
+

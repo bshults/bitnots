@@ -21,34 +21,27 @@ public class TheoremApplication implements Comparable {
    * TheoremApplication can be performed on.
    */
   private TableauFormula lowestFormula;
-
   /**
    * The map that was used to translate sequent variables to tableau
    * variables when this theorem was applied.
    */
   private HashMap varMap = null;
-
   /** The sequent that is applied on this branch. */
   private KBSequent sequent;
-
   /** The substitution which allows this sequent to be applied.  This
    * substitution will contain sequent variables.
    */
   Substitution subst;
-
   /** The substitution which allows this sequent to be applied.  This
    * substitution will not contain sequent variables and those pairs
    * that were replacing sequent variables won't be in here.  I.e.,
    * this is the substitution that the tableau needs to know about.
    */
   Substitution tabSubst;
-
   /** The InitialMatches used in the creation of this TA */
   private List<InitialMatch> initialMatches;
-
   /** The splits involved in this TheoremApplication */
   private TreeSet splits;
-
   /** Used to rank TAs in relation to each other.
    * Each TA's rank is initialized based on a
    * variety of factors.
@@ -115,18 +108,17 @@ public class TheoremApplication implements Comparable {
     double rank = 0;
 
     // fewer needs is better
-    rank += ( -40) * (this.getSequent().getPositives().size() +
-                      this.getSequent().getNegatives().size() -
-                      this.initialMatches.size());
+    rank += (-40) * (this.getSequent().getPositives().size() + this.getSequent().
+        getNegatives().size() - this.initialMatches.size());
 
     // more IMs is better
     rank += 4 * this.initialMatches.size();
 
     // smaller substitutions are better
-    rank += ( -3) * this.subst.size();
+    rank += (-3) * this.subst.size();
 
     // smaller number of splits is better
-    rank += ( -5) * this.splits.size();
+    rank += (-5) * this.splits.size();
 
     // a less-used sequent is better
     // TODO: replace this with HashMap reference
@@ -190,43 +182,55 @@ public class TheoremApplication implements Comparable {
    * Creates a new TheoremApplication object with a new
    * Map which includes information about the new match
    * that was found.
-   * Note: This assumes the substitution in the InitialMatch
-   * is compatible with this TA's substitution.
-   *
    * @param im the match to combine with this TheoremApplication
    * @param newSub the combination of the substitution of the receiver
    * and the substitution of <code>im</code>.
    * @return the result of combining <code>im</code> with the receiver.
    */
-  public TheoremApplication combine(InitialMatch im,
-                                    Substitution newSub) {
-
+  public TheoremApplication combine(InitialMatch match) {
     // it's illegal to try create a TA from different sequents
-    assert this.getSequent() == im.getSequent();
+    if (this.getSequent() != match.getSequent())
+      return null;
+
+    // check whether the initial match and the receiver
+    // already use the same sequent formula
+    Formula imForm = match.getSequentFormula();
+    for (InitialMatch taMatch: this.initialMatches) {
+      Formula taForm = taMatch.getSequentFormula();
+      if (imForm == taForm)
+        return null;
+    }
+
+    // make sure the substitutions are compatible
+    Substitution combo = Substitution.compatible(match.getSubstitution(),
+                                                 this.getSubstitution());
+    if (combo == null)
+      return null;
 
     // create the new InitialMatch list
-    ArrayList newInitialMatchList =
-        new ArrayList(this.initialMatches.size() + 1);
+    ArrayList<InitialMatch> newInitialMatchList =
+                            new ArrayList<InitialMatch>(this.initialMatches.size()
+                                                        + 1);
     newInitialMatchList.addAll(this.initialMatches);
-    newInitialMatchList.add(im);
+    newInitialMatchList.add(match);
 
     // create the new set of splits
     TreeSet newSplits = new TreeSet();
     newSplits.addAll(this.splits);
-    newSplits.addAll(im.getBranchFormula().getInvolvedSplits());
+    newSplits.addAll(match.getBranchFormula().getInvolvedSplits());
 
     // compare the height of the TA's lowest node
     // and the node of the initial match
     TableauFormula newLowestFormula;
     if (this.lowestFormula.getBirthPlace().isAncestorOf(
-        im.getBranchFormula().getBirthPlace())) {
-      newLowestFormula = im.getBranchFormula();
+        match.getBranchFormula().getBirthPlace())) {
+      newLowestFormula = match.getBranchFormula();
     } else {
       newLowestFormula = this.lowestFormula;
     }
 
     return new TheoremApplication(newLowestFormula, this.sequent,
-                                  newSub, newInitialMatchList,
+                                  combo, newInitialMatchList,
                                   newSplits);
   }
 
@@ -279,8 +283,9 @@ public class TheoremApplication implements Comparable {
    * @return the list of matched branch formulas.
    */
   public List<TableauFormula> getBranchFormulas() {
-    ArrayList<TableauFormula> retVal = new ArrayList<TableauFormula>(this.initialMatches.size());
-    for (InitialMatch match: this.initialMatches) {
+    ArrayList<TableauFormula> retVal =
+        new ArrayList<TableauFormula>(this.initialMatches.size());
+    for (InitialMatch match : this.initialMatches) {
       retVal.add(match.getBranchFormula());
     }
     return retVal;
@@ -294,7 +299,7 @@ public class TheoremApplication implements Comparable {
   protected List getSequentFormulas() {
     ArrayList retVal = new ArrayList(this.initialMatches.size());
     for (int i = 0; i < this.initialMatches.size(); i++) {
-      InitialMatch im = (InitialMatch)this.initialMatches.get(i);
+      InitialMatch im = (InitialMatch) this.initialMatches.get(i);
       retVal.add(im.getSequentFormula());
     }
     return retVal;
@@ -309,8 +314,8 @@ public class TheoremApplication implements Comparable {
     ArrayList pfs = new ArrayList(this.initialMatches.size());
     TableauFormula tf;
     for (int i = 0; i < this.initialMatches.size(); i++) {
-      tf = (TableauFormula) ((InitialMatch)this.initialMatches.
-                             get(i)).getBranchFormula();
+      tf = (TableauFormula) ((InitialMatch) this.initialMatches.get(i)).
+          getBranchFormula();
       if (tf.getSign()) {
         pfs.add(tf);
       }
@@ -327,8 +332,8 @@ public class TheoremApplication implements Comparable {
     ArrayList nfs = new ArrayList(this.initialMatches.size());
     TableauFormula tf;
     for (int i = 0; i < this.initialMatches.size(); i++) {
-      tf = (TableauFormula) ((InitialMatch)this.initialMatches.
-                             get(i)).getBranchFormula();
+      tf = (TableauFormula) ((InitialMatch) this.initialMatches.get(i)).
+          getBranchFormula();
       if (!tf.getSign()) {
         nfs.add(tf);
       }
@@ -343,14 +348,10 @@ public class TheoremApplication implements Comparable {
    *
    * @return The unused positive formulas in the sequent
    */
-  public List getUnusedPositiveSeqFormulas() {
-
-    List matchedSeqForms = this.getSequentFormulas();
-    ArrayList unusedPositives = new ArrayList();
-    List sps = this.sequent.getPositives();
-    Formula sf;
-    for (int cntr = 0; cntr < sps.size(); cntr++) {
-      sf = (Formula) sps.get(cntr);
+  public List<Formula> getUnusedPositiveSeqFormulas() {
+    List<Formula> matchedSeqForms = this.getSequentFormulas();
+    ArrayList<Formula> unusedPositives = new ArrayList<Formula>();
+    for (Formula sf : this.sequent.getPositives()) {
       if (!matchedSeqForms.contains(sf)) {
         unusedPositives.add(sf);
       }
@@ -365,14 +366,10 @@ public class TheoremApplication implements Comparable {
    *
    * @return The unused negative formulas in the sequent
    */
-  public List getUnusedNegativeSeqFormulas() {
-
+  public List<Formula> getUnusedNegativeSeqFormulas() {
     List matchedSeqForms = this.getSequentFormulas();
-    ArrayList unusedNegatives = new ArrayList();
-    List sns = this.sequent.getNegatives();
-    Formula sf;
-    for (int cntr = 0; cntr < sns.size(); cntr++) {
-      sf = (Formula) sns.get(cntr);
+    ArrayList<Formula> unusedNegatives = new ArrayList<Formula>();
+    for (Formula sf : this.sequent.getNegatives()) {
       if (!matchedSeqForms.contains(sf)) {
         unusedNegatives.add(sf);
       }
@@ -380,6 +377,7 @@ public class TheoremApplication implements Comparable {
     return unusedNegatives;
   }
 
+  @Override
   public String toString() {
     String retVal = new String();
     retVal += "Theorem Application (branch formula --> sequent formula):\n<br>";

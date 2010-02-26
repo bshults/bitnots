@@ -1,0 +1,77 @@
+(require ngb-set-theory)
+
+(def-predicate (a-bijection-from-to f a b)
+  (and (a-one-to-one-function f)
+       (= (the-domain f) a)
+       (= (the-range f) b)))
+
+(def-predicate (disjoint a b)
+  (= (the-intersection-of a b) (the-empty-set)))
+
+(def-predicate (pairwise-disjoint a)
+  (forall ((x) (y))
+    (implies (and (a-member-of x a)
+		  (a-member-of y a))
+      (disjoint x y))))
+
+(def-predicate (a-function-from-to f a b)
+  (and (a-function f)
+       (= (the-domain f) a)
+       (a-subclass-of (the-range f) b)))
+
+(def-predicate (a-category class morph-sets-class compositions)
+    (and (pairwise-disjoint morph-sets)
+	 (for-some
+	  ((hom))
+	  (and (a-bijection-from-to
+		hom (the-cross-product-class class class) morph-sets-class)
+	       (forall
+		((a) (b) (c))
+		(implies (and (a-member-of a class)
+			      (a-member-of b class)
+			      (a-member-of c class))
+		  (for-some
+		   ((composite))
+		   (and (a-function-d-r
+			 composite (the-cross-procuct-class
+				    (apply hom (the-ordered-pair b c))
+				    (apply hom (the-ordered-pair a b)))
+			 (apply hom (the-ordered-pair a c)))
+			(implies (and (a-member-of
+				       f (apply hom (the-ordered-pair a b)))
+				      (a-member-of
+				       g (apply hom (the-ordered-pair b c)))
+				      (a-member-of 
+				       h (apply hom (the-ordered-pair c d))))
+			  (= (apply composite
+				    (the-ordered-pair 
+				     h (the-ordered-pair g f)))
+			     (apply composite
+				    (the-ordered-pair
+				     (the-ordered-pair h g) f))))
+			(forall
+			 ((b))
+			 (for-some
+			  ((the-identity-morph-on-b))
+			  (and (a-member-of the-identity-morph-on-b
+					    (apply hom (the-ordered-pair b b)))
+			       (forall
+				((a) (c) (f) (g))
+				(implies (and (a-member-of a class)
+					      (a-member-of c class)
+					      (a-member-of
+					       f (apply hom (the-ordered-pair
+							     a b)))
+					      (a-member-of
+					       g (apply hom (the-ordered-pair
+							     b c))))
+				  (and (= (apply
+					   composite
+					   (the-ordered-pair
+					    the-identity-morph-on-b f)) f)
+				       (= (apply 
+					   composite
+					   (the-ordered-pair
+					    g the-identity-morph-on-b))
+					  g)))))))))))))))
+

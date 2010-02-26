@@ -1,0 +1,17 @@
+
+(def-theorem closer
+  (= (the-class-of-all (y) (P)) (b))
+  (string "the closing equality")
+)
+
+(def-target the-target
+    (implies (forall ((x)) (a-member-of x (b))) 
+             (P))
+ (string "the sequent-needy target")        
+)
+
+(def-target the-second-target
+    (implies (and (forall ((x)) (a-member-of x (set-such-that-Q))) (= (set-such-that-Q) (the-class-of-all (y) (Q)))) 
+    (Q))
+ (string "the non-sequent-needy target")
+)

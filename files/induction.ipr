@@ -1,0 +1,9 @@
+(implies (and (forall ((x)) (not (< x 0)))
+              (forall ((x) (y))
+                (implies (< (s x) (s y)) (< x y)))
+              (forall ((x))
+                (for-some ((y))
+                          (implies (not (= x 0))
+                            (and (= x (s y)) (< y x))))))
+  (not (for-some ((x)) (< x x))))
+

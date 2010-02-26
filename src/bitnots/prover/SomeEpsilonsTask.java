@@ -22,7 +22,8 @@ public class SomeEpsilonsTask
       return;
     if (Prover.unifyEquality(this.tableau) != null)
       return;
-    this.tableau.getEpsilonToolkit().applySomeEpsilons();
+    if (this.tableau.getEpsilonToolkit().applySomeEpsilons())
+      Prover.unifyEquality(this.tableau);
   }
 }
 

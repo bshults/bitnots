@@ -1,0 +1,217 @@
+(def-theorem sb-example
+  (forall ((l1) (c12) (c21) (l))
+    (implies (and (a-subset-of (the-singleton L1) c12)
+		  (a-subset-of (the-singleton (the-complement L1)) c21))
+      (a-subset-of (the-union (the-union (the-set-difference
+					  c12 (the-singleton L1))
+					 (the-set-difference
+					  c21 (the-singleton (the-complement
+							      L1))))
+			      (the-singleton L))
+		   (the-union (the-set-difference
+			       (the-union c12 (the-singleton L))
+			       (the-singleton L1))
+			      (the-set-difference
+			       c21 (the-singleton (the-complement L1))))))))
+
+(def-theorem sb-ex1
+  (forall ((l) (l1) (c12) (c21))
+    (implies (a-subset-of (the-intersection (the-singleton L)
+					    (the-singleton L1))
+			  (the-empty-set))
+      (a-subset-of (the-union (the-union (the-set-difference
+					  c12 (the-singleton L1))
+					 (the-set-difference
+					  c21 (the-singleton
+					       (the-complement L1))))
+			      (the-singleton L))
+		   (the-union (the-set-difference
+			       (the-union c12 (the-singleton L))
+			       (the-singleton L1))
+			      (the-set-difference
+			       c21 (the-singleton (the-complement L1))))))))
+
+(def-theorem sb-ex1=
+  (forall ((l) (l1) (c12) (c21))
+    (implies (a-subset-of (the-intersection (the-singleton L)
+					    (the-singleton L1))
+			  (the-empty-set))
+      (= (the-union (the-union (the-set-difference c12 (the-singleton L1))
+			       (the-set-difference
+				c21 (the-singleton (the-complement L1))))
+		    (the-singleton L))
+	 (the-union (the-set-difference
+		     (the-union c12 (the-singleton L)) (the-singleton L1))
+		    (the-set-difference
+		     c21 (the-singleton (the-complement L1))))))))
+
+(def-theorem sb-ex2
+  (forall ((l) (l1) (c12) (c21))
+    (for-some ((c))
+      (implies (a-subset-of (the-intersection (the-singleton L)
+					      (the-singleton L1))
+			    (the-empty-set))
+	(a-subset-of (the-union
+		      (the-union
+		       (the-set-difference c12 (the-singleton L1))
+		       (the-set-difference
+			c21 (the-singleton (the-complement L1))))
+		      (the-singleton L))
+		     (the-union (the-set-difference c (the-singleton L1))
+				(the-set-difference
+				 c21 (the-singleton
+				      (the-complement L1)))))))))
+
+(def-theorem sb-ex2=
+  (forall ((l) (l1) (c12) (c21))
+    (for-some ((c))
+	  (implies (a-subset-of (the-intersection (the-singleton L)
+						  (the-singleton L1))
+				(the-empty-set))
+	    (= (the-union
+		(the-union
+		 (the-set-difference c12 (the-singleton L1))
+		 (the-set-difference
+		  c21 (the-singleton (the-complement L1))))
+		(the-singleton L))
+	       (the-union (the-set-difference c (the-singleton L1))
+			  (the-set-difference
+			   c21 (the-singleton (the-complement L1)))))))))
+
+;;;(def-theorem sb-ex3e
+;;;  (forall ((a) (b))
+;;;    (implies (a-subset-of A B) (a-subset-of A B))))
+
+(def-theorem sb-ex3u
+  (forall ((a) (b) (c))
+    (implies (a-subset-of A B) (a-subset-of A (THE-UNION B C)))))
+
+(def-theorem sb-ex3i
+  (forall ((a) (b) (c))
+    (implies (a-subset-of A B) (a-subset-of (the-intersection A C) B))))
+
+(def-theorem sb-ex4e
+  (forall ((a) (b))
+    (implies (a-proper-subset-of  A B) (a-subset-of A B))))
+
+;;;(def-theorem sb-ex4s
+;;;  (forall ((a) (b))
+;;;    (implies (a-proper-subset-of  A B) (a-proper-subset-of  A B))))
+
+(def-theorem sb-ex4eu
+  (forall ((a) (b) (c))
+    (implies (a-proper-subset-of  A B)
+      (a-subset-of A (THE-UNION B C)))))
+
+(def-theorem sb-ex4su
+  (forall ((a) (b) (c))
+    (implies (a-proper-subset-of  A B)
+      (a-proper-subset-of  A (THE-UNION B C)))))
+
+(def-theorem sb-ex4ei
+  (forall ((a) (b) (c))
+    (implies (a-proper-subset-of  A B)
+      (a-subset-of (the-intersection A C) B))))
+
+(def-theorem sb-ex4si
+  (forall ((a) (b) (c))
+    (implies (a-proper-subset-of  A B)
+      (a-proper-subset-of  (the-intersection A C) B))))
+
+(def-theorem sb-ex5e
+  (forall ((a) (b) (c))
+    (implies (and (a-subset-of A C) (a-subset-of C B)) (a-subset-of A B))))
+
+(def-theorem sb-ex5u
+  (forall ((a) (b) (c))
+    (implies (and (a-subset-of A C) (a-subset-of C B))
+      (a-subset-of A (THE-UNION B C)))))
+
+(def-theorem sb-ex5i
+  (forall ((a) (b) (c))
+    (implies (and (a-subset-of A C) (a-subset-of C B))
+      (a-subset-of (the-intersection A C) B))))
+
+(def-theorem sb-ex6e
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-subset-of C B))
+      (a-subset-of A B))))
+
+;;;(def-theorem sb-ex6s
+;;;  (forall ((a) (b) (c))
+;;;    (implies (and (a-proper-subset-of  A B) (a-subset-of C B))
+;;;      (a-proper-subset-of  A B))))
+
+(def-theorem sb-ex6eu
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-subset-of C B))
+      (a-subset-of A (THE-UNION B C)))))
+
+(def-theorem sb-ex6su
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-subset-of C B))
+      (a-proper-subset-of  A (THE-UNION B C)))))
+
+(def-theorem sb-ex6ei
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-subset-of C B))
+      (a-subset-of (the-intersection A C) B))))
+
+(def-theorem sb-ex6si
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-subset-of C B))
+      (a-proper-subset-of  (the-intersection A C) B))))
+
+;;;(def-theorem sb-ex7e
+;;;  (forall ((a) (b) (c))
+;;;    (implies (and (a-subset-of A B) (a-proper-subset-of  C B))
+;;;      (a-subset-of A B))))
+
+(def-theorem sb-ex7eu
+  (forall ((a) (b) (c))
+    (implies (and (a-subset-of A B) (a-proper-subset-of  C B))
+      (a-subset-of A (THE-UNION B C)))))
+
+(def-theorem sb-ex7ei
+  (forall ((a) (b) (c))
+    (implies (and (a-subset-of A B) (a-proper-subset-of  C B))
+      (a-subset-of (the-intersection A C) B))))
+
+(def-theorem sb-ex8e
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-proper-subset-of  C B))
+      (a-subset-of A B))))
+
+;;;(def-theorem sb-ex8s
+;;;  (forall ((a) (b) (c))
+;;;    (implies (and (a-proper-subset-of  A B) (a-proper-subset-of  C B))
+;;;      (a-proper-subset-of  A B))))
+
+(def-theorem sb-ex8eu
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-proper-subset-of  C B))
+      (a-subset-of A (THE-UNION B C)))))
+
+(def-theorem sb-ex8su
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-proper-subset-of  C B))
+      (a-proper-subset-of  A (THE-UNION B C)))))
+
+(def-theorem sb-ex8ei
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-proper-subset-of  C B))
+      (a-subset-of (the-intersection A C) B))))
+
+(def-theorem sb-ex8si
+  (forall ((a) (b) (c))
+    (implies (and (a-proper-subset-of  A B) (a-proper-subset-of  C B))
+      (a-proper-subset-of  (the-intersection A C) B))))
+
+(defvar grd-sb-examples
+  '(sb-ex1 sb-ex1= sb-ex3e sb-ex3u sb-ex3i
+	   sb-ex4e sb-ex4s sb-ex4eu sb-ex4su sb-ex4ei sb-ex4si
+	   sb-ex5e sb-ex5u sb-ex5i
+	   sb-ex6e sb-ex6s sb-ex6eu sb-ex6su sb-ex6ei sb-ex6si
+	   sb-ex7e sb-ex7eu sb-ex7ei
+	   sb-ex8e sb-ex8s sb-ex8eu sb-ex8su sb-ex8ei sb-ex8si))
+

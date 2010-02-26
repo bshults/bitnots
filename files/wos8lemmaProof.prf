@@ -1,0 +1,147 @@
+;; Note I use f'(x) to represent (apply f x).  This is to distinguish
+;; it from f(x) which means that f is a function symbol taking x as an
+;; argument.
+
+()
+000+  f_0:Dom(G_0) -> Dom(H_0) onto                                     delta+alpha
+001+  f_0:G_0 -> H_0 homomorphism                                       delta+alpha
+0011+ G_0 is a group                                                    Defn:homomorphism (001)
+0012+ some(a)(a E Dom(G_0))                                             groups-non-empty (0011)
+0013+ a_1 E Dom(G_0)                                                    delta (0012)
+0014+ H_0 is a group                                                    Defn:homomorphism (001)
+0015+ some(a)(a E Dom(H_0))                                             groups-non-empty (0014)
+0016+ a_2 E Dom(H_0)                                                    delta (0015)
+0017+ f_0:Dom(G_0) -> Dom(H_0)                                          Defn:onto (000)
+0018+ all(a)(a E Dom(G_0) implies some(y)(<a,y> E f_0 and y E Dom(H_0) and
+                                  all(z)(<a,z> E f_0 implies z = y)))   Defn:function (0017)
+0019+ a E Dom(G_0) implies some(y)(<a,y> E f_0 and y E Dom(H_0) and
+                                 all(z)(<a,z> E f_0 implies z = y)))    gamma (0018)
+
+(1)  ;; Show Phi is a function
+002-  Phi_0:Dom(G_0/Ker(f_0)) -> Dom(H_0)                               beta
+
+(1.1)  ;; Show Phi sends everything in G/Ker(f) to a unique spot in H
+005-  all(a)(a E Dom(G_0/Ker(f_0)) implies some(y)(y E Dom(H_0) and <a, y> E Phi_0 and
+                              all(z)(<a, z> E Phi_0 implies z = y)))    Defn:function (002)
+007+  a_0 E Dom(G_0/Ker(f_0))                                           delta+alpha (005)
+008-  some(y)(y E Dom(H_0) and <a_0, y> E Phi_0 and
+              all(z)(<a_0, z> E Phi_0 implies z = y))                   delta+alpha (005)
+009+  some(g)(g E Dom(G_0) and a_0 = gKer(f_0))                         quotient-group-element (007)
+010+  g1 E Dom(G_0)                                                     gamma+alpha
+011+  a_0 = g1Ker(f_0)                                                  gamma+alpha
+
+(1.1.1)  ;; Show y is in H
+109-  y E Dom(H_0)                                                      gamma+beta (008)
+
+      * (109, 0016, {y/a_2})
+
+(1.1.2)  ;; Show Phi(a_0) = y
+210-  <a_0, y> E Phi_0                                                  gamma+beta (008)
+2101- <g1Ker(f_0), y> E Phi_0                                           Brown^? (210, 011)
+211-  <g1Ker(f_0), y> E {x:some(g)(x = <gKer(f_0),f_0'(g)> and g E Dom(G_0))}
+                                                                        comprehensionTrigger (2101)
+212-  some(g)(<g1Ker(f_0), y> = <gKer(f_0),f_0'(g)> and g E Dom(G_0))   comprehension (211)
+
+(1.1.2.1)  ;; Show g1Ker(f_0) = gKer(f) and y = f(g)
+213-  <g1Ker(f_0), y> = <gKer(f_0),f_0'(g)>                             delta+beta
+
+      * (213, {g1/g, y/f_0'(g)})
+
+(1.1.2.2)  ;; Show g is in G
+214-  g E Dom(G_0))                                                     delta+beta
+
+      * (214, 0013, {g/a_1})
+
+(1.1.3)  ;; Show Phi(g1Ker(f_0)) = z implies z = y
+311+  <a_0, z(y)> E Phi_0                                               gamma+beta+alpha (008)
+3111+ <g1Ker(f_0), z(y)> E Phi_0                                        Brown^ (311, 011)
+312-  z(y) = y                                                          gamma+beta+alpha (008)
+320+  <g1Ker(f_0), z(y)> E {x:some(g)(x = <gKer(f_0),f_0'(g)> and g E Dom(G_0))}
+                                                                        comprehensionTrigger (311, Defn:phi)
+321+  some(g)(<g1Ker(f_0), z(y)> = <gKer(f_0),f_0'(g)> and g E Dom(G_0))
+                                                                        comprehension (320)
+322+  <g1Ker(f_0), z(y)> = <g(y)Ker(f_0),f_0'(g(y))>                    delta+alpha (321)
+323+  g(y) E Dom(G_0)                                                   delta+alpha (321)
+324+  g1Ker(f_0) = g(y)Ker(f_0)                                         ordered-pairs (322)
+325+  z(y) = f_0'(g(y))                                                 ordered-pairs (322)
+326-  f_0'(g(y)) = y                                                    Brown (312, 325)
+
+[Note: this was an application of Brown's rule to a formula up on the
+       branch.  See if it's needed.  Also, there was a choice about
+       which skolem term to remove here.]
+
+(1.1.3.1)  ;; Show a is in G
+330-  a E Dom(G_0)                                                      beta (0019)
+
+      * (330, 323, {a/g(y)})
+
+(1.1.3.2)  ;; we know f sends a to a unique element of H
+331+  some(y)(<a,y> E f_0 and y E Dom(H_0) and
+          all(z)(<a,z> E f_0 implies z = y)))                           beta (0019)
+332+  <a,y_0> E f_0                                                     delta+alpha (331)
+333+  y_0 E Dom(H_0)                                                    delta+alpha (331)
+334+  all(z)(<a,z> E f_0 implies z = y_0)                               delta+alpha (331)
+
+(1.1.3.2.1)  ;; Show f(a) = z
+335-  <a,z> E f_0                                                       gamma+beta (334)
+
+      * (335, 332, {z/y_0})
+
+(1.1.3.2.2)  ;; We know z = y_0
+336+  z = y_0                                                           gamma+beta (334)
+337+  z E Dom(H_0)                                                      Brown (336, 333)
+338+  <a,z> E f_0                                                       Brown (336, 332)
+339+  f_0'(a) = z                                                       function-application1 (338)
+
+      * (339, 326, {a/g(y), y/z/y_0})
+
+[Note: these were applications of Brown's rule to a formula up on the
+       branch.  See if it's needed.]
+
+(1.2) ;; Show that G/Ker(f) is the domain of Phi
+406-  all(z)(z E Phi_0 implies some(x, y)(z = <x, y> and x E Dom(G_0/Ker(f_0)))
+                                                                        Defn:function (002)
+407+  z_0 E Phi_0                                                       delta+alpha (406)
+408-  some(x,y)(z_0 = <x,y> and x E Dom(G_0/Ker(f_0)))                  delta+alpha (406)
+409-  z_0 = <x3,y3> and x3 E Dom(G_0/Ker(f_0))                          gamma (408)
+4091+ z_0 E {x:some(g)(x = <gKer(f_0),f_0'(g)> and g E Dom(G_0))}       comprehensionTrigger (407, Defn:Phi_0)
+4092+ z_0 = <g_3Ker(f_0),f_0'(g_3)>                                     comprehension+delta+alpha (4091)
+4093+ g_3 E Dom(G_0)                                                    comprehension+delta+alpha (4091)
+
+(1.2.1)
+410-  z_0 = <x3,y3>                                                     beta (409)
+
+      * (410, {x3/g_3Ker(f_0), y3/f_0'(g_3)})
+
+(1.2.2)
+411-  x3 E Dom(G_0/Ker(f_0))                                            beta (409)
+412-  some(g)(g E Dom(G_0) and x3 = gKer(f_0))                          quotient-group-element (411)
+
+(1.2.2.1)
+413-  g4 E Dom(G_0)                                                     gamma+beta
+
+      * (413, 4093, {g4/g_3})
+
+(1.2.2.2)
+414-  x3 = g4Ker(f_0)                                                   gamma+beta
+
+      * (414, {x3/g4Ker(f_0)})
+
+(2)  ;; Suppose g is in G and show that Phi(gKer(f)) = f(g)
+503+  g_0 E Dom(G_0)                                                    beta+alpha
+504-  Phi_0'(g_0Ker(f_0)) = f_0'(g_0)                                   beta+alpha
+505-  <g_0Ker(f_0), f_0'(g_0)> E Phi_0                                  function-application1 (504)
+506-  <g_0Ker(f_0), f_0'(g_0)> E {x:some(g)(x = <gKer(f_0),f_0'(g)> and g E Dom(G_0))}
+                                                                        comprehensionTrigger (405, Defn:Phi_0)
+
+(2.1)
+507-  <g_0Ker(f_0), f_0'(g_0)> = <g6Ker(f_0),f_0'(g6)>                  comprehension+gamma+beta (506)
+
+      * (507 {g6/g_0})
+
+(2.2)
+508-  g6 E Dom(G_0)                                                     comprehension+gamma+beta (506)
+
+      * (508, 503, {g6/g_0})
+
+
